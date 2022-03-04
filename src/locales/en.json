@@ -1,0 +1,173 @@
+{
+  "common": {
+    "all": "All",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "save": "Save",
+    "logout": "Logout",
+    "cancel": "Cancel",
+    "back": "Back",
+    "delete": "Delete",
+    "register": "Register",
+    "modify": "Modify",
+    "min": "Min",
+    "pcs": "pcs",
+    "filter": "Filter",
+    "language": "Választott nyelv",
+    "confirm": "Confirmation",
+    "warning": "Warning",
+    "modifySuccess": "Modification Success",
+    "insertSuccess": "Insert Success",
+    "removeSuccess": "Remove Success"
+  },
+  "menu": {
+    "myCalendar": "My Calendar",
+    "nextEvents": "Next Events",
+    "memberships": "Memberships"
+  },
+  "calendar": {
+    "week": "Week",
+    "actWeek": "This Week",
+    "year": "Year"
+  },
+  "login": {
+    "email": "Email",
+    "password": "Password",
+    "oldPassword": "Old password",
+    "newPassword": "New password",
+    "changePassword": "Change password",
+    "passwordCheck": "Check password",
+    "userName": "User name",
+    "photoURL": "Avatar",
+    "login": "Log in",
+    "location": "Location",
+    "profile": "Profile",
+    "google": "Google login",
+    "facebook": "Facebook login",
+    "registration": "Registration",
+    "verification": "Verification",
+    "registerLink": "Register new user",
+    "loginLink": "Back to login",
+    "verificationSent": "Verification email was sent to {{email}}, please check your emails.",
+    "verificationTodo": "If email not arrived, or expired, please send it again.",
+    "registrationSuccess": "Congratulation, your registration was success",
+    "startWork": "Start work",
+    "sendAgain": "Send again",
+    "otherUser": "Other user",
+    "resetPassword": "Reset password",
+    "changePasswordSuccess": "Reset password success.",
+    "error": {
+      "passwordCheck": "Password is not the same",
+      "auth/invalid-email": "Invalid email",
+      "auth/user-disabled": "User disabled",
+      "auth/user-not-found": "Wrong user or password",
+      "auth/wrong-password": "Wrong user or password",
+      "auth/email-already-in-use": "Email already in use",
+      "auth/operation-not-allowed": "Operation not allowed",
+      "auth/weak-password": "Weak password"
+    }
+  },
+  "error": {
+    "required": "Field is required",
+    "numberType": "Not valid integer",
+    "email": "Not valid email"
+  },
+  "home": {
+    "title": "Home"
+  },
+  "trainer": {
+    "nextEvents": "Next 7 day events",
+    "calendar": "Training Calendar",
+    "registrationInfo": "If you want to be a trainer, please setup location, register and wait for approval.",
+    "title": "Trainer",
+    "events": "Events",
+    "name": "Name",
+    "groups": "Training Groups",
+    "newGroup": "New Group",
+    "waitingApprovalText": "You are waiting for approval, to be a trainer.",
+    "approvedText": "Congratulation, You are an approved trainer. Now you can use Training Groups menu on the top right menu bar."
+  },
+  "trainingGroup": {
+    "title": "Training Group",
+    "displayTitle": "{{ name }} Group",
+    "baseData": "Base Data",
+    "members": "Members",
+    "maxMember": "Maximum Member no",
+    "name": "Name",
+    "duration": "Duration",
+    "color": "Color",
+    "days": "Days",
+    "time": "Time",
+    "trainingTime": "Training time",
+    "ticketLength": "Ticket length",
+    "deleteConfirm": "Are you sure, delete this group ?"
+  },
+  "memberState": {
+    "ACCEPTED": "Accepted",
+    "TRAINER_REQUEST": "Invited to join",
+    "USER_REQUEST": "Waiting for membership",
+    "USER_SUSPENDED": "Quited",
+    "TRAINER_SUSPENDED": "Banned"
+  },
+  "membership": {
+    "checkinApproved": "Checkin approved",
+    "checkoutApproved": "Checkout approved",
+    "title": "Contacts",
+    "trainerEmail": "Trainer email",
+    "trainerName": "Trainer name",
+    "groupName": "Trainer name",
+    "details": "Member details",
+    "newMember": "Invite User",
+    "state": "State",
+    "ticketNo": "Ticket No.",
+    "remainingEventNo": "Remaining event no",
+    "purchasedTicketNo": "Purchased ticket no",
+    "cancelRequest": "Cancel request"
+  },
+  "confirm": {
+    "setStateByTrainer": {
+      "ACCEPTED" : "Are you sure you want to add this user to the group?",
+      "TRAINER_REQUEST": "Are you sure you want to invite this user to the group?",
+      "TRAINER_SUSPENDED": "Are you sure you want to suspend the user's membership?",
+      "null": "Are you sure you want to delete user from the group?"
+    },
+    "setStateByUser": {
+      "ACCEPTED" : "Are you sure you want to login to the group?",
+      "USER_REQUEST": "Are you sure you want to join to the group?",
+      "USER_SUSPENDED": "Are you sure you leave the group?",
+      "null": "Are you sure you want to delete this group contact?"
+    },
+    "noMoreTicket": "You have run out of tickets. Are you sure to checkin ?",
+    "buySeasonTicket": "Are you sure, to add season ticket ?",
+    "memberMissed": "Deduct the ticket of the missing member ?"
+  },
+  "warning": {
+    "consultTrainer": "Please consult your trainer about tickets!",
+    "deleteGroup": "Please delete all members before delete group!",
+    "selectionExistsNoTicket": "You should buy season ticket, before you can select more than one event, in a group!",
+    "maxMembershipError": "Sorry, the training reached the maximum number of peoples, try to register for another time!"
+  },
+  "action": {
+    "userRequest": "Applying",
+    "leaveRequest": "Leave",
+    "cancelRequest": "Membership Withdrawal",
+    "acceptTrainerRequest": "Join the group",
+    "acceptUserRequest": "Add to group",
+    "delete": "Delete",
+    "returns": "Returns",
+    "trainerRequest": "Invite User",
+    "suspendRequest": "Suspend",
+    "rejectRequest": "Reject",
+    "buySeasonTicket": "Buy Season Ticket",
+    "memberMissed": "Member missed"
+  },
+  "event": {
+    "details": "Event details",
+    "members": "Members",
+    "time": "Time",
+    "remainingEventNo": "There are {{ ticketNo }} tickets left",
+    "owesTicket": "Owes  {{ ticketNo }} tickets",
+    "noMoreEvent": "No more ticket left"
+  }
+}

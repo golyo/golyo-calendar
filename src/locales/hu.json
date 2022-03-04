@@ -1,0 +1,170 @@
+{
+  "common": {
+    "all": "Összes",
+    "yes": "Igen",
+    "no": "Nem",
+    "ok": "Rendben",
+    "save": "Mentés",
+    "logout": "Kilépés",
+    "cancel": "Mégsem",
+    "back": "Vissza",
+    "register": "Jelentkezés",
+    "modify": "Módosítás",
+    "min": "Perc",
+    "pcs": "db",
+    "filter": "Szűrés",
+    "language": "Választott nyelv",
+    "confirm": "Megerősítés",
+    "warning": "Figyelmeztetés",
+    "modifySuccess": "Módosítás sikeres",
+    "insertSuccess": "Létrehozás sikeres",
+    "removeSuccess": "Eltávolítás sikeres"
+  },
+  "menu": {
+    "myCalendar": "Edzés naptár",
+    "nextEvents": "Közelgő Események",
+    "memberships": "Kapcsolatok"
+  },
+  "calendar": {
+    "week": "Hét",
+    "actWeek": "Ez a hét",
+    "year": "Év"
+  },
+  "login": {
+    "email": "Email",
+    "password": "Jelszó",
+    "oldPassword": "Régi jelszó",
+    "newPassword": "Új jelszó",
+    "changePassword": "Jelszó csere",
+    "passwordCheck": "Jelszó ellenőrzés",
+    "userName": "Megjelenő név",
+    "photoURL": "Avatar",
+    "login": "Belépés",
+    "location": "Helyszín",
+    "profile": "Felhasználói Beállítások",
+    "google": "Google belépés",
+    "facebook": "Facebook belépés",
+    "register": "Regisztráció",
+    "verification": "Elenőrzés",
+    "registerLink": "Új felhasználó rögzítése",
+    "loginLink": "Vissza a belépéshez",
+    "verificationSent": "Ellenőrző levél kiküldve a(z) {{email}} címre, kérem ellenőrizze a postaládáját.",
+    "verificationTodo": "Ha az ellenőrző levél nem érkezett meg, vagy lejárt, kérem küldje el azt újra.",
+    "registrationSuccess": "Gratulálunk, sikeres regisztráció",
+    "startWork": "Munka kezdése",
+    "sendAgain": "Újra küld",
+    "otherUser": "Másik felhasználó",
+    "resetPassword": "Elfelejtett jelszó",
+    "changePasswordSuccess": "Új jelszó beállítása sikeresen megtörtént.",
+    "error": {
+      "auth/invalid-email": "Hibás email",
+      "auth/user-disabled": "Felhasználó letiltva",
+      "auth/user-not-found": "Hibás jelszó vagy felhasználó",
+      "auth/wrong-password": "Hibás jelszó vagy felhasználó",
+      "auth/email-already-in-use": "Már regisztrált email cím",
+      "auth/operation-not-allowed": "Hibás próbálkozás",
+      "auth/weak-password": "Gyenge jelszó"
+    }
+  },
+  "home": {
+    "title": "Kezdő oldal"
+  },
+  "error": {
+    "required": "Mező megadása kötelező",
+    "numberType": "Nem megfelelő szám",
+    "email": "Nem megfelelő email"
+  },
+  "trainer": {
+    "nextEvents": "Következő 7 nap eseményei",
+    "calendar": "Edzés naptár",
+    "registrationInfo": "Ha edző szeretne lenni, kérjük adja meg a helyszínt, regisztráljon, és várja meg a jóváhagyást.",
+    "title": "Edző",
+    "events": "Események",
+    "name": "Név",
+    "groups": "Edzés Csoportok",
+    "newGroup": "Új csoport",
+    "waitingApprovalText": "Jóváhagyásra vár, hogy edző lehessen.",
+    "approvedText": "Gratulálunk, edző lettél a rendszerben. A csoportok kezelését a jobb felső menüsorban használhatod."
+  },
+  "trainingGroup": {
+    "title": "Csoport",
+    "displayTitle": "{{ name }} Csoport",
+    "baseData": "Alapadatok",
+    "members": "Tagok",
+    "maxMember": "Maximális létszám",
+    "name": "Név",
+    "duration": "Időtartam",
+    "color": "Szín",
+    "days": "Napok",
+    "time": "Idő",
+    "trainingTime": "Edzések ideje",
+    "ticketLength": "Bérlet hossza",
+    "deleteConfirm": "Bizto hogy törli a csoportot ?"
+  },
+  "memberState": {
+    "ACCEPTED": "Aktív tag",
+    "TRAINER_REQUEST": "Meghívás alatt",
+    "USER_REQUEST": "Felvételre vár",
+    "USER_SUSPENDED": "Kilépett",
+    "TRAINER_SUSPENDED": "Letiltott"
+  },
+  "membership": {
+    "checkinApproved": "Jelentkezés rögzítve",
+    "checkoutApproved": "Jelentkezés törölve",
+    "title": "Kapcsolatok",
+    "trainerEmail": "Edző email",
+    "trainerName": "Edző neve",
+    "groupName": "Csoport neve",
+    "details": "Tag Információk",
+    "newMember": "Tag meghívása",
+    "state": "Állapot",
+    "ticketNo": "Jegyek",
+    "remainingEventNo": "Hátralevő alkalmak",
+    "purchasedTicketNo": "Megvett bérletek",
+    "cancelTrainerRequest": "Meghívás visszavonása"
+  },
+  "confirm": {
+    "setStateByTrainer": {
+      "ACCEPTED": "Biztosan felveszi a felhasználót a csoportba?",
+      "TRAINER_REQUEST": "Biztosan meghívja a felhasználót a csoportba?",
+      "TRAINER_SUSPENDED": "Biztosan felfüggeszti a felhasználó tagságát?",
+      "null": "Biztosan törli a felhasználót a csoportból?"
+    },
+    "setStateByUser": {
+      "ACCEPTED" : "Biztosan csatlakozni szeretne a csoporthoz?",
+      "USER_REQUEST": "Biztosan szeretne csatlakozási kérelmet küldeni a csoporthoz?",
+      "USER_SUSPENDED": "Biztosan szünetelteti a csoport látogatását?",
+      "null": "Biztosan törli a csoport elérhetőségét?"
+    },
+    "noMoreTicket": "A rendelkezésre álló jegyei elfogytak. Biztosan bejelentkezik ?",
+    "buySeasonTicket": "Biztosan jóváírja a bérlet vásárlást ?",
+    "memberMissed": "Felszámolja a jegyet a hiányzónak ?"
+  },
+  "warning": {
+    "consultTrainer": "A rendelkezésre álló jegyei elfogytak, kérem egyeztessen az edzőjével!",
+    "deleteGroup": "Kérem törölje a tagokat a csoport törlése előtt!",
+    "selectionExistsNoTicket": "Amíg nem vesz bérletet, addig csak egy eseményre tud jelentkezni a csoportban!",
+    "maxMembershipError": "Sajnos betelt a maximum létszám, próbálj regisztrálni másik időpontra!"
+  },
+  "action": {
+    "userRequest": "Jelentkezés",
+    "leaveRequest": "Kilépés",
+    "acceptTrainerRequest": "Csatlakozás",
+    "acceptUserRequest": "Felvétel",
+    "delete": "Törlés",
+    "returns": "Visszalépés",
+    "trainerRequest": "Meghívás",
+    "suspendRequest": "Felfüggesztés",
+    "rejectRequest": "Viszautasítás",
+    "buySeasonTicket": "Bérlet vásárlás",
+    "memberMissed": "Nem volt ott"
+  },
+  "event": {
+    "details": "Esemény részletek",
+    "members": "Résztvevők",
+    "time": "Időpont",
+    "remainingEventNo": "Még van {{ ticketNo }} jegye.",
+    "owesTicket": "{{ ticketNo }} jeggyel tartozik!",
+    "noMoreEvent": "Nincs több jegye!"
+  }
+}
