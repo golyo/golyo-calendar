@@ -18,6 +18,7 @@ export const DEFAULT_GROUP: TrainingGroupUIType = {
   duration: 60,
   ticketLength: 10,
   maxMember: 12,
+  inviteOnly: false,
   crons: [{
     days: [],
     time: '',

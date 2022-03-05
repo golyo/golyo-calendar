@@ -37,16 +37,18 @@ export interface User {
 }
 
 export interface UserContextType {
-  user?: User;
-  utils: IUtils<any>;
-  cronConverter: CronConverter;
-  userEventProvider: EventProvider;
-  groupMemberships: UserGroupMembership[];
+  addGroupMembership: (trainer: User, groupId: string) => Promise<void>;
   activeMemberships: UserGroupMembership[];
+  changeUserGroupState: (group: UserGroupMembership, toState: MemberState | null) => Promise<any>;
+  cronConverter: CronConverter;
   getDateRangeStr: (event: TrainerEvent) => string;
+  groupMemberships: UserGroupMembership[];
+  loadTrainers: () => Promise<User[]>;
   membershipChanged: () => void;
   saveUser: (user: User) => Promise<any>;
-  changeUserGroupState: (group: UserGroupMembership, toState: MemberState | null) => Promise<any>;
+  user?: User;
+  userEventProvider: EventProvider;
+  utils: IUtils<any>;
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType);

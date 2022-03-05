@@ -1,5 +1,7 @@
 {
   "common": {
+    "true": "True",
+    "false": "False",
     "all": "All",
     "yes": "Yes",
     "no": "No",
@@ -24,7 +26,8 @@
   "menu": {
     "myCalendar": "My Calendar",
     "nextEvents": "Next Events",
-    "memberships": "Memberships"
+    "memberships": "Memberships",
+    "searchTrainer": "Search Trainer"
   },
   "calendar": {
     "week": "Week",
@@ -92,6 +95,7 @@
     "title": "Training Group",
     "displayTitle": "{{ name }} Group",
     "baseData": "Base Data",
+    "inviteOnly": "Join only invite",
     "members": "Members",
     "maxMember": "Maximum Member no",
     "name": "Name",
@@ -140,13 +144,17 @@
     },
     "noMoreTicket": "You have run out of tickets. Are you sure to checkin ?",
     "buySeasonTicket": "Are you sure, to add season ticket ?",
-    "memberMissed": "Deduct the ticket of the missing member ?"
+    "memberMissed": "Deduct the ticket of the missing member ?",
+    "userRequest": "Are you sure, to join the selected group ?"
   },
   "warning": {
     "consultTrainer": "Please consult your trainer about tickets!",
     "deleteGroup": "Please delete all members before delete group!",
     "selectionExistsNoTicket": "You should buy season ticket, before you can select more than one event, in a group!",
-    "maxMembershipError": "Sorry, the training reached the maximum number of peoples, try to register for another time!"
+    "maxMembershipError": "Sorry, the training reached the maximum number of peoples, try to register for another time!",
+    "membershipExists": "You ara already member in this group!",
+    "trainerOwnGroup": "You are the owner in this group!",
+    "groupInviteOnly": "You can join this group onyl, if trainer invites you!"
   },
   "action": {
     "userRequest": "Applying",

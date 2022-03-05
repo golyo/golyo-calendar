@@ -9,7 +9,7 @@ import {
   Groups,
   Home as HomeIcon,
   ManageAccounts,
-  PermContactCalendar,
+  PermContactCalendar, Search,
 } from '@mui/icons-material';
 import { createTheme, ThemeProvider, responsiveFontSizes } from '@mui/material/styles';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
@@ -29,22 +29,28 @@ const VISIBLE = () => true;
 
 const leftMenu: MenuItemType[] = [
   {
-    isVisible: VISIBLE,
+    isVisible: (user) => !!user && user.memberships.length > 0,
     label: 'menu.nextEvents',
     path: '/',
     icon: <HomeIcon />,
   },
   {
-    isVisible: VISIBLE,
+    isVisible: (user) => !!user && user.memberships.length > 0,
     label: 'menu.myCalendar',
     path: '/myCalendar',
     icon: <CalendarViewWeek />,
   },
   {
-    isVisible: VISIBLE,
+    isVisible: (user) => !!user && user.memberships.length > 0,
     label: 'menu.memberships',
     path: '/memberships',
     icon: <Contacts />,
+  },
+  {
+    isVisible: VISIBLE,
+    label: 'menu.searchTrainer',
+    path: '/searchTrainer',
+    icon: <Search />,
   },
 ];
 

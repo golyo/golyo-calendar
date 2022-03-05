@@ -37,6 +37,7 @@ import NextEvents from '../view/user/NextEvents';
 import TrainerCalendar from '../view/trainer/events/TrainerCalendar';
 import EventPage from '../view/trainer/events/EventPage';
 import TrainerEvents from '../view/trainer/events/TrainerEvents';
+import SearchTrainer from '../view/user/SearchTrainer';
 
 const useStyles = makeStyles(styles, { name: 'MenuDrawer' });
 
@@ -192,6 +193,7 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
             <Route index element={<NextEvents />} />
             <Route path="myCalendar" element={<UserCalendar />} />
             <Route path="trainerCalendar" element={<TrainerCalendar />} />
+            <Route path="searchTrainer" element={<SearchTrainer />} />
             <Route path="test" element={<ManageAccounts />} />
             <Route path="memberships" element={<UserMemberships />} />
             <Route path="profile" element={<Profile />} />

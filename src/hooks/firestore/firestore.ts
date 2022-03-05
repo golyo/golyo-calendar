@@ -89,7 +89,7 @@ export const loadObject = (firestore: Firestore, path: string, id: string) => {
   });
 };
 
-export const insertObject = <T extends { id?: string }>(firestore: Firestore, path: string, object: T) => {
+export const insertObject = <T extends { id: string }>(firestore: Firestore, path: string, object: T) => {
   const collectionRef = collection(firestore, path);
   return addDoc(collectionRef, object).then((docRef) => {
     object.id = docRef.id;
@@ -115,7 +115,7 @@ export const doQuery = (firestore: Firestore, path: string, dateProperties: stri
     .then((querySnapshot) => querySnapshot.docs.map((document) => document.data()));
 };
 
-export const useFirestore = <T extends { id?: string }>(path: string, dateProperties?: string[]) => {
+export const useFirestore = <T extends { id: string }>(path: string, dateProperties?: string[]) => {
   const { firestore } = useFirebase();
   const { showBackdrop, hideBackdrop } = useDialog();
   
@@ -160,10 +160,10 @@ export const useFirestore = <T extends { id?: string }>(path: string, dateProper
     return deleteDoc(getDocRef(id)).then(() => hideBackdrop(useMessage && 'common.removeSuccess'));
   }, [getDocRef, hideBackdrop, showBackdrop]);
 
-  const listAll = useCallback(() => {
+  const listAll = useCallback((...queryConstraints: QueryConstraint[]) => {
     showBackdrop();
-    return getDocs(collectionRef).then((querySnapshot) => {
-      const result = querySnapshot.docs.map((document) => document.data());
+    return getDocs(query(collectionRef, ...queryConstraints)).then((querySnapshot) => {
+      const result = querySnapshot.docs.map((document) => document.data() as T);
       hideBackdrop();
       return result;
     });

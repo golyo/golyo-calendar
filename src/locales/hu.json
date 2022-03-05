@@ -1,5 +1,7 @@
 {
   "common": {
+    "true": "Igen",
+    "false": "Nem",
     "all": "Összes",
     "yes": "Igen",
     "no": "Nem",
@@ -23,7 +25,8 @@
   "menu": {
     "myCalendar": "Edzés naptár",
     "nextEvents": "Közelgő Események",
-    "memberships": "Kapcsolatok"
+    "memberships": "Kapcsolatok",
+    "searchTrainer": "Edző keresése"
   },
   "calendar": {
     "week": "Hét",
@@ -90,6 +93,7 @@
     "title": "Csoport",
     "displayTitle": "{{ name }} Csoport",
     "baseData": "Alapadatok",
+    "inviteOnly": "Csatlakozás csak meghívásra",
     "members": "Tagok",
     "maxMember": "Maximális létszám",
     "name": "Név",
@@ -138,13 +142,17 @@
     },
     "noMoreTicket": "A rendelkezésre álló jegyei elfogytak. Biztosan bejelentkezik ?",
     "buySeasonTicket": "Biztosan jóváírja a bérlet vásárlást ?",
-    "memberMissed": "Felszámolja a jegyet a hiányzónak ?"
+    "memberMissed": "Felszámolja a jegyet a hiányzónak ?",
+    "userRequest": "Biztosan csatlakozni szeretne a csoporthoz ?"
   },
   "warning": {
     "consultTrainer": "A rendelkezésre álló jegyei elfogytak, kérem egyeztessen az edzőjével!",
     "deleteGroup": "Kérem törölje a tagokat a csoport törlése előtt!",
     "selectionExistsNoTicket": "Amíg nem vesz bérletet, addig csak egy eseményre tud jelentkezni a csoportban!",
-    "maxMembershipError": "Sajnos betelt a maximum létszám, próbálj regisztrálni másik időpontra!"
+    "maxMembershipError": "Sajnos betelt a maximum létszám, próbálj regisztrálni másik időpontra!",
+    "membershipExists": "Már tagja ennek a csoportnak!",
+    "trainerOwnGroup": "Saját csoportjához nem csatlakozhat!",
+    "groupInviteOnly": "Csak az edző meghívására csatlakozhatsz a csoporthoz!"
   },
   "action": {
     "userRequest": "Jelentkezés",

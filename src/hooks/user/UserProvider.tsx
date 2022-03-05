@@ -14,7 +14,7 @@ import { useAuth } from '../auth/AuthProvider';
 import UserContext, { User, UserGroupMembership } from './UserContext';
 import { useFirebase } from '../firebase';
 import { MembershipType, MemberState, TrainingGroupType } from '../trainer/GroupContext';
-import { Firestore } from 'firebase/firestore';
+import { Firestore, where } from 'firebase/firestore';
 import { TrainerProvider } from '../trainer';
 import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
 import { createCronConverter } from './cronUtils';
@@ -80,6 +80,10 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     });
   }, [user]);
 
+  const loadTrainers = useCallback(() => {
+    return userSrv.listAll(where('isTrainer', '==', true));
+  },  [userSrv]);
+
   const saveUser = useCallback((toSave: User) => userSrv.save(toSave).then(() => changeUser(toSave)), [changeUser, userSrv]);
 
   const userEventProvider = useMemo(() => createUserEventProvider(firestore, activeMemberships), [firestore, activeMemberships]);
@@ -135,6 +139,16 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     });
   }, [firestore]);
 
+  const addGroupMembership = useCallback((trainer: User, groupId: string) => {
+    user!.memberships = user!.memberships || [];
+    user!.memberships.push({
+      trainerId: trainer.id,
+      trainerName: trainer.name,
+      groupId,
+    });
+    return saveUser(user!);
+  }, [saveUser, user]);
+
   const loadUser = useCallback(() => {
     userSrv.get(authUser!.email!).then((dbUser) => {
       if (dbUser) {
@@ -179,22 +193,25 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     loadUser();
   }, [authUser, initialized, loadUser, user, userSrv]);
 
-  const ctx = useMemo(() => ({
-    user: user,
-    utils,
-    cronConverter,
-    getDateRangeStr,
-    userEventProvider,
-    groupMemberships,
-    activeMemberships,
-    membershipChanged,
-    saveUser,
-    changeUserGroupState,
-  }), [activeMemberships, membershipChanged, getDateRangeStr, user, utils, cronConverter, userEventProvider, groupMemberships, saveUser, changeUserGroupState]);
-
   if (!initialized) {
     return null;
   }
+
+  const ctx = {
+    addGroupMembership,
+    activeMemberships,
+    changeUserGroupState,
+    cronConverter,
+    getDateRangeStr,
+    groupMemberships,
+    loadTrainers,
+    membershipChanged,
+    saveUser,
+    user: user,
+    userEventProvider,
+    utils,
+  };
+
   if (user && user.isTrainer) {
     return (
       <UserContext.Provider value={ctx}>

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Avatar, Button, InputAdornment, MenuItem, TextField } from '@mui/material';
+import { Avatar, Button, Checkbox, FormControlLabel, InputAdornment, MenuItem, TextField } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { TrainingGroupUIType } from '../../../hooks/trainer';
 import ModalContainer from '../../common/ModalContainer';
@@ -24,6 +24,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
   const schema = useMemo(() => yup.object({
     name: yup.string().required(),
     color: yup.string().required(),
+    inviteOnly: yup.boolean().required(),
     duration: yup.number().integer().min(1).max(24 * 60),
     ticketLength: yup.number().integer().min(1).max(100),
     maxMember: yup.number().integer().min(1).max(100),
@@ -119,6 +120,21 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
                 helperText={errors.maxMember?.message}
               />
             )}
+          />
+          <FormControlLabel
+            control={
+              <Controller
+                name="inviteOnly"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    {...field}
+                    checked={field.value}
+                  />
+                )}
+              />
+            }
+            label={t('trainingGroup.inviteOnly') as string}
           />
           <Controller
             control={control}
