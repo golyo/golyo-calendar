@@ -1,4 +1,4 @@
-import { createContext, useCallback } from 'react';
+import { createContext } from 'react';
 import { MemberState, MembershipType } from '../trainer';
 import { TrainingGroupType } from '../trainer/GroupContext';
 import { EventProvider, TrainerEvent } from '../event';
