@@ -91,6 +91,7 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
     setState((prev) => ({ ...prev, anchorLeft: null, anchorRight: null }));
   }, []);
 
+  const leftVisible = useMemo(() => leftMenu.filter((menu) => user && menu.isVisible(user)), [leftMenu, user]);
   const rightVisible = useMemo(() => rightMenu.filter((menu) => user && menu.isVisible(user)), [rightMenu, user]);
 
   const renderMenu = useCallback((menus: MenuItemType[]) => {
@@ -141,7 +142,7 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
             open={isLeftOpen}
             onClose={handleClose}
           >
-            { renderMenu(leftMenu) }
+            { renderMenu(leftVisible) }
           </Menu>
           <div className={classes.grow}>
           </div>

@@ -74,6 +74,9 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
       ...user,
       ...newUser,
     };
+    if (!mergedUser.memberships) {
+      mergedUser.memberships = [];
+    }
     setState({
       initialized: true,
       user: mergedUser,
@@ -140,7 +143,6 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   }, [firestore]);
 
   const addGroupMembership = useCallback((trainer: User, groupId: string) => {
-    user!.memberships = user!.memberships || [];
     user!.memberships.push({
       trainerId: trainer.id,
       trainerName: trainer.name,
