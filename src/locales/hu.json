@@ -6,6 +6,7 @@
     "yes": "Igen",
     "no": "Nem",
     "ok": "Rendben",
+    "hour": "óra",
     "save": "Mentés",
     "logout": "Kilépés",
     "cancel": "Mégsem",
@@ -98,6 +99,7 @@
     "maxMember": "Maximális létszám",
     "name": "Név",
     "duration": "Időtartam",
+    "cancellationDeadline": "Lemondási határidő",
     "color": "Szín",
     "days": "Napok",
     "time": "Idő",
@@ -154,7 +156,9 @@
     "maxMembershipError": "Sajnos betelt a maximum létszám, próbálj regisztrálni másik időpontra!",
     "membershipExists": "Már tagja ennek a csoportnak!",
     "trainerOwnGroup": "Saját csoportjához nem csatlakozhat!",
-    "groupInviteOnly": "Csak az edző meghívására csatlakozhatsz a csoporthoz!"
+    "groupInviteOnly": "Csak az edző meghívására csatlakozhatsz a csoporthoz!",
+    "cancellationOutranged": "A visszamondásra szánt időkeret lejárt, egyeztessen edzőjével!",
+    "joinRequestOutranged": "Az edzés elkezdődött, a csatlakozási idő lejárt!"
   },
   "action": {
     "userRequest": "Jelentkezés",

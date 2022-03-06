@@ -74,7 +74,7 @@ export default function EventPage() {
       <List>
         {activeMembers.map((eMember, idx) => (
           <ListItem key={idx}
-                    secondaryAction={isStarted && <TrainerActionsPopup member={eMember} eventId={eventId} setEvent={setEvent} />}
+                    secondaryAction={isStarted && <TrainerActionsPopup member={eMember} event={event} setEvent={setEvent} />}
                     divider
           >
             <ListItemAvatar>

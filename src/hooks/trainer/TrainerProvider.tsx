@@ -7,6 +7,11 @@ import { createTrainerEventProvider } from '../event/eventUtil';
 import { useFirebase } from '../firebase';
 import { convertGroupToFirestore, convertGroupToUi } from './GroupProvider';
 
+const initGroup = (group: TrainingGroupType) => {
+  group.cancellationDeadline = group.cancellationDeadline || 0;
+  return group;
+};
+
 const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
   const { firestore } = useFirebase();
   const { user, cronConverter } = useUser();
@@ -53,7 +58,7 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
   }), [deleteGroup, findGroup, trainingGroups, eventProvider, saveGroup]);
 
   useEffect(() => {
-    groupSrv.listAll().then((groups) => setTrainingGroups(groups));
+    groupSrv.listAll().then((groups) => setTrainingGroups(groups.map((group) => initGroup(group))));
   }, [groupSrv]);
 
   return <TrainerContext.Provider value={ctx}>{ children}</TrainerContext.Provider>;

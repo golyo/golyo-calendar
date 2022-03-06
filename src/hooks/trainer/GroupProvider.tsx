@@ -16,6 +16,7 @@ export const DEFAULT_GROUP: TrainingGroupUIType = {
   name: '',
   color: '',
   duration: 60,
+  cancellationDeadline: 4,
   ticketLength: 10,
   maxMember: 12,
   inviteOnly: false,

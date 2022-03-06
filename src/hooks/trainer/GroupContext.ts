@@ -7,6 +7,7 @@ interface TrainingGroupBase {
   name: string;
   color?: string;
   inviteOnly: boolean;
+  cancellationDeadline: number;
   ticketLength: number;
   duration: number;
   maxMember: number;

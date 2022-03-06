@@ -26,6 +26,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
     color: yup.string().required(),
     inviteOnly: yup.boolean().required(),
     duration: yup.number().integer().min(1).max(24 * 60),
+    cancellationDeadline: yup.number().integer().min(0).max(120),
     ticketLength: yup.number().integer().min(1).max(100),
     maxMember: yup.number().integer().min(1).max(100),
     crons: yup.array().of(
@@ -135,6 +136,29 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
               />
             }
             label={t('trainingGroup.inviteOnly') as string}
+          />
+          <Controller
+            control={control}
+            name="cancellationDeadline"
+            render={({ field }) => (
+              <TextField
+                {...field}
+                fullWidth
+                type="number"
+                label={t('trainingGroup.cancellationDeadline')}
+                size="small"
+                variant="outlined"
+                error={!!errors.cancellationDeadline}
+                helperText={errors.cancellationDeadline?.message}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Avatar variant="square">{t('common.hour')}</Avatar>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            )}
           />
           <Controller
             control={control}

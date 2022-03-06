@@ -32,6 +32,21 @@ const NextEvents = () => {
   const handleChange = useCallback((event: TrainerEvent) => (e: any) => {
     const isAdd = e.target.checked;
     const membership = activeMemberships.find((gm) => gm.groupId === event.groupId);
+    const maxDiff = membership!.group.cancellationDeadline * 60 * 60 * 1000;
+    if (!isAdd && (Date.now() + maxDiff > event.startDate.getTime())) {
+      showDialog({
+        title: 'common.warning',
+        description: 'warning.cancellationOutranged',
+      });
+      return;
+    }
+    if (isAdd && (Date.now() > event.startDate.getTime())) {
+      showDialog({
+        title: 'common.warning',
+        description: 'warning.joinRequestOutranged',
+      });
+      return;
+    }
     if (isAdd && membership!.membership.remainingEventNo <= 0 && hasChecked(event)) {
       showDialog({
         title: 'common.warning',

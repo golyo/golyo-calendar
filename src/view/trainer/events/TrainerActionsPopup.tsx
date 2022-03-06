@@ -11,11 +11,11 @@ import { TrainerEvent } from '../../../hooks/event';
 
 type ActionPopupProps = {
   member: MembershipType;
-  eventId?: string;
+  event: TrainerEvent;
   setEvent?: (event: TrainerEvent) => void;
 };
 
-const TrainerActionsPopup = ({ member, eventId, setEvent } : ActionPopupProps) => {
+const TrainerActionsPopup = ({ member, event, setEvent } : ActionPopupProps) => {
   const { t } = useTranslation();
   const { buySeasonTicket, removeMemberFromEvent } = useGroup();
   const { showDialog, showConfirmDialog } = useDialog();
@@ -24,6 +24,10 @@ const TrainerActionsPopup = ({ member, eventId, setEvent } : ActionPopupProps) =
 
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);
+  
+  const isDisabled = useCallback(() => {
+    return event.startDate.getTime() > Date.now();
+  }, [event]);
 
   const buyTicket = useCallback(() => {
     showConfirmDialog({
@@ -36,9 +40,9 @@ const TrainerActionsPopup = ({ member, eventId, setEvent } : ActionPopupProps) =
   }, [buySeasonTicket, closeModal, member.id, showConfirmDialog, t]);
 
   const removeMember = useCallback((ticketBack: boolean) => {
-    removeMemberFromEvent(eventId!, member.id, ticketBack).then((event) => setEvent!(event));
+    removeMemberFromEvent(event.id!, member.id, ticketBack).then((dbEvent) => setEvent!(dbEvent));
     closeModal();
-  }, [closeModal, eventId, member.id, removeMemberFromEvent, setEvent]);
+  }, [closeModal, event.id, member.id, removeMemberFromEvent, setEvent]);
 
 
   const memberMissed = useCallback(() => {
@@ -62,7 +66,7 @@ const TrainerActionsPopup = ({ member, eventId, setEvent } : ActionPopupProps) =
 
   return (
     <>
-      <IconButton onClick={openModal}>
+      <IconButton onClick={openModal} disabled={isDisabled()}>
         <EditIcon />
       </IconButton>
       <Modal
@@ -80,7 +84,7 @@ const TrainerActionsPopup = ({ member, eventId, setEvent } : ActionPopupProps) =
             <TicketNoWarning member={member} t={t} />
             <div className="horizontal">
               <Button onClick={buyTicket} variant="contained">{t('action.buySeasonTicket')}</Button>
-              {eventId && <Button onClick={memberMissed} variant="outlined">{t('action.memberMissed')}</Button>}
+              {event && <Button onClick={memberMissed} variant="outlined">{t('action.memberMissed')}</Button>}
               <Button onClick={closeModal} >{t('common.cancel')}</Button>
             </div>
           </div>

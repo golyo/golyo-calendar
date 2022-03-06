@@ -6,6 +6,7 @@
     "yes": "Yes",
     "no": "No",
     "ok": "OK",
+    "hour": "hour",
     "save": "Save",
     "logout": "Logout",
     "cancel": "Cancel",
@@ -100,6 +101,7 @@
     "maxMember": "Maximum Member no",
     "name": "Name",
     "duration": "Duration",
+    "cancellationDeadline": "Cancellation Deadline",
     "color": "Color",
     "days": "Days",
     "time": "Time",
@@ -156,7 +158,9 @@
     "maxMembershipError": "Sorry, the training reached the maximum number of peoples, try to register for another time!",
     "membershipExists": "You ara already member in this group!",
     "trainerOwnGroup": "You are the owner in this group!",
-    "groupInviteOnly": "You can join this group onyl, if trainer invites you!"
+    "groupInviteOnly": "You can join this group onyl, if trainer invites you!",
+    "cancellationOutranged": "Your time range to cancel join request is expired, please consult with your trainer!",
+    "joinRequestOutranged": "The training has started, join request expired!"
   },
   "action": {
     "userRequest": "Applying",

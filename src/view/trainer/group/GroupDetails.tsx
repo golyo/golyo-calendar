@@ -18,6 +18,9 @@ export default function GroupDetails({ group }: { group: TrainingGroupUIType }) 
       <LabelValue label={t('trainingGroup.inviteOnly')}>
         { t(`common.${group.inviteOnly.toString()}`) }
       </LabelValue>
+      <LabelValue label={t('trainingGroup.cancellationDeadline')}>
+        { group.cancellationDeadline + ' ' + t('common.hour') }
+      </LabelValue>
       <LabelValue label={t('trainingGroup.ticketLength')}>
         { group.ticketLength }&nbsp;{t('common.pcs')}
       </LabelValue>
