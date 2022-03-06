@@ -126,6 +126,8 @@
     "state": "State",
     "ticketNo": "Ticket No.",
     "remainingEventNo": "Remaining event no",
+    "modifyTicketNo": "Modify remaining ticket number",
+    "changeEventNo": "Change value to",
     "purchasedTicketNo": "Purchased ticket no",
     "cancelRequest": "Cancel request"
   },

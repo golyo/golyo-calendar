@@ -12,6 +12,7 @@ import {
 } from '../../../hooks/trainer';
 import LabelValue from '../../common/LabelValue';
 import { useDialog } from '../../../hooks/dialog';
+import ModifyTicketPopup from './ModifyTicketPopup';
 
 interface Props {
   member: MembershipType;
@@ -73,7 +74,8 @@ const MemberDetailPopup = ({ member, updateMembershipState, buySeasonTicket }: P
               {t(`memberState.${member.state}`)}
             </LabelValue>
             <LabelValue label={t('membership.remainingEventNo')}>
-              {member.remainingEventNo}
+              <span style={{ paddingRight: '20px' }}>{member.remainingEventNo}</span>
+              <ModifyTicketPopup membership={member} />
             </LabelValue>
             <LabelValue label={t('membership.purchasedTicketNo')}>
               {member.purchasedTicketNo}

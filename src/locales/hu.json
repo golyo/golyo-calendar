@@ -124,6 +124,8 @@
     "state": "Állapot",
     "ticketNo": "Jegyek",
     "remainingEventNo": "Hátralevő alkalmak",
+    "modifyTicketNo": "Hátralevő alkalmak módosítása",
+    "changeEventNo": "Változtatott érték",
     "purchasedTicketNo": "Megvett bérletek",
     "cancelTrainerRequest": "Meghívás visszavonása"
   },

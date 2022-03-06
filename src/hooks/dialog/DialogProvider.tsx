@@ -84,7 +84,7 @@ const DialogProvider = ({ children } : { children: React.ReactNode }) => {
     <DialogContext.Provider value={ context }>
       {dialogType && <ConfirmDialog {...dialogType} open={open} hideDialog={hideDialog} /> }
       <Backdrop
-        sx={{ color: '#fff', zIndex: (theme: any) => theme.zIndex.drawer + 1, flexDirection: 'column' }}
+        sx={{ color: '#fff', zIndex: (theme: any) => theme.zIndex.modal + 1, flexDirection: 'column' }}
         open={backdropState.backdropNo > 0}
       >
         {backdropState.messages.map((message, idx) => (

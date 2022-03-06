@@ -118,6 +118,7 @@ interface GroupContextType {
   removeMemberFromEvent: (eventId: string, memberId: string, ticketBack: boolean) => Promise<TrainerEvent>,
   group: TrainingGroupUIType | undefined,
   members: MembershipType[],
+  updateMembership: (membership: MembershipType) => Promise<void>
   updateMembershipState: (membership: MembershipType, toState: MemberState | null) => Promise<any>;
 }
 

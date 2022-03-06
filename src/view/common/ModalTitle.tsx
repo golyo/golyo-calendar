@@ -27,7 +27,7 @@ const ModalTitle = ({ children, close }: ModalTitleProps) => {
   return (
     <div className={classes.headerContainer}>
       <div className={classes.headerTextContainer}>
-        <Typography variant="h6" component="h2">
+        <Typography variant="h4">
           { children }
         </Typography>
         <IconButton onClick={close} color="error">

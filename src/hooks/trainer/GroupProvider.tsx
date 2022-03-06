@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import GroupContext, {
   MembershipType,
   MemberState,
@@ -132,6 +132,12 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
     });
   }, [memberSrv, removeUserMembership]);
   
+  const updateMembership = useCallback((membership: MembershipType) => {
+    return memberSrv.save(membership).then(() => {
+      setMembers((prevMembers) => changeItem(prevMembers, membership));
+    });
+  }, [memberSrv]);
+
   const updateMembershipState = useCallback((requested: MembershipType, toState: MemberState | null) => {
     if (toState === null) {
       return removeTrainerRequest(requested);
@@ -163,14 +169,15 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
     }
   }, [groupId, loadMemberList, findGroup]);
 
-  const ctx = useMemo(() => ({
+  const ctx = {
     buySeasonTicket,
     group,
     loadEvent,
     members,
+    updateMembership,
     updateMembershipState,
     removeMemberFromEvent,
-  }), [buySeasonTicket, group, loadEvent, members, updateMembershipState, removeMemberFromEvent]);
+  };
 
   if (!user || !group) {
     return null;

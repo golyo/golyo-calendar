@@ -7,12 +7,13 @@ import ModalContainer from '../common/ModalContainer';
 import ModalTitle from '../common/ModalTitle';
 import {
   convertGroupToUi,
-  TrainingGroupUIType,
-  TrainingGroupType,
-  MembershipType,
   DEFAULT_MEMBER,
+  MembershipType,
+  MemberState,
+  TrainingGroupType,
+  TrainingGroupUIType,
 } from '../../hooks/trainer';
-import { insertObject, useFirestore } from '../../hooks/firestore/firestore';
+import { updateObject, useFirestore } from '../../hooks/firestore/firestore';
 import { useDialog } from '../../hooks/dialog';
 import { useFirebase } from '../../hooks/firebase';
 
@@ -37,10 +38,11 @@ const SearchGroupPopup = ({ trainer }: Props) => {
   const addUserRequest = useCallback((group: TrainingGroupUIType) => {
     const membership: MembershipType = {
       ...DEFAULT_MEMBER,
+      state: MemberState.USER_REQUEST,
       name: user!.name,
       id: user!.id,
     };
-    return insertObject(firestore, `users/${trainer.id}/groups/${group.id}/members`, membership);
+    return updateObject(firestore, `users/${trainer.id}/groups/${group.id}/members`, membership, false);
   }, [firestore, trainer.id, user]);
 
   const joinToGroup = useCallback((group: TrainingGroupUIType) => {
@@ -91,7 +93,7 @@ const SearchGroupPopup = ({ trainer }: Props) => {
       >
         <ModalContainer variant="big">
           <ModalTitle close={closeModal}>{ trainer.name }</ModalTitle>
-          {t('common.yes')}
+          <Typography variant="h5">{t('trainer.groups')}</Typography>
           <List sx={{ width: 'max(70vw, 320px)', bgcolor: 'background.paper', borderColor: 'divider' }}>
             {groups.map((group, idx) => (
               <div key={idx}>
