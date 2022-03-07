@@ -46,7 +46,10 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
 
   const findGroup = useCallback((groupId) => {
     const dbGroup = trainingGroups.find((group) => group.id === groupId);
-    return dbGroup ? convertGroupToUi(dbGroup, cronConverter) : undefined;
+    if (!dbGroup) {
+      return undefined;
+    }
+    return convertGroupToUi(dbGroup!, cronConverter);
   }, [cronConverter, trainingGroups]);
 
   const ctx = useMemo(() => ({

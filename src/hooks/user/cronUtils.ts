@@ -1,8 +1,8 @@
 import { IUtils } from '@date-io/core/IUtils';
 import { UiCronType } from './UserContext';
 
-const daysToWeekValue = (days: string[], weekDays: string[]) => days.map((dayIdx) => weekDays[parseInt(dayIdx) - 1]);
-const daysToWeekIdx = (days: string[], weekDays: string[]) => days.map((dayName) => weekDays.indexOf(dayName) + 1);
+const daysToWeekValue = (days: string[], weekDays: string[]) => days.map((dayIdx) => weekDays[parseInt(dayIdx)]);
+const daysToWeekIdx = (days: string[], weekDays: string[]) => days.map((dayName) => weekDays.indexOf(dayName));
 
 const CRON_CONVERTER = {
   toCron: (uiCron: UiCronType, weekDays: string[]) => {
@@ -21,7 +21,13 @@ const CRON_CONVERTER = {
   },
 };
 
-export const createCronConverter = (utils: IUtils<any>) => ({
-  toCron: (uiCron: UiCronType) => CRON_CONVERTER.toCron(uiCron, utils.getWeekdays()),
-  toUiCron: (cron: string) => CRON_CONVERTER.toUiCron(cron, utils.getWeekdays()),
-});
+export const createCronConverter = (utils: IUtils<any>) => {
+  const weekDays = utils.getWeekdays();
+  if (utils.locale.weekStartsOn === 1) {
+    weekDays.unshift(weekDays.pop()!);
+  }
+  return {
+    toCron: (uiCron: UiCronType) => CRON_CONVERTER.toCron(uiCron, weekDays),
+    toUiCron: (cron: string) => CRON_CONVERTER.toUiCron(cron, weekDays),
+  };
+};
