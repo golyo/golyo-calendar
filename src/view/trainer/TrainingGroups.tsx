@@ -16,7 +16,7 @@ import { convertGroupToUi, DEFAULT_GROUP, useTrainer } from '../../hooks/trainer
 const TrainingGroups = () => {
   const { t } = useTranslation();
   const { user, cronConverter } = useUser();
-  const { trainingGroups, saveGroup } = useTrainer();
+  const { trainingGroups, saveGroup, sendEmail } = useTrainer();
 
   const traningUiGroups = useMemo(() => trainingGroups.map((group) => convertGroupToUi(group, cronConverter)), [trainingGroups, cronConverter]);
   const [edit, setEdit] = useState<boolean>(false);
@@ -31,7 +31,12 @@ const TrainingGroups = () => {
     });
   }, [saveGroup, closePopup]);
 
+  const testEmail = useCallback(() => {
+    sendEmail('szetamas75@gmail.com', 'testÜzi', 'testCOntent');
+  }, [sendEmail]);
+
   if (!user) {
+    console.log('XXXXtestEMail', testEmail);
     return null;
   }
   return (

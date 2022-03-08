@@ -8,6 +8,7 @@ interface TrainerContextType {
   saveGroup: (modified: TrainingGroupUIType) => Promise<void>;
   deleteGroup: (groupId: string) => Promise<void>;
   findGroup: (groupId: string) => TrainingGroupUIType | undefined;
+  sendEmail: (to: string, title: string, message: string) => Promise<any>;
 }
 
 const TrainerContext = createContext<TrainerContextType>({} as TrainerContextType);

@@ -23,7 +23,7 @@ const CRON_CONVERTER = {
 
 export const createCronConverter = (utils: IUtils<any>) => {
   const weekDays = utils.getWeekdays();
-  if (utils.locale.weekStartsOn === 1) {
+  if (utils.locale?.options?.weekStartsOn === 1) {
     weekDays.unshift(weekDays.pop()!);
   }
   return {

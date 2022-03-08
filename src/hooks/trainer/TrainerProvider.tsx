@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import TrainerContext from './TrainerContext';
 import { useUser } from '../user';
 import { TrainingGroupType, TrainingGroupUIType } from './GroupContext';
-import { useFirestore } from '../firestore/firestore';
+import { insertObject, useFirestore } from '../firestore/firestore';
 import { createTrainerEventProvider } from '../event/eventUtil';
 import { useFirebase } from '../firebase';
 import { convertGroupToFirestore, convertGroupToUi } from './GroupProvider';
@@ -36,6 +36,31 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
     });
   }, [cronConverter, groupSrv]);
 
+  const sendEmail = useCallback((to: string, subject: string, html: string) => {
+    const mail = {
+      id: undefined,
+      to,
+      message: {
+        subject: subject,
+        html: html,
+      },
+    };
+    const mail2 = {
+      id: undefined,
+      to,
+      template: {
+        name: 'invite',
+        data: {
+          username: 'ada',
+          name: 'Ada Lovelace',
+        },
+      },
+    };
+
+    const toSend = true ? mail2 : mail;
+    return insertObject(firestore, 'mail', toSend);
+  }, [firestore]);
+
   const deleteGroup = useCallback((groupId: string) => groupSrv.remove(groupId).then(() => {
     setTrainingGroups((prev) => {
       const idx = prev.findIndex((group) => group.id === groupId);
@@ -52,13 +77,14 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
     return convertGroupToUi(dbGroup!, cronConverter);
   }, [cronConverter, trainingGroups]);
 
-  const ctx = useMemo(() => ({
+  const ctx = {
     trainingGroups,
     eventProvider,
     saveGroup,
     deleteGroup,
     findGroup,
-  }), [deleteGroup, findGroup, trainingGroups, eventProvider, saveGroup]);
+    sendEmail,
+  };
 
   useEffect(() => {
     groupSrv.listAll().then((groups) => setTrainingGroups(groups.map((group) => initGroup(group))));

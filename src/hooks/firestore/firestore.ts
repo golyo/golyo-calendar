@@ -89,7 +89,7 @@ export const loadObject = (firestore: Firestore, path: string, id: string) => {
   });
 };
 
-export const insertObject = <T extends { id: string }>(firestore: Firestore, path: string, object: T) => {
+export const insertObject = <T extends { id?: string }>(firestore: Firestore, path: string, object: T) => {
   const collectionRef = collection(firestore, path);
   return addDoc(collectionRef, object).then((docRef) => {
     object.id = docRef.id;
