@@ -1,7 +1,6 @@
 import { MembershipType, useGroup } from '../../../hooks/trainer';
 import { Avatar, Button, IconButton, Modal } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
-import ModalTitle from '../../common/ModalTitle';
 import ModalContainer from '../../common/ModalContainer';
 import { useTranslation } from 'react-i18next';
 import React, { useCallback, useState } from 'react';
@@ -73,13 +72,12 @@ const TrainerActionsPopup = ({ member, event, setEvent } : ActionPopupProps) => 
         open={open}
         onClose={closeModal}
       >
-        <ModalContainer variant="big">
-          <ModalTitle close={closeModal}>
-            <span className="horizontal">
-              <Avatar src={member.avatar} />
-              <span>{member.name}</span>
-            </span>
-          </ModalTitle>
+        <ModalContainer variant="small" close={closeModal} title={
+          (<span className="horizontal">
+            <Avatar src={member.avatar} />
+            <span>{member.name}</span>
+          </span>)
+        }>
           <div className="vertical">
             <TicketNoWarning member={member} t={t} />
             <div className="horizontal">

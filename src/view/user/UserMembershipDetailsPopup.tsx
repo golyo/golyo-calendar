@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, IconButton, Modal } from '@mui/material';
 import { Visibility } from '@mui/icons-material';
-import ModalTitle from '../common/ModalTitle';
 import ModalContainer from '../common/ModalContainer';
 import { ActionButton, convertGroupToUi, getButtonVariant, MemberState, USER_STATE_MAP } from '../../hooks/trainer';
 import LabelValue from '../common/LabelValue';
@@ -47,8 +46,7 @@ const UserMembershipDetailPopup = ({ cronConverter, groupMembership, handleReque
         open={open}
         onClose={closeModal}
       >
-        <ModalContainer variant="big">
-          <ModalTitle close={closeModal}>{ groupMembership.trainerName }</ModalTitle>
+        <ModalContainer variant="big" close={closeModal} title={groupMembership.trainerName}>
           <div className="vertical">
             <LabelValue label={t('membership.trainerEmail')}>
               { groupMembership.trainerId }

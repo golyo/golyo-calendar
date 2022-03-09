@@ -2,6 +2,7 @@ export interface CalendarEvent {
   id: string;
   title: string;
   text: string;
+  badge?: string;
   startDate: Date;
   endDate: Date;
   color?: string;

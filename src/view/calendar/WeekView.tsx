@@ -233,6 +233,7 @@ export default function WeekView({ eventProvider, eventClick, weekLabel = 'Week'
                       backgroundColor: hourEvent.color,
                     }} onClick={() => eventClick ? eventClick(hourEvent.event) : null}>
                       { hourEvent.event.title }
+                      {hourEvent.event.badge && <Chip className={classes.eventBadge} size="small" label={hourEvent.event.badge} color="primary" />}
                     </div>
                   )) }
                 </TableCell>

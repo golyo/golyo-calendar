@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Typography } from '@mui/material';
-import ModalTitle from './ModalTitle';
 import ModalContainer from './ModalContainer';
 import { DialogType } from '../../hooks/dialog/DialogContext';
 
@@ -25,8 +24,7 @@ const ConfirmDialog = ({ title, description, buttons, open, hideDialog } : Confi
       open={open}
       onClose={hideDialog}
     >
-      <ModalContainer variant="small">
-        <ModalTitle close={hideDialog}>{ t(title) }</ModalTitle>
+      <ModalContainer variant="small" title={t(title)} close={hideDialog}>
         <div className="vertical">
           <Typography id="modal-description">
             { t(description) }

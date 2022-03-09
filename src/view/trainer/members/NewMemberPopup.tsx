@@ -5,7 +5,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Modal, TextField } from '@mui/material';
 import { AddCircle } from '@mui/icons-material';
 import * as yup from 'yup';
-import ModalTitle from '../../common/ModalTitle';
 import ModalContainer from '../../common/ModalContainer';
 import { DEFAULT_MEMBER, MembershipType, MemberState } from '../../../hooks/trainer';
 
@@ -40,8 +39,7 @@ const NewMemberPopup = ({ updateMembershipState }: Props) => {
         open={open}
         onClose={closeModal}
       >
-        <ModalContainer variant="big">
-          <ModalTitle close={closeModal}>{t('membership.newMember')}</ModalTitle>
+        <ModalContainer variant="big" close={closeModal} title={t('membership.newMember')}>
           <form onSubmit={handleSubmit(modifyData)} className="vertical">
             <Controller
               name="id"

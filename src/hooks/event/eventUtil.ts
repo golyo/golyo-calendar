@@ -136,7 +136,8 @@ const createDBEventProvider = (firestore: Firestore, userGroups: UserGroupMember
       return doQuery(firestore, `trainers/${trainerKey}/events`, EVENT_DATE_PROPS, where('groupId', 'in', groups),
         where('startDate', '>=', from.getTime()), where('startDate', '<=', to.getTime()));
     })).then((data) => {
-      const allEvent = [].concat.apply([], data as [][]);
+      const allEvent: TrainerEvent[] = [].concat.apply([], data as [][]);
+      allEvent.forEach((event) => event.badge = event.members?.length.toString() || '0');
       allEvent.sort(EVENT_COMPARE);
       return allEvent;
     });

@@ -70,6 +70,11 @@ const STYLE = (theme: any) => {
       textAlign: 'center',
       borderRadius: 8,
     },
+    eventBadge: {
+      position: 'absolute',
+      bottom: '0px',
+      right: '0px',
+    },
     chipContent: {
       height: '100%',
     },

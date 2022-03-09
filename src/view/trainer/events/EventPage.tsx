@@ -42,8 +42,7 @@ export default function EventPage() {
 
   const [event, setEvent] = useState<TrainerEvent | undefined>(undefined);
 
-  // const isStarted = useMemo(() => event && Date.now() >= event.startDate.getTime(), [event]);
-  const isStarted = useMemo(() => true, []);
+  const isStarted = useMemo(() => event && Date.now() >= event.startDate.getTime(), [event]);
 
   const activeMembers = useMemo(() => {
     if (!event || !group || !group.members) {

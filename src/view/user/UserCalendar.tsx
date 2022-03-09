@@ -19,7 +19,7 @@ export default function UserCalendar() {
   const resetEvent = useCallback(() => setSelectedEvent(null), []);
 
   return (
-    <div className="vertical">
+    <div>
       <Typography variant="h3">{t('menu.myCalendar')}</Typography>
       <WeekView eventClick={eventClick}
                 eventProvider={userEventProvider}

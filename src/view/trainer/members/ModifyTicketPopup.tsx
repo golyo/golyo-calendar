@@ -4,7 +4,6 @@ import { Button, IconButton, Modal, TextField } from '@mui/material';
 import { Edit } from '@mui/icons-material';
 import { MembershipType, useGroup } from '../../../hooks/trainer';
 import ModalContainer from '../../common/ModalContainer';
-import ModalTitle from '../../common/ModalTitle';
 import LabelValue from '../../common/LabelValue';
 
 const ModifyTicketPopup = ({ membership }: { membership: MembershipType }) => {
@@ -30,8 +29,7 @@ const ModifyTicketPopup = ({ membership }: { membership: MembershipType }) => {
         open={open}
         onClose={closeModal}
       >
-        <ModalContainer variant="big">
-          <ModalTitle close={closeModal}>{ t('membership.modifyTicketNo') }</ModalTitle>
+        <ModalContainer variant="big" close={closeModal} title={t('membership.modifyTicketNo')}>
           <div className="vertical">
             <LabelValue label={t('login.userName')}>
               { membership.name }

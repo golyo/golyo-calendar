@@ -6,10 +6,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Avatar, Button, Checkbox, FormControlLabel, InputAdornment, MenuItem, TextField } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { TrainingGroupUIType } from '../../../hooks/trainer';
-import ModalContainer from '../../common/ModalContainer';
-import ModalTitle from '../../common/ModalTitle';
 import CronWeekPicker from '../../common/CronWeekPicker';
 import { EVENT_COLORS } from '../../../theme/weekTableTheme';
+import ModalContainer from '../../common/ModalContainer';
 
 interface ModalTitleProps {
   trainingGroup: TrainingGroupUIType;
@@ -65,8 +64,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
       open={!!isOpen}
       onClose={closePopup}
     >
-      <ModalContainer variant="big">
-        <ModalTitle close={closePopup}>{t('trainingGroup.title')}</ModalTitle>
+      <ModalContainer variant="big" title={t('trainingGroup.title')} close={closePopup}>
         <form onSubmit={handleSubmit(modifyData)} className="vertical">
           <Controller
             name="name"

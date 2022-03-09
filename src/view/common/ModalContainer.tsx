@@ -1,23 +1,47 @@
-import { styled } from '@mui/system';
+import { makeStyles } from '@mui/styles';
+import styles from './ModalContainer.style';
+import { useMemo } from 'react';
+import classNames from 'classnames';
+import Typography from '@mui/material/Typography';
+import { AppBar, IconButton, Toolbar } from '@mui/material';
+import { Close } from '@mui/icons-material';
+import * as React from 'react';
 
-interface ModalContainerProps {
-  variant?: 'small' | 'big';
+const useStyles = makeStyles(styles, { name: 'ModalContainer2' });
+
+interface ModalProps {
+  children : React.ReactNode;
+  title: React.ReactNode;
+  variant?: 'big' | 'small';
+  close: () => void;
 }
 
-const ModalContainer = styled('div', {
-  shouldForwardProp: (prop) => prop !== 'variant',
-  name: 'ModalContainer',
-  slot: 'Root',
-})<ModalContainerProps>(({ theme }) => ({
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  outline:'none',
-  backgroundColor: theme.palette.background.paper,
-  border: `3px solid ${theme.palette.grey[500]}`,
-  borderRadius: 20,
-  padding: 20,
-}));
+const ModalContainer = ({ children, variant, title, close } : ModalProps) => {
+  const classes = useStyles();
+
+  console.log('XXX', variant);
+  const appendRootClass = useMemo(() => {
+    return variant === 'big' ? classes.variantBig : variant === 'small' ? classes.variantSmall : undefined;
+  }, [classes.variantBig, classes.variantSmall, variant]);
+  
+
+  return (
+    <div className={classNames(classes.root, appendRootClass)}>
+      <AppBar position="relative">
+        <Toolbar className={classes.headerTextContainer}>
+          <Typography variant="h4" color="inherit" component="div">
+            { title }
+          </Typography>
+          <IconButton onClick={close} edge="end" size="large" color="inherit">
+            <Close></Close>
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <div className={classes.modalContent}>
+        {children}
+      </div>
+    </div>
+  );
+};
 
 export default ModalContainer;

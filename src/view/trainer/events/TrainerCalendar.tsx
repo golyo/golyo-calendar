@@ -15,8 +15,12 @@ export default function TrainerCalendar() {
   const [selectedEvent, setSelectedEvent] = useState<TrainerEvent | null>(null);
 
   const eventClick = useCallback((event) => {
-    navigate(`/group/${event.groupId}/event/${event.id}`);
-  }, [navigate]);
+    setSelectedEvent(event);
+    // navigate(`/group/${event.groupId}/event/${event.id}`);
+  }, []);
+
+  const detailsAction = useCallback(() => navigate(`/group/${selectedEvent!.groupId}/event/${selectedEvent!.id}`),
+    [navigate, selectedEvent]);
 
   const resetEvent = useCallback(() => setSelectedEvent(null), []);
 
@@ -31,7 +35,7 @@ export default function TrainerCalendar() {
                 weekLabel={t('calendar.week')}
                 yearLabel={t('calendar.year')}
       />
-      <EventPopup event={selectedEvent} resetEvent={resetEvent} />
+      <EventPopup event={selectedEvent} resetEvent={resetEvent} detailsAction={detailsAction} />
     </div>
   );
 }

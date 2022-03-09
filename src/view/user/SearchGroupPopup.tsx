@@ -4,7 +4,6 @@ import { Avatar, Box, Divider, IconButton, List, ListItem, ListItemAvatar, Modal
 import { AddCircle, Event as EventIcon, Visibility } from '@mui/icons-material';
 import { User, useUser } from '../../hooks/user';
 import ModalContainer from '../common/ModalContainer';
-import ModalTitle from '../common/ModalTitle';
 import {
   convertGroupToUi,
   DEFAULT_MEMBER,
@@ -91,8 +90,7 @@ const SearchGroupPopup = ({ trainer }: Props) => {
         open={open}
         onClose={closeModal}
       >
-        <ModalContainer variant="big">
-          <ModalTitle close={closeModal}>{ trainer.name }</ModalTitle>
+        <ModalContainer variant="big" close={closeModal} title={trainer.name}>
           <Typography variant="h5">{t('trainer.groups')}</Typography>
           <List sx={{ width: 'max(70vw, 320px)', bgcolor: 'background.paper', borderColor: 'divider' }}>
             {groups.map((group, idx) => (

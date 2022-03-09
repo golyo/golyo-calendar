@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, IconButton, Modal } from '@mui/material';
 import { Visibility } from '@mui/icons-material';
-import ModalTitle from '../../common/ModalTitle';
 import ModalContainer from '../../common/ModalContainer';
 import {
   MemberState,
@@ -61,8 +60,7 @@ const MemberDetailPopup = ({ member, updateMembershipState, buySeasonTicket }: P
         open={open}
         onClose={closeModal}
       >
-        <ModalContainer variant="big">
-          <ModalTitle close={closeModal}>{t('membership.details')}</ModalTitle>
+        <ModalContainer variant="big" close={closeModal} title={t('membership.details')}>
           <div className="vertical">
             <LabelValue label={t('login.email')}>
               { member.id }
