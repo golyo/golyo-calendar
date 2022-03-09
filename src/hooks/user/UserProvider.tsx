@@ -21,10 +21,10 @@ import { createCronConverter } from './cronUtils';
 import { createUserEventProvider, getInterval, TrainerEvent } from '../event';
 
 export const loadGroup = (firestore: Firestore, trainerId: string, groupId: string) =>
-  loadObject(firestore, `users/${trainerId}/groups`, groupId);
+  loadObject(firestore, `trainers/${trainerId}/groups`, groupId);
 
 export const loadMembership = (firestore: Firestore, trainerId: string, groupId: string, userId: string) =>
-  loadObject(firestore, `users/${trainerId}/groups/${groupId}/members`, userId);
+  loadObject(firestore, `trainers/${trainerId}/groups/${groupId}/members`, userId);
 
 const setMember = (firestore: Firestore, user: User, membership: UserGroupMembership) => {
   const member: MembershipType = {
@@ -33,7 +33,7 @@ const setMember = (firestore: Firestore, user: User, membership: UserGroupMember
     name: user.name,
     avatar: user.photoURL,
   };
-  return updateObject(firestore, `users/${membership.trainerId}/groups/${membership.groupId}/members`, member);
+  return updateObject(firestore, `trainers/${membership.trainerId}/groups/${membership.groupId}/members`, member);
 };
 
 const DEFAULT_USER_VALUES = {
@@ -98,7 +98,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     }
     await userSrv.save(user);
     changeUser(user!);
-    await deleteObject(firestore, `users/${userGroup.trainerId}/groups/${userGroup.groupId}/members`, user!.id);
+    await deleteObject(firestore, `trainers/${userGroup.trainerId}/groups/${userGroup.groupId}/members`, user!.id);
     setGroupMemberships((prev) => removeItemByEqual(prev, userGroup, userGroupEqual));
   }, [changeUser, firestore, user, userSrv]);
 

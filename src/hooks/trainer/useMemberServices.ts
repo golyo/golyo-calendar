@@ -21,7 +21,7 @@ const useMemberServices = () => {
 
   const [members, setMembers] = useState<MembershipType[] | undefined>(undefined);
 
-  const memberSrv = useFirestore<MembershipType>(`users/${user!.id}/groups/${group!.id}/members`);
+  const memberSrv = useFirestore<MembershipType>(`trainers/${user!.id}/groups/${group!.id}/members`);
   const userSrv = useFirestore<User>('users');
 
   const loadMemberList = useCallback(() => memberSrv.listAll().then((dbMembers) => {

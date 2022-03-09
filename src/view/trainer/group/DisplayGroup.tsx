@@ -13,7 +13,7 @@ export default function DisplayGroup() {
   const { t } = useTranslation();
   const { showConfirmDialog, showDialog } = useDialog();
   const navigate = useNavigate();
-  const { group, members } = useGroup();
+  const { group } = useGroup();
   const { saveGroup, deleteGroup } = useTrainer();
 
   const [edit, setEdit] = useState<boolean>(false);
@@ -22,7 +22,7 @@ export default function DisplayGroup() {
   const openPopup = useCallback(() => setEdit(true), []);
 
   const doDelete = useCallback(() => {
-    if (members.length > 0) {
+    if (group!.members!.length > 0) {
       showDialog({
         title: 'common.warning',
         description: 'warning.deleteGroup',
@@ -31,9 +31,12 @@ export default function DisplayGroup() {
     }
     showConfirmDialog({
       description: 'trainingGroup.deleteConfirm',
-      okCallback: () => deleteGroup(group!.id).then(() => navigate('/groups')),
+      okCallback: () => {
+        navigate('/groups');
+        deleteGroup(group!.id);
+      },
     });
-  }, [deleteGroup, group, members.length, navigate, showConfirmDialog, showDialog]);
+  }, [deleteGroup, group, navigate, showConfirmDialog, showDialog]);
 
   if (!group) {
     return null;

@@ -1,8 +1,8 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import TrainerContext from './TrainerContext';
 import { useUser } from '../user';
-import { TrainingGroupType, TrainingGroupUIType } from './GroupContext';
-import { insertObject, useFirestore } from '../firestore/firestore';
+import { MembershipType, TrainerGroupMemberships, TrainingGroupType, TrainingGroupUIType } from './GroupContext';
+import { changeItem, doQuery, insertObject, useFirestore } from '../firestore/firestore';
 import { createTrainerEventProvider } from '../event/eventUtil';
 import { useFirebase } from '../firebase';
 import { convertGroupToFirestore, convertGroupToUi } from './GroupProvider';
@@ -15,24 +15,27 @@ const initGroup = (group: TrainingGroupType) => {
 const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
   const { firestore } = useFirebase();
   const { user, cronConverter } = useUser();
-  const groupSrv = useFirestore<TrainingGroupType>('users/' + user?.id + '/groups');
+  const groupSrv = useFirestore<TrainingGroupType>('trainers/' + user?.id + '/groups');
 
-  const [trainingGroups, setTrainingGroups] = useState<TrainingGroupType[]>([]);
+  const [trainingGroups, setTrainingGroups] = useState<TrainerGroupMemberships[]>([]);
 
   const eventProvider = useMemo(() => createTrainerEventProvider(firestore, user!, trainingGroups), [firestore, trainingGroups, user]);
 
+  const membershipChanged = useCallback((groupId: string, members: MembershipType[]) => {
+    setTrainingGroups((prev) => {
+      const group = prev.find((gr) => gr.id === groupId)!;
+      group.members = members;
+      return changeItem(prev, group);
+    });
+  }, []);
+
   const saveGroup = useCallback((modifiedUi: TrainingGroupUIType) => {
     const modified = convertGroupToFirestore(modifiedUi, cronConverter);
-    return groupSrv.save(modified).then(() => {
-      setTrainingGroups((prev) => {
-        const idx = prev.findIndex((group) => group.id === modified.id);
-        if (idx >= 0) {
-          prev[idx] = modified;
-        } else {
-          prev.push(modified);
-        }
-        return [...prev];
-      });
+    const { members, ...modifiedToDb } = modified;
+    return groupSrv.save(modifiedToDb).then(() => {
+      // set id, if new
+      modified.id = modifiedToDb.id;
+      setTrainingGroups((prev) => changeItem(prev, modified));
     });
   }, [cronConverter, groupSrv]);
 
@@ -69,13 +72,25 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
     });
   }), [groupSrv]);
 
+  const loadMembers = useCallback((groupId) => {
+    return doQuery(firestore, `trainers/${user?.id}/groups/${groupId}/members`);
+  }, [firestore, user?.id]);
+
   const findGroup = useCallback((groupId) => {
     const dbGroup = trainingGroups.find((group) => group.id === groupId);
     if (!dbGroup) {
-      return undefined;
+      return Promise.resolve(undefined);
     }
-    return convertGroupToUi(dbGroup!, cronConverter);
-  }, [cronConverter, trainingGroups]);
+    if (!dbGroup.members) {
+      loadMembers(groupId).then((members) => {
+        dbGroup.members = members;
+        // this setter will trigger the membership loaded result
+        setTrainingGroups((prev) => changeItem(prev, dbGroup));
+      });
+      return Promise.resolve(undefined);
+    }
+    return Promise.resolve(convertGroupToUi(dbGroup!, cronConverter));
+  }, [cronConverter, loadMembers, trainingGroups]);
 
   const ctx = {
     trainingGroups,
@@ -84,6 +99,7 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
     deleteGroup,
     findGroup,
     sendEmail,
+    membershipChanged,
   };
 
   useEffect(() => {

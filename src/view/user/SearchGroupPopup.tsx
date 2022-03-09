@@ -23,7 +23,7 @@ interface Props {
 
 const SearchGroupPopup = ({ trainer }: Props) => {
   const { t } = useTranslation();
-  const groupService = useFirestore<TrainingGroupType>(`users/${trainer.id}/groups`);
+  const groupService = useFirestore<TrainingGroupType>(`trainers/${trainer.id}/groups`);
   const { showConfirmDialog, showDialog } = useDialog();
   const { firestore } = useFirebase();
 
@@ -42,7 +42,7 @@ const SearchGroupPopup = ({ trainer }: Props) => {
       name: user!.name,
       id: user!.id,
     };
-    return updateObject(firestore, `users/${trainer.id}/groups/${group.id}/members`, membership, false);
+    return updateObject(firestore, `trainers/${trainer.id}/groups/${group.id}/members`, membership, false);
   }, [firestore, trainer.id, user]);
 
   const joinToGroup = useCallback((group: TrainingGroupUIType) => {

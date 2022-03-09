@@ -38,7 +38,7 @@ export default function EventPage() {
   const { eventId } = useParams<{ eventId: string }>();
   const { t } = useTranslation();
   const { getDateRangeStr } = useUser();
-  const { group, members, loadEvent } = useGroup();
+  const { group, loadEvent } = useGroup();
 
   const [event, setEvent] = useState<TrainerEvent | undefined>(undefined);
 
@@ -46,11 +46,11 @@ export default function EventPage() {
   const isStarted = useMemo(() => true, []);
 
   const activeMembers = useMemo(() => {
-    if (!event) {
+    if (!event || !group || !group.members) {
       return [];
     }
-    return event.members.map((m) => members.find((gm) => gm.id === m.id) || DEFAULT_MEMBER);
-  }, [event, members]);
+    return event.members.map((m) => group.members!.find((gm) => gm.id === m.id) || DEFAULT_MEMBER);
+  }, [event, group]);
 
   useEffect(() => {
     if (!eventId) {

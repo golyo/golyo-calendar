@@ -15,6 +15,11 @@ interface TrainingGroupBase {
 
 export interface TrainingGroupUIType extends TrainingGroupBase {
   crons: UiCronType[];
+  members?: MembershipType[];
+}
+
+export interface TrainerGroupMemberships extends TrainingGroupType {
+  members?: MembershipType[];
 }
 
 export interface TrainingGroupType extends TrainingGroupBase {
@@ -118,7 +123,6 @@ interface GroupContextType {
   loadEvent: (eventId: string) => Promise<TrainerEvent>,
   removeMemberFromEvent: (eventId: string, memberId: string, ticketBack: boolean) => Promise<TrainerEvent>,
   group: TrainingGroupUIType | undefined,
-  members: MembershipType[],
   updateMembership: (membership: MembershipType) => Promise<void>
   updateMembershipState: (membership: MembershipType, toState: MemberState | null) => Promise<any>;
 }

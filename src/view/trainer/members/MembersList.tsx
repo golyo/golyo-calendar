@@ -24,21 +24,21 @@ const MembersList = () => {
   const { t } = useTranslation();
   const [selectedState, setSelectedState] = useState<MemberState | 0>(0);
 
-  const { members, updateMembershipState, buySeasonTicket } = useGroup();
+  const { group, updateMembershipState, buySeasonTicket } = useGroup();
 
   const filteredMembers = useMemo(() => {
-    if (!members) {
+    if (!group?.members) {
       return [];
     }
     if (!selectedState) {
-      return members;
+      return group.members;
     }
-    return members.filter((member) => member.state === selectedState);
-  }, [members, selectedState]);
+    return group.members.filter((member) => member.state === selectedState);
+  }, [group, selectedState]);
 
   const handleSelectChange = useCallback((event: React.ChangeEvent<any>) => setSelectedState(event.target.value), [setSelectedState]);
 
-  if (!members) {
+  if (!group?.members) {
     return null;
   }
   return (

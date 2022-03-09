@@ -51,7 +51,11 @@ export const removeItemById : <T extends { id: string }> (items: T[], id: string
 export const changeItemByEqual :<T> (items: T[], newItem: T, isEqual: (a: T, b: T) => boolean) => T[] = (items, newItem, isEqual) => {
   const changed = [...items];
   const idx = changed.findIndex((item) => isEqual(item, newItem));
-  changed[idx] = newItem;
+  if (idx >= 0) {
+    changed[idx] = newItem;
+  } else {
+    changed.push(newItem);
+  }
   return changed;
 };
 
@@ -104,15 +108,40 @@ export const deleteObject = (firestore: Firestore, path: string, id: string) => 
 
 export const updateObject = <T extends { id: string }>(firestore: Firestore, path: string, object: T, merge = true) => {
   const docRef = doc(firestore, path, object.id);
-  return setDoc(docRef, object, { merge });
+  const updated = { ... object };
+  // @ts-ignore
+  delete updated.id;
+  return setDoc(docRef, updated, { merge });
 };
 
 export const getCollectionRef = (firestore: Firestore, path: string, dateProperties?: string[]) => collection(firestore, path)
   .withConverter(dateProperties ? createDatePropertiesWithConverter(dateProperties) : idConverter);
 
-export const doQuery = (firestore: Firestore, path: string, dateProperties: string[], ...queryConstraints: QueryConstraint[]) => {
+export const doQuery = (firestore: Firestore, path: string, dateProperties?: string[], ...queryConstraints: QueryConstraint[]) => {
   return getDocs(query(getCollectionRef(firestore, path, dateProperties), ...queryConstraints))
     .then((querySnapshot) => querySnapshot.docs.map((document) => document.data()));
+};
+
+export const cloneObject = (firestore: Firestore, fromPath: string, toPath: string, id: string) => {
+  loadObject(firestore, fromPath, id).then((data) => {
+    if (!data) {
+      throw new Error('Data not found to id ' + fromPath + '/' + id);
+    }
+    updateObject(firestore, toPath, data).then(() => {
+      console.log('Object moved', data);
+    });
+  });  
+};
+
+export const cloneCollection = (firestore: Firestore, fromPath: string, toPath: string) => {
+  const fromRef = getCollectionRef(firestore, fromPath);
+  getDocs(fromRef).then((querySnapshot) => {
+    querySnapshot.docs.forEach((document) => {
+      updateObject(firestore, toPath, document.data()).then(() => {
+        console.log('Object moved from collection', document.data(), false);
+      });
+    });
+  });
 };
 
 export const useFirestore = <T extends { id: string }>(path: string, dateProperties?: string[]) => {

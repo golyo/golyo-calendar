@@ -66,7 +66,7 @@ export const filterEvents = (events: CalendarEvent[], from: Date, to: Date) => {
 };
 
 const changeCounterToMembership = (firestore: Firestore, user: User, groupMembership: UserGroupMembership, isAdd: boolean) => {
-  const path = `users/${groupMembership.trainerId}/groups/${groupMembership.groupId}/members`;
+  const path = `trainers/${groupMembership.trainerId}/groups/${groupMembership.groupId}/members`;
   const collectionRef = getCollectionRef(firestore, path);
   const docRef = doc(collectionRef, user.id);
   const modifier = isAdd ? 1 : -1;
@@ -86,7 +86,7 @@ export const isMaxMembershipError = (error: string) => error === MAX_MEMBERSHIP_
 export const EVENT_DATE_PROPS = ['startDate', 'endDate'];
 
 export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: TrainerEvent, user: User, membership: UserGroupMembership, isAdd: boolean) => {
-  const path = `users/${trainerEvent.trainerId}/events`;
+  const path = `trainers/${trainerEvent.trainerId}/events`;
   const collectionRef = getCollectionRef(firestore, path, EVENT_DATE_PROPS);
   const docRef = doc(collectionRef, trainerEvent.id);
   return new Promise<void>((resolve, reject) => {
@@ -133,7 +133,7 @@ const createDBEventProvider = (firestore: Firestore, userGroups: UserGroupMember
     const trainerGroups = getTrainerGroups(userGroups, groupRestriction);
     return Promise.all(Object.keys(trainerGroups).map((trainerKey) => {
       const groups = trainerGroups[trainerKey];
-      return doQuery(firestore, `users/${trainerKey}/events`, EVENT_DATE_PROPS, where('groupId', 'in', groups),
+      return doQuery(firestore, `trainers/${trainerKey}/events`, EVENT_DATE_PROPS, where('groupId', 'in', groups),
         where('startDate', '>=', from.getTime()), where('startDate', '<=', to.getTime()));
     })).then((data) => {
       const allEvent = [].concat.apply([], data as [][]);

@@ -1,14 +1,15 @@
 import { createContext } from 'react';
-import { TrainingGroupType, TrainingGroupUIType } from './GroupContext';
+import { MembershipType, TrainerGroupMemberships, TrainingGroupUIType } from './GroupContext';
 import { EventProvider } from '../event';
 
 interface TrainerContextType {
-  trainingGroups: TrainingGroupType[];
+  trainingGroups: TrainerGroupMemberships[];
   eventProvider: EventProvider;
   saveGroup: (modified: TrainingGroupUIType) => Promise<void>;
   deleteGroup: (groupId: string) => Promise<void>;
-  findGroup: (groupId: string) => TrainingGroupUIType | undefined;
+  findGroup: (groupId: string) => Promise<TrainingGroupUIType | undefined>;
   sendEmail: (to: string, title: string, message: string) => Promise<any>;
+  membershipChanged: (groupId: string, members: MembershipType[]) => void;
 }
 
 const TrainerContext = createContext<TrainerContextType>({} as TrainerContextType);
