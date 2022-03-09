@@ -4,8 +4,9 @@ import Modal from '@mui/material/Modal';
 import { useMemo } from 'react';
 import ModalContainer from '../common/ModalContainer';
 import { getInterval, TrainerEvent } from '../../hooks/event';
-import { Button } from '@mui/material';
+import { Avatar, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { Event as EventIcon } from '@mui/icons-material';
 
 const EventPopup = ({ event, resetEvent, detailsAction }: { event: TrainerEvent | null; resetEvent: () => void; detailsAction?: () => void }) => {
   const { t } = useTranslation();
@@ -18,7 +19,14 @@ const EventPopup = ({ event, resetEvent, detailsAction }: { event: TrainerEvent 
       open={!!event}
       onClose={resetEvent}
     >
-      <ModalContainer variant="small" close={resetEvent} title={event?.title}>
+      <ModalContainer variant="small" close={resetEvent} title={(
+        <>
+          <Avatar sx={{ bgcolor: event?.color }}>
+            <EventIcon></EventIcon>
+          </Avatar>
+          <span>{event?.title}</span>
+        </>
+      )}>
         <div className="vertical">
           <Typography variant="subtitle2">{event?.text + ' ' + interval}</Typography>
           <Typography variant="subtitle1">{t('event.members')}</Typography>

@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Avatar, Button, Checkbox, FormControlLabel, InputAdornment, MenuItem, TextField } from '@mui/material';
-import Modal from '@mui/material/Modal';
+import { Avatar, Button, Checkbox, FormControlLabel, InputAdornment, MenuItem, Modal, TextField } from '@mui/material';
+import { Event as EventIcon } from '@mui/icons-material';
 import { TrainingGroupUIType } from '../../../hooks/trainer';
 import CronWeekPicker from '../../common/CronWeekPicker';
 import { EVENT_COLORS } from '../../../theme/weekTableTheme';
@@ -36,11 +36,13 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
     ),
   }), [t]);
 
-  const { handleSubmit, control, setValue, reset, trigger, formState: { errors } } = useForm({ resolver: yupResolver(schema) });
+  const { handleSubmit, control, setValue, reset, trigger, formState: { errors }, watch } = useForm({ resolver: yupResolver(schema) });
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'crons',
   });
+
+  const groupColor = watch('color');
 
   useEffect(() => {
     reset(trainingGroup);
@@ -64,7 +66,14 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
       open={!!isOpen}
       onClose={closePopup}
     >
-      <ModalContainer variant="big" title={t('trainingGroup.title')} close={closePopup}>
+      <ModalContainer variant="big" title={(
+        <>
+          <Avatar sx={{ bgcolor: groupColor }}>
+            <EventIcon></EventIcon>
+          </Avatar>
+          <span>{t('trainingGroup.title')}</span>
+        </>
+      )} close={closePopup}>
         <form onSubmit={handleSubmit(modifyData)} className="vertical">
           <Controller
             name="name"

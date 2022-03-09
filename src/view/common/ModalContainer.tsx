@@ -3,7 +3,7 @@ import styles from './ModalContainer.style';
 import { useMemo } from 'react';
 import classNames from 'classnames';
 import Typography from '@mui/material/Typography';
-import { AppBar, IconButton, Toolbar } from '@mui/material';
+import { AppBar, Box, IconButton, Toolbar } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import * as React from 'react';
 
@@ -16,20 +16,18 @@ interface ModalProps {
   close: () => void;
 }
 
-const ModalContainer = ({ children, variant, title, close } : ModalProps) => {
+const ModalContainer = React.forwardRef<HTMLDivElement, ModalProps>(({ children, variant, title, close }, ref) => {
   const classes = useStyles();
 
-  console.log('XXX', variant);
   const appendRootClass = useMemo(() => {
     return variant === 'big' ? classes.variantBig : variant === 'small' ? classes.variantSmall : undefined;
   }, [classes.variantBig, classes.variantSmall, variant]);
-  
 
   return (
-    <div className={classNames(classes.root, appendRootClass)}>
+    <Box tabIndex={-1} className={classNames(classes.root, appendRootClass)} ref={ref}>
       <AppBar position="relative">
         <Toolbar className={classes.headerTextContainer}>
-          <Typography variant="h4" color="inherit" component="div">
+          <Typography variant="h4" color="inherit" component="div" className={classes.headerTitle}>
             { title }
           </Typography>
           <IconButton onClick={close} edge="end" size="large" color="inherit">
@@ -40,8 +38,8 @@ const ModalContainer = ({ children, variant, title, close } : ModalProps) => {
       <div className={classes.modalContent}>
         {children}
       </div>
-    </div>
+    </Box>
   );
-};
+});
 
 export default ModalContainer;

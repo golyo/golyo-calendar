@@ -20,8 +20,11 @@ export default (theme: any) => createStyles({
     minWidth: '40vw',
     maxWidth: '98vw',
   },
-  headerContainer: {
-    marginBottom: '10px',
+  headerTitle: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    gap: '10px',
   },
   headerTextContainer: {
     display: 'flex',
