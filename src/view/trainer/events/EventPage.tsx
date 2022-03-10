@@ -13,7 +13,7 @@ import {
 
 import { TrainerEvent } from '../../../hooks/event';
 import { useUser } from '../../../hooks/user';
-import { DEFAULT_MEMBER, MembershipType, useGroup } from '../../../hooks/trainer';
+import { DEFAULT_MEMBER, MembershipType, useGroup, useTrainer } from '../../../hooks/trainer';
 import LabelValue from '../../common/LabelValue';
 import TrainerActionsPopup from './TrainerActionsPopup';
 import { styled } from '@mui/material/styles';
@@ -38,6 +38,7 @@ export default function EventPage() {
   const { eventId } = useParams<{ eventId: string }>();
   const { t } = useTranslation();
   const { getDateRangeStr } = useUser();
+  const { members } = useTrainer();
   const { group, loadEvent } = useGroup();
 
   const [event, setEvent] = useState<TrainerEvent | undefined>(undefined);
@@ -45,11 +46,11 @@ export default function EventPage() {
   const isStarted = useMemo(() => event && Date.now() >= event.startDate.getTime(), [event]);
 
   const activeMembers = useMemo(() => {
-    if (!event || !group || !group.members) {
+    if (!event || !group || !members) {
       return [];
     }
-    return event.members.map((m) => group.members!.find((gm) => gm.id === m.id) || DEFAULT_MEMBER);
-  }, [event, group]);
+    return event.members.map((m) => members!.find((gm) => gm.id === m.id) || DEFAULT_MEMBER);
+  }, [event, group, members]);
 
   useEffect(() => {
     if (!eventId) {

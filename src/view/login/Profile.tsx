@@ -10,7 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FlagIcon from '../../menu/FlagIcon';
 import LabelValue from '../common/LabelValue';
 
-export default function Profile() {
+const Profile = () => {
   const { t, i18n } = useTranslation();
   const { isPasswordEnabled } = useAuth();
   const { user, saveUser } = useUser();
@@ -153,4 +153,6 @@ export default function Profile() {
       </Paper>
     </div>
   );
-}
+};
+
+export default Profile;

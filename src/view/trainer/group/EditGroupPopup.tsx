@@ -3,12 +3,24 @@ import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Avatar, Button, Checkbox, FormControlLabel, InputAdornment, MenuItem, Modal, TextField } from '@mui/material';
+import {
+  Avatar,
+  Button,
+  Checkbox, FormControl,
+  FormControlLabel,
+  InputAdornment, InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+} from '@mui/material';
 import { Event as EventIcon } from '@mui/icons-material';
-import { TrainingGroupUIType } from '../../../hooks/trainer';
+import { GroupType, TrainingGroupUIType, useTrainer } from '../../../hooks/trainer';
 import CronWeekPicker from '../../common/CronWeekPicker';
 import { EVENT_COLORS } from '../../../theme/weekTableTheme';
 import ModalContainer from '../../common/ModalContainer';
+import * as React from 'react';
+import { useDialog } from '../../../hooks/dialog';
 
 interface ModalTitleProps {
   trainingGroup: TrainingGroupUIType;
@@ -19,15 +31,19 @@ interface ModalTitleProps {
 
 const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : ModalTitleProps) => {
   const { t } = useTranslation();
+  const { showDialog } = useDialog();
+  const { groups } = useTrainer();
 
   const schema = useMemo(() => yup.object({
     name: yup.string().required(),
+    groupType: yup.string().required(),
     color: yup.string().required(),
     inviteOnly: yup.boolean().required(),
     duration: yup.number().integer().min(1).max(24 * 60),
     cancellationDeadline: yup.number().integer().min(0).max(120),
     ticketLength: yup.number().integer().min(1).max(100),
     maxMember: yup.number().integer().min(1).max(100),
+    attachedGroups: yup.array().of(yup.string()),
     crons: yup.array().of(
       yup.object().shape({
         days: yup.array().of(yup.string()).min(1, t('error.required')),
@@ -43,6 +59,10 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
   });
 
   const groupColor = watch('color');
+  const groupType = watch('groupType');
+  const attachedGroups = watch('attachedGroups');
+
+  const attachableGroups = useMemo(() => groups.filter((gr) => gr.groupType === groupType ), [groups, groupType]);
 
   useEffect(() => {
     reset(trainingGroup);
@@ -56,6 +76,16 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
     saveGroup(toSave);
     closePopup();
   }, [closePopup, saveGroup, trainingGroup]);
+
+  const onGroupTypeChanged = useCallback(() => {
+    if (attachedGroups.length > 0) {
+      showDialog({
+        title: 'common.warning',
+        description: 'warning.groupTypeChangeIfNotAttached',
+      });
+    }
+    return attachedGroups.length === 0;
+  }, [attachedGroups, showDialog]);
 
   if (!trainingGroup) {
     return null;
@@ -88,6 +118,29 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
                 error={!!errors.name}
                 helperText={errors.name?.message}
               />
+            )}
+          />
+          <Controller
+            name="groupType"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                fullWidth
+                select
+                label={t('trainingGroup.groupType')}
+                size="small"
+                variant="outlined"
+                onChange={(e) => {
+                  if (onGroupTypeChanged()) {
+                    field.onChange(e);
+                  }
+                }}
+              >
+                {Object.values(GroupType).map((gtype, idx) =>
+                  (<MenuItem key={idx} value={gtype}>{t(`groupType.${gtype}`)}</MenuItem>),
+                )}
+              </TextField>
             )}
           />
           <Controller
@@ -230,6 +283,27 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
               />
             </div>
           ))}
+          <Controller
+            name="attachedGroups"
+            control={control}
+            render={({ field }) => (
+              <FormControl size="small">
+                <InputLabel id="attachedGroupsLabel">{t('trainingGroup.attachedGroups')}</InputLabel>
+                <Select
+                  {...field}
+                  labelId="attachedGroupsLabel"
+                  fullWidth
+                  multiple
+                  label={t('trainingGroup.attachedGroups')}
+                  size="small"
+                >
+                  {attachableGroups.map((agroup, idx) =>
+                    (<MenuItem key={idx} value={agroup.id}>{agroup.name}</MenuItem>),
+                  )}
+                </Select>
+              </FormControl>
+            )}
+          />
           <div>
             <Button color="primary" type="submit" variant="contained">
               {t('common.save')}

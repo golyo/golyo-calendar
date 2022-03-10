@@ -13,7 +13,7 @@ import {
 import { useAuth } from '../auth/AuthProvider';
 import UserContext, { User, UserGroupMembership } from './UserContext';
 import { useFirebase } from '../firebase';
-import { MembershipType, MemberState, TrainingGroupType } from '../trainer/GroupContext';
+import { MembershipType, MemberState, TrainingGroupType } from '../trainer';
 import { Firestore, where } from 'firebase/firestore';
 import { TrainerProvider } from '../trainer';
 import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';

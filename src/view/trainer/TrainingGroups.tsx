@@ -8,7 +8,7 @@ import {
   Edit, Event as EventIcon,
 } from '@mui/icons-material';
 import { useUser } from '../../hooks/user';
-import { TrainingGroupUIType } from '../../hooks/trainer/GroupContext';
+import { TrainingGroupUIType } from '../../hooks/trainer';
 import { Link } from 'react-router-dom';
 import EditGroupPopup from './group/EditGroupPopup';
 import { convertGroupToUi, DEFAULT_GROUP, useTrainer } from '../../hooks/trainer';
@@ -16,9 +16,9 @@ import { convertGroupToUi, DEFAULT_GROUP, useTrainer } from '../../hooks/trainer
 const TrainingGroups = () => {
   const { t } = useTranslation();
   const { user, cronConverter } = useUser();
-  const { trainingGroups, saveGroup, sendEmail } = useTrainer();
+  const { groups, saveGroup, sendEmail } = useTrainer();
 
-  const traningUiGroups = useMemo(() => trainingGroups.map((group) => convertGroupToUi(group, cronConverter)), [trainingGroups, cronConverter]);
+  const traningUiGroups = useMemo(() => groups.map((group) => convertGroupToUi(group, cronConverter)), [groups, cronConverter]);
   const [edit, setEdit] = useState<boolean>(false);
 
   const closePopup = useCallback(() => setEdit(false), []);

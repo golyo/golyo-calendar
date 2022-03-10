@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import { MemberState, MembershipType } from '../trainer';
-import { TrainingGroupType } from '../trainer/GroupContext';
+import { TrainingGroupType } from '../trainer/TrainerContext';
 import { EventProvider, TrainerEvent } from '../event';
 import { IUtils } from '@date-io/core/IUtils';
 

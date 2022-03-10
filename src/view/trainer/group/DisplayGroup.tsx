@@ -8,13 +8,14 @@ import { useDialog } from '../../../hooks/dialog';
 import { useGroup, useTrainer } from '../../../hooks/trainer';
 import EditGroupPopup from './EditGroupPopup';
 import GroupDetails from './GroupDetails';
+import LabelValue from '../../common/LabelValue';
 
 export default function DisplayGroup() {
   const { t } = useTranslation();
   const { showConfirmDialog, showDialog } = useDialog();
   const navigate = useNavigate();
-  const { group } = useGroup();
-  const { saveGroup, deleteGroup } = useTrainer();
+  const { attachedGroups, group } = useGroup();
+  const { members, saveGroup, deleteGroup } = useTrainer();
 
   const [edit, setEdit] = useState<boolean>(false);
 
@@ -22,7 +23,7 @@ export default function DisplayGroup() {
   const openPopup = useCallback(() => setEdit(true), []);
 
   const doDelete = useCallback(() => {
-    if (group!.members!.length > 0) {
+    if (members.length > 0) {
       showDialog({
         title: 'common.warning',
         description: 'warning.deleteGroup',
@@ -36,7 +37,7 @@ export default function DisplayGroup() {
         deleteGroup(group!.id);
       },
     });
-  }, [deleteGroup, group, navigate, showConfirmDialog, showDialog]);
+  }, [deleteGroup, group, members.length, navigate, showConfirmDialog, showDialog]);
 
   if (!group) {
     return null;
@@ -45,6 +46,11 @@ export default function DisplayGroup() {
   return (
     <>
       <GroupDetails group={group} />
+      <LabelValue label={t('trainingGroup.attachedGroups')}>
+        {attachedGroups.map((agroup, idx) => (
+          <div key={idx}>{agroup.name}</div>
+        ))}
+      </LabelValue>
       <div className="horizontal">
         <Button onClick={openPopup} variant="contained" startIcon={<Edit />}>{t('common.modify')}</Button>
         <Button onClick={doDelete} variant="contained" startIcon={<Delete />}>{t('common.delete')}</Button>

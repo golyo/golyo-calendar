@@ -2,7 +2,7 @@ import { useFirestore } from '../firestore/firestore';
 import { useCallback, useEffect, useState } from 'react';
 import { User, useUser } from '../user';
 import { MemberState, useGroup } from './index';
-import { MembershipType } from './GroupContext';
+import { MembershipType } from './TrainerContext';
 import { UserGroup } from '../user/UserContext';
 
 

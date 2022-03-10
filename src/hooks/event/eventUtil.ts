@@ -4,7 +4,7 @@ import { CalendarEvent, EventProvider, TrainerEvent } from './EventContext';
 import { UserGroup } from '../user/UserContext';
 import { Firestore, getDoc, doc, where, setDoc } from 'firebase/firestore';
 import { doQuery, getCollectionRef } from '../firestore/firestore';
-import { TrainingGroupType } from '../trainer/GroupContext';
+import { TrainingGroupType } from '../trainer';
 
 const NEXT_EVENT_DAYNO = 7;
 const NEXT_EVENTS_RANGE = NEXT_EVENT_DAYNO * 24 * 60 * 60 * 1000;

@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 
 import NewMemberPopup from './NewMemberPopup';
-import { MemberState, useGroup } from '../../../hooks/trainer';
+import { MemberState, useGroup, useTrainer } from '../../../hooks/trainer';
 import MemberDetailPopup from './MemberDetailPopup';
 import { TicketNoWarning } from '../events/EventPage';
 
@@ -24,21 +24,19 @@ const MembersList = () => {
   const { t } = useTranslation();
   const [selectedState, setSelectedState] = useState<MemberState | 0>(0);
 
-  const { group, updateMembershipState, buySeasonTicket } = useGroup();
+  const { members } = useTrainer();
+  const { updateMembershipState, buySeasonTicket } = useGroup();
 
   const filteredMembers = useMemo(() => {
-    if (!group?.members) {
-      return [];
-    }
     if (!selectedState) {
-      return group.members;
+      return members;
     }
-    return group.members.filter((member) => member.state === selectedState);
-  }, [group, selectedState]);
+    return members.filter((member) => member.state === selectedState);
+  }, [members, selectedState]);
 
   const handleSelectChange = useCallback((event: React.ChangeEvent<any>) => setSelectedState(event.target.value), [setSelectedState]);
 
-  if (!group?.members) {
+  if (members) {
     return null;
   }
   return (

@@ -12,6 +12,9 @@ export default function GroupDetails({ group }: { group: TrainingGroupUIType }) 
       <LabelValue label={t('trainingGroup.duration')}>
         { group.duration }&nbsp;{t('common.min')}
       </LabelValue>
+      <LabelValue label={t('trainingGroup.groupType')}>
+        {t(`groupType.${group.groupType}`)}
+      </LabelValue>
       <LabelValue label={t('trainingGroup.maxMember')}>
         { group.maxMember }
       </LabelValue>

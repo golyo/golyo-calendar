@@ -94,6 +94,8 @@
   },
   "trainingGroup": {
     "title": "Training Group",
+    "groupType": "Type",
+    "attachedGroups": "Attached groups",
     "displayTitle": "{{ name }} Group",
     "baseData": "Base Data",
     "inviteOnly": "Join only invite",
@@ -160,7 +162,8 @@
     "trainerOwnGroup": "You are the owner in this group!",
     "groupInviteOnly": "You can join this group onyl, if trainer invites you!",
     "cancellationOutranged": "Your time range to cancel join request is expired, please consult with your trainer!",
-    "joinRequestOutranged": "The training has started, join request expired!"
+    "joinRequestOutranged": "The training has started, join request expired!",
+    "groupTypeChangeIfNotAttached": "You can change group type only if there are no attached groups!"
   },
   "action": {
     "userRequest": "Applying",
@@ -175,6 +178,11 @@
     "rejectRequest": "Reject",
     "buySeasonTicket": "Buy Season Ticket",
     "memberMissed": "Member missed"
+  },
+  "groupType": {
+    "PERSONAL": "Personal Training",
+    "GROUP": "Group Training",
+    "MASS": "Mass Training"
   },
   "event": {
     "details": "Event details",

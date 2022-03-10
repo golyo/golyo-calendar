@@ -92,6 +92,8 @@
   },
   "trainingGroup": {
     "title": "Csoport",
+    "groupType": "Típus",
+    "attachedGroups": "Csatolt csoportok",
     "displayTitle": "{{ name }} Csoport",
     "baseData": "Alapadatok",
     "inviteOnly": "Csatlakozás csak meghívásra",
@@ -158,7 +160,8 @@
     "trainerOwnGroup": "Saját csoportjához nem csatlakozhat!",
     "groupInviteOnly": "Csak az edző meghívására csatlakozhatsz a csoporthoz!",
     "cancellationOutranged": "A visszamondásra szánt időkeret lejárt, egyeztessen edzőjével!",
-    "joinRequestOutranged": "Az edzés elkezdődött, a csatlakozási idő lejárt!"
+    "joinRequestOutranged": "Az edzés elkezdődött, a csatlakozási idő lejárt!",
+    "groupTypeChangeIfNotAttached": "A típust csak akkor módosíthatja, ha nincs csatolt csoport megadva!"
   },
   "action": {
     "userRequest": "Jelentkezés",
@@ -172,6 +175,11 @@
     "rejectRequest": "Viszautasítás",
     "buySeasonTicket": "Bérlet vásárlás",
     "memberMissed": "Nem volt ott"
+  },
+  "groupType": {
+    "PERSONAL": "Személyi edzés",
+    "GROUP": "Csoportos edzés",
+    "MASS": "Tömeg sport"
   },
   "event": {
     "details": "Esemény részletek",

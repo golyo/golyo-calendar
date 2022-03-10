@@ -1,18 +1,16 @@
-import React, { ReactNode, useCallback, useContext, useEffect, useState } from 'react';
-import GroupContext, {
-  MembershipType,
-  MemberState, TrainerGroupMemberships,
-  TrainingGroupUIType,
-} from './GroupContext';
+import React, { ReactNode, useCallback, useContext, useMemo } from 'react';
+import GroupContext from './GroupContext';
 import { CronConverter, User, useUser } from '../user';
 import { changeItem, removeItemById, useFirestore } from '../firestore/firestore';
 import { UserGroup } from '../user/UserContext';
 import { useTrainer } from './TrainerProvider';
 import { EVENT_DATE_PROPS, TrainerEvent } from '../event';
+import { GroupType, MembershipType, MemberState, TrainingGroupType, TrainingGroupUIType } from './TrainerContext';
 
 export const DEFAULT_GROUP: TrainingGroupUIType = {
   id: '',
   name: '',
+  groupType: GroupType.GROUP,
   color: '',
   duration: 60,
   cancellationDeadline: 4,
@@ -23,28 +21,41 @@ export const DEFAULT_GROUP: TrainingGroupUIType = {
     days: [],
     time: '',
   }],
+  attachedGroups: [],
 };
 
-export const convertGroupToFirestore: (data: TrainingGroupUIType, cronConverter: CronConverter) => TrainerGroupMemberships =
+export const convertGroupToFirestore: (data: TrainingGroupUIType, cronConverter: CronConverter) => TrainingGroupType =
   (data: TrainingGroupUIType, cronConverter: CronConverter) => ({
     ...data,
     crons: data.crons.map((uiCron) => cronConverter.toCron(uiCron)),
   });
 
-export const convertGroupToUi: (data: TrainerGroupMemberships, cronConverter: CronConverter) => TrainingGroupUIType =
+export const convertGroupToUi: (data: TrainingGroupType, cronConverter: CronConverter) => TrainingGroupUIType =
   (data: any, cronConverter: CronConverter) => ({
     ...data,
+    attachedGroups: data.attachedGroups || [],
     crons: data.crons.map((cron: string) => cronConverter.toUiCron(cron)),
   });
 
 const GroupProvider = ({ groupId, children }: { groupId: string, children: ReactNode }) => {
-  const { findGroup, membershipChanged } = useTrainer();
-  const { user } = useUser();
-  const [group, setGroup] = useState<TrainingGroupUIType>();
-  const eventSrv = useFirestore<TrainerEvent>(`trainers/${user!.id}/events`, EVENT_DATE_PROPS);
+  const { user, cronConverter } = useUser();
+  const { groups, members, membershipChanged } = useTrainer();
 
+  const eventSrv = useFirestore<TrainerEvent>(`trainers/${user!.id}/events`, EVENT_DATE_PROPS);
   const userSrv = useFirestore<User>('users');
   const memberSrv = useFirestore<MembershipType>(`trainers/${user?.id}/groups/${groupId}/members`);
+
+  const group = useMemo(() => {
+    const dbGroup = groups.find((find) => find.id === groupId);
+    return convertGroupToUi(dbGroup!, cronConverter);
+  }, [cronConverter, groupId, groups]);
+
+  const attachedGroups = useMemo(() => {
+    if (!group) {
+      return [];
+    }
+    return (group.attachedGroups || []).map((attachedId) => groups.find((dbGroup) => dbGroup.id === attachedId)!);
+  }, [group, groups]);
 
   const setUserMemberships = useCallback((userId: string, userGroup: UserGroup) => {
     return userSrv.get(userId).then((dbUser) => {
@@ -75,22 +86,19 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
   }, [group, userSrv]);
 
   const createTrainerRequest = useCallback((requested: MembershipType) => {
-    if (group!.members && group!.members.findIndex((member) => member.id === requested.id) >= 0) {
+    if (members && members.findIndex((member) => member.id === requested.id) >= 0) {
       // SHOW ERROR
       return Promise.reject('Already exists');
     }
     return memberSrv.save(requested).then(() => {
       setUserMemberships(requested.id, {
-        groupId: group!.id!,
+        groupId: groupId,
         trainerId: user!.id,
         trainerName: user!.name,
       });
-      membershipChanged(group!.id, [
-        ...(group?.members || []),
-        requested,
-      ]);
+      membershipChanged(changeItem(members, requested));
     });
-  }, [group, memberSrv, setUserMemberships, user, membershipChanged]);
+  }, [members, memberSrv, setUserMemberships, groupId, user, membershipChanged]);
 
   const loadEvent = useCallback((eventId: string) => eventSrv.get(eventId), [eventSrv]);
 
@@ -100,10 +108,10 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
       purchasedTicketNo: member.purchasedTicketNo + 1,
       remainingEventNo: member.remainingEventNo + group!.ticketLength,
     })).then((member) => {
-      membershipChanged(group!.id, changeItem(group!.members!, member));
+      membershipChanged(changeItem(members, member));
       return member;
     });
-  }, [group, memberSrv, membershipChanged]);
+  }, [group, memberSrv, members, membershipChanged]);
 
   const removeMemberFromEvent = useCallback((eventId: string, memberId: string, ticketBack: boolean) => {
     memberSrv.getAndModify(memberId, (member) => ({
@@ -111,26 +119,26 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
       remainingEventNo: member.remainingEventNo + (ticketBack ? 1 : 0),
       presenceNo: member.presenceNo - 1,
     }), false).then((member) => {
-      membershipChanged(group!.id, changeItem(group!.members!, member));
+      membershipChanged(changeItem(members, member));
     });
     return eventSrv.getAndModify(eventId, (event) => ({
       ...event,
       members: removeItemById(event.members, memberId),
     }));
-  }, [eventSrv, group, memberSrv, membershipChanged]);
+  }, [eventSrv, memberSrv, members, membershipChanged]);
 
   const removeTrainerRequest = useCallback((requested: MembershipType) => {
     return memberSrv.remove(requested.id).then(() => {
       removeUserMembership(requested.id);
-      membershipChanged(group!.id, removeItemById(group!.members!, requested.id));
+      membershipChanged(removeItemById(members, requested.id));
     });
-  }, [group, memberSrv, membershipChanged, removeUserMembership]);
+  }, [memberSrv, members, membershipChanged, removeUserMembership]);
   
   const updateMembership = useCallback((membership: MembershipType) => {
     return memberSrv.save(membership).then(() => {
-      membershipChanged(group!.id, changeItem(group!.members!, membership));
+      membershipChanged(changeItem(members, membership));
     });
-  }, [group, memberSrv, membershipChanged]);
+  }, [memberSrv, members, membershipChanged]);
 
   const updateMembershipState = useCallback((requested: MembershipType, toState: MemberState | null) => {
     if (toState === null) {
@@ -141,20 +149,13 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
       return createTrainerRequest(requested);
     }
     return memberSrv.save(requested).then(() => {
-      membershipChanged(group!.id, changeItem(group!.members!, requested));
+      membershipChanged(changeItem(members, requested));
     });
-  }, [createTrainerRequest, group, memberSrv, membershipChanged, removeTrainerRequest]);
-
-  useEffect(() => {
-    if (groupId === 'new') {
-      setGroup(DEFAULT_GROUP);
-      return;
-    }
-    findGroup(groupId).then((myGroup) => setGroup(myGroup));
-  }, [groupId, findGroup]);
+  }, [createTrainerRequest, memberSrv, members, membershipChanged, removeTrainerRequest]);
 
   const ctx = {
     buySeasonTicket,
+    attachedGroups,
     group,
     loadEvent,
     updateMembership,
