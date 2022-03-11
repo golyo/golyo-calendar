@@ -133,32 +133,36 @@
     "modifyTicketNo": "Modify remaining ticket number",
     "changeEventNo": "Change value to",
     "purchasedTicketNo": "Purchased ticket no",
-    "cancelRequest": "Cancel request"
+    "cancelRequest": "Cancel request",
+    "addOtherGroupMember": "Add member from other groups",
+    "inviteMember": "Invite member"
   },
   "confirm": {
     "setStateByTrainer": {
-      "ACCEPTED" : "Are you sure you want to add this user to the group?",
+      "ACCEPTED" : "Are you sure you want to activate the user's memberships ?",
       "TRAINER_REQUEST": "Are you sure you want to invite this user to the group?",
       "TRAINER_SUSPENDED": "Are you sure you want to suspend the user's membership?",
-      "null": "Are you sure you want to delete user from the group?"
+      "null": "Are you sure you want to delete this user's memberships?"
     },
     "setStateByUser": {
       "ACCEPTED" : "Are you sure you want to login to the group?",
       "USER_REQUEST": "Are you sure you want to join to the group?",
-      "USER_SUSPENDED": "Are you sure you leave the group?",
-      "null": "Are you sure you want to delete this group contact?"
+      "USER_SUSPENDED": "Are you sure you leave the trainer groups?",
+      "null": "Are you sure you want to delete this trainer contact?"
     },
-    "noMoreTicket": "You have run out of tickets. Are you sure to checkin ?",
-    "buySeasonTicket": "Are you sure, to add season ticket ?",
-    "memberMissed": "Deduct the ticket of the missing member ?",
-    "userRequest": "Are you sure, to join the selected group ?"
+    "noMoreTicket": "You have run out of tickets. Are you sure to checkin?",
+    "buySeasonTicket": "Are you sure, to add season ticket?",
+    "memberMissed": "Deduct the ticket of the missing member?",
+    "userRequest": "Are you sure, to join the selected group?",
+    "removeFromGroup": "Are you sure, to remove user from group?",
+    "leaveGroup": "Are you sure, to leave group?"
   },
   "warning": {
     "consultTrainer": "Please consult your trainer about tickets!",
     "deleteGroup": "Please delete all members before delete group!",
     "selectionExistsNoTicket": "You should buy season ticket, before you can select more than one event, in a group!",
     "maxMembershipError": "Sorry, the training reached the maximum number of peoples, try to register for another time!",
-    "membershipExists": "You ara already member in this group!",
+    "membershipExists": "You ara already has contact with the trainer, only the trainer can add more group memberships!",
     "trainerOwnGroup": "You are the owner in this group!",
     "groupInviteOnly": "You can join this group onyl, if trainer invites you!",
     "cancellationOutranged": "Your time range to cancel join request is expired, please consult with your trainer!",
@@ -177,7 +181,8 @@
     "suspendRequest": "Suspend",
     "rejectRequest": "Reject",
     "buySeasonTicket": "Buy Season Ticket",
-    "memberMissed": "Member missed"
+    "memberMissed": "Member missed",
+    "removeFromGroup": "Remove from group"
   },
   "groupType": {
     "PERSONAL": "Personal Training",

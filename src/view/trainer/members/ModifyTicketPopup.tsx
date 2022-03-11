@@ -5,20 +5,21 @@ import { Edit } from '@mui/icons-material';
 import { MembershipType, useGroup } from '../../../hooks/trainer';
 import ModalContainer from '../../common/ModalContainer';
 import LabelValue from '../../common/LabelValue';
+import { TicketSheet } from '../../../hooks/trainer/TrainerContext';
 
-const ModifyTicketPopup = ({ membership }: { membership: MembershipType }) => {
+const ModifyTicketPopup = ({ membership, sheet }: { membership: MembershipType, sheet: TicketSheet }) => {
   const { t } = useTranslation();
 
   const { updateMembership } = useGroup();
   const [open, setOpen] = useState(false);
-  const [newValue, setNewValue] = useState<number>(membership.remainingEventNo);
+  const [newValue, setNewValue] = useState<number>(sheet.remainingEventNo);
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);
 
   const updateTicketEvent = useCallback(() => {
-    membership.remainingEventNo = newValue;
+    sheet.remainingEventNo = newValue;
     updateMembership(membership).then(() => closeModal());
-  }, [closeModal, membership, newValue, updateMembership]);
+  }, [closeModal, membership, newValue, sheet, updateMembership]);
 
   return (
     <>
@@ -35,7 +36,7 @@ const ModifyTicketPopup = ({ membership }: { membership: MembershipType }) => {
               { membership.name }
             </LabelValue>
             <LabelValue label={t('membership.remainingEventNo')}>
-              { membership.remainingEventNo }
+              { sheet.remainingEventNo }
             </LabelValue>
             <div>
               <TextField

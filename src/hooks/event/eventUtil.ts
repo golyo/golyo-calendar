@@ -1,7 +1,7 @@
 import parser, { CronDate } from 'cron-parser';
-import { User, UserGroupMembership } from '../../hooks/user';
+import { User, TrainerContactMembership, TrainerGroups } from '../../hooks/user';
 import { CalendarEvent, EventProvider, TrainerEvent } from './EventContext';
-import { UserGroup } from '../user/UserContext';
+import { TrainerContact } from '../user/UserContext';
 import { Firestore, getDoc, doc, where, setDoc } from 'firebase/firestore';
 import { doQuery, getCollectionRef } from '../firestore/firestore';
 import { TrainingGroupType } from '../trainer';
@@ -23,13 +23,12 @@ const getCronInterval = (cronStr: string, from: Date, to: Date) => {
   return parser.parseExpression(cronStr, options);
 };
 
-const generateCronEvent = (membership: UserGroupMembership, startDate: Date) => {
-  const group = membership.group;
+const generateCronEvent = (group: TrainingGroupType, trainer: TrainerContact, startDate: Date) => {
   return {
     id: startDate.getTime().toString(),
     groupId: group.id,
-    trainerId: membership.trainerId,
-    title: membership.trainerName,
+    trainerId: trainer.trainerId,
+    title: trainer.trainerName,
     maxMember: group.maxMember,
     text: group.name,
     startDate: startDate,
@@ -39,14 +38,14 @@ const generateCronEvent = (membership: UserGroupMembership, startDate: Date) => 
   } as TrainerEvent;
 };
 
-const appendCronEvents = (events: TrainerEvent[], membership: UserGroupMembership, from: Date, to: Date) => {
-  membership.group.crons.forEach((cron) => {
+const appendCronEvents = (events: TrainerEvent[], group:TrainingGroupType, trainer: TrainerContact, from: Date, to: Date) => {
+  group.crons.forEach((cron) => {
     const interval = getCronInterval(cron, from, to);
     while (interval.hasNext()) {
       const aa = interval.next() as IteratorReturnResult<CronDate>;
       const eventDate = aa.value.toDate();
       if (!events.some((event) => event.startDate.getTime() === eventDate.getTime())) {
-        events.push(generateCronEvent(membership, eventDate));
+        events.push(generateCronEvent(group, trainer, eventDate));
       }
     }
   });
@@ -65,18 +64,17 @@ export const filterEvents = (events: CalendarEvent[], from: Date, to: Date) => {
   });
 };
 
-const changeCounterToMembership = (firestore: Firestore, user: User, groupMembership: UserGroupMembership, isAdd: boolean) => {
-  const path = `trainers/${groupMembership.trainerId}/groups/${groupMembership.groupId}/members`;
+const changeCounterToMembership = (firestore: Firestore, user: User, groupMembership: TrainerContactMembership, group: TrainingGroupType, isAdd: boolean) => {
+  const path = `trainers/${groupMembership.trainer.trainerId}/members`;
   const collectionRef = getCollectionRef(firestore, path);
   const docRef = doc(collectionRef, user.id);
   const modifier = isAdd ? 1 : -1;
-  groupMembership.membership = {
-    ...groupMembership.membership,
-    avatar: user.photoURL,
-    name: user.name,
-    presenceNo: groupMembership.membership.presenceNo + modifier,
-    remainingEventNo: groupMembership.membership.remainingEventNo - modifier,
-  };
+  const ticketSheet = groupMembership.membership.ticketSheets.find((sheet) => sheet.type === group.groupType)!;
+  ticketSheet.presenceNo += modifier;
+  ticketSheet.remainingEventNo += -modifier;
+  // refresh name and avatar
+  groupMembership.membership.name = user.name;
+  groupMembership.membership.avatar = user.photoURL;
   return setDoc(docRef, groupMembership.membership);
 };
 
@@ -85,15 +83,16 @@ export const isMaxMembershipError = (error: string) => error === MAX_MEMBERSHIP_
 
 export const EVENT_DATE_PROPS = ['startDate', 'endDate'];
 
-export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: TrainerEvent, user: User, membership: UserGroupMembership, isAdd: boolean) => {
+export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: TrainerEvent, user: User, membership: TrainerContactMembership, isAdd: boolean) => {
   const path = `trainers/${trainerEvent.trainerId}/events`;
   const collectionRef = getCollectionRef(firestore, path, EVENT_DATE_PROPS);
   const docRef = doc(collectionRef, trainerEvent.id);
+  const group = membership.dbGroups.find((gr) => gr.id === trainerEvent.groupId)!;
   return new Promise<void>((resolve, reject) => {
     getDoc(docRef).then(docSnapshot => {
       const data = (docSnapshot.data() || trainerEvent) as TrainerEvent;
       if (isAdd) {
-        if (membership.group.maxMember <= data.members.length) {
+        if (group.maxMember <= data.members.length) {
           reject(MAX_MEMBERSHIP_ERROR);
           return;
         }
@@ -106,35 +105,33 @@ export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: Trai
         data.members.splice(idx, 1);
       }
       setDoc(docRef, data).then(() => {
-        changeCounterToMembership(firestore, user, membership, isAdd).then(() => resolve());
+        changeCounterToMembership(firestore, user, membership, group, isAdd).then(() => resolve());
       });
     });
   });
 };
 
-const getTrainerGroups = (userGroups: UserGroup[], groupId: string | undefined) => {
-  const trainerGroups: Record<string, string[]> = {};
-  userGroups.forEach((group) => {
-    if (!groupId || group.groupId === groupId) {
-      trainerGroups[group.trainerId] = trainerGroups[group.trainerId] || [];
-      trainerGroups[group.trainerId].push(group.groupId);
-    }
-  });
-  return trainerGroups;
-};
-
-const createDBEventProvider = (firestore: Firestore, userGroups: UserGroupMembership[]) => {
+const createDBEventProvider = (firestore: Firestore, trainerGroups: TrainerGroups[]) => {
   let groupRestriction: string | undefined = undefined;
 
   const getEvents = (from: Date, to: Date) => {
     if (to < from) {
       return Promise.resolve([]);
     }
-    const trainerGroups = getTrainerGroups(userGroups, groupRestriction);
-    return Promise.all(Object.keys(trainerGroups).map((trainerKey) => {
-      const groups = trainerGroups[trainerKey];
-      return doQuery(firestore, `trainers/${trainerKey}/events`, EVENT_DATE_PROPS, where('groupId', 'in', groups),
-        where('startDate', '>=', from.getTime()), where('startDate', '<=', to.getTime()));
+    return Promise.all(trainerGroups.map((trainerGroup) => {
+      const groups = trainerGroup.dbGroups.map((gr) => gr.id);
+      const filtered = groupRestriction ? (groups.includes(groupRestriction) ? [groupRestriction] : []) : groups;
+      if (filtered.length <= 0) {
+        return Promise.resolve([]);
+      }
+      const queries = [
+        where('startDate', '>=', from.getTime()),
+        where('startDate', '<=', to.getTime()),
+      ];
+      if (!trainerGroup.isAllGroup || groupRestriction) {
+        queries.push(where('groupId', 'in', filtered));
+      }
+      return doQuery(firestore, `trainers/${trainerGroup.trainer.trainerId}/events`, EVENT_DATE_PROPS, ...queries);
     })).then((data) => {
       const allEvent: TrainerEvent[] = [].concat.apply([], data as [][]);
       allEvent.forEach((event) => event.badge = event.members?.length.toString() || '0');
@@ -153,12 +150,12 @@ const createDBEventProvider = (firestore: Firestore, userGroups: UserGroupMember
   } as EventProvider;
 };
 
-export const createUserEventProvider = (firestore: Firestore, memberships: UserGroupMembership[]) => {
-  const dbEventProvider = createDBEventProvider(firestore, memberships);
+const createEventProvider = (firestore: Firestore, trainerGroups: TrainerGroups[]) => {
+  const dbEventProvider = createDBEventProvider(firestore, trainerGroups);
   let groupRestriction: string | undefined = undefined;
 
   const getEvents = (from: Date, to: Date) => {
-    if (memberships.length === 0) {
+    if (trainerGroups.length === 0) {
       return Promise.resolve([]);
     }
     return dbEventProvider.getEvents(from, to).then((events: TrainerEvent[]) => {
@@ -166,11 +163,11 @@ export const createUserEventProvider = (firestore: Firestore, memberships: UserG
       if (now >= to) {
         return events;
       }
-      const filtered = groupRestriction ? memberships.filter((m) => m.groupId === groupRestriction) : memberships;
-      filtered.forEach((membership) => appendCronEvents(events, membership, now > from ? now : from, to));
-      if (filtered.length > 1) {
-        events.sort(EVENT_COMPARE);
-      }
+      trainerGroups.forEach((trainerGroup) => {
+        const filtered = groupRestriction ? trainerGroup.dbGroups.filter((m) => m.id === groupRestriction) : trainerGroup.dbGroups;
+        filtered.forEach((group) => appendCronEvents(events, group, trainerGroup.trainer, now > from ? now : from, to));
+      });
+      events.sort(EVENT_COMPARE);
       return events;
     });
   };
@@ -186,12 +183,17 @@ export const createUserEventProvider = (firestore: Firestore, memberships: UserG
   } as EventProvider;
 };
 
-export const createTrainerEventProvider = (firestore: Firestore, trainer: User, groups: TrainingGroupType[]) => {
-  const groupMemberships = groups.map((group) => ({
-    group,
-    trainerName: trainer.name,
-    trainerId: trainer.id,
-    groupId: group.id,
-  } as UserGroupMembership));
-  return createUserEventProvider(firestore, groupMemberships);
+export const createUserEventProvider = (firestore: Firestore, memberships: TrainerContactMembership[]) =>
+  createEventProvider(firestore, memberships);
+
+export const createTrainerEventProvider = (firestore: Firestore, trainer: User, dbGroups: TrainingGroupType[]) => {
+  const trainerGroup: TrainerGroups = {
+    isAllGroup: true,
+    trainer: {
+      trainerId: trainer.id,
+      trainerName: trainer.name,
+    },
+    dbGroups,
+  };
+  return createEventProvider(firestore, [trainerGroup]);
 };

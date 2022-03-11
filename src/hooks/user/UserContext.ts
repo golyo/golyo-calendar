@@ -1,6 +1,5 @@
 import { createContext } from 'react';
-import { MemberState, MembershipType } from '../trainer';
-import { TrainingGroupType } from '../trainer/TrainerContext';
+import { MembershipType, MemberState, TrainingGroupType, TrainingGroupUIType } from '../trainer';
 import { EventProvider, TrainerEvent } from '../event';
 import { IUtils } from '@date-io/core/IUtils';
 
@@ -14,14 +13,18 @@ export interface CronConverter {
   toUiCron: (cron: string) => UiCronType;
 }
 
-export interface UserGroup {
+export interface TrainerContact {
   trainerName: string;
   trainerId: string;
-  groupId: string;
 }
 
-export interface UserGroupMembership extends UserGroup {
-  group: TrainingGroupType;
+export interface TrainerGroups {
+  isAllGroup?: boolean;
+  trainer: TrainerContact;
+  dbGroups: TrainingGroupType[];
+}
+
+export interface TrainerContactMembership extends TrainerGroups {
   membership: MembershipType;
 }
 
@@ -33,17 +36,18 @@ export interface User {
   isTrainer: boolean;
   location: string;
   registrationDate?: number;
-  memberships: UserGroup[];
+  memberships: TrainerContact[];
 }
 
 export interface UserContextType {
-  addGroupMembership: (trainer: User, groupId: string) => Promise<void>;
-  activeMemberships: UserGroupMembership[];
-  changeUserGroupState: (group: UserGroupMembership, toState: MemberState | null) => Promise<any>;
+  addGroupMembership: (trainer: User, group: TrainingGroupUIType) => Promise<void>;
+  activeMemberships: TrainerContactMembership[];
+  changeTrainerContactState: (group: TrainerContactMembership, toState: MemberState | null) => Promise<any>;
   cronConverter: CronConverter;
   getDateRangeStr: (event: TrainerEvent) => string;
-  groupMemberships: UserGroupMembership[];
+  groupMemberships: TrainerContactMembership[];
   loadTrainers: () => Promise<User[]>;
+  leaveGroup: (membership: TrainerContactMembership, group: TrainingGroupType) => Promise<void>;
   membershipChanged: () => void;
   saveUser: (user: User) => Promise<any>;
   user?: User;

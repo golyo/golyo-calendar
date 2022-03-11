@@ -1,25 +1,28 @@
-import { MembershipType, useGroup } from '../../../hooks/trainer';
+import { MembershipType, TrainingGroupUIType, useGroup } from '../../../hooks/trainer';
 import { Avatar, Button, IconButton, Modal } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import ModalContainer from '../../common/ModalContainer';
 import { useTranslation } from 'react-i18next';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { TicketNoWarning } from './EventPage';
 import { useDialog } from '../../../hooks/dialog';
 import { TrainerEvent } from '../../../hooks/event';
 
 type ActionPopupProps = {
+  group: TrainingGroupUIType,
   member: MembershipType;
   event: TrainerEvent;
   setEvent?: (event: TrainerEvent) => void;
 };
 
-const TrainerActionsPopup = ({ member, event, setEvent } : ActionPopupProps) => {
+const TrainerActionsPopup = ({ group, member, event, setEvent } : ActionPopupProps) => {
   const { t } = useTranslation();
   const { buySeasonTicket, removeMemberFromEvent } = useGroup();
   const { showDialog, showConfirmDialog } = useDialog();
 
   const [open, setOpen] = useState(false);
+
+  const sheet = useMemo(() => member.ticketSheets.find((sh) => sh.type === group.groupType), [group, member]);
 
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);
@@ -79,7 +82,7 @@ const TrainerActionsPopup = ({ member, event, setEvent } : ActionPopupProps) => 
           </span>)
         }>
           <div className="vertical">
-            <TicketNoWarning member={member} t={t} />
+            <TicketNoWarning sheet={sheet!} t={t} />
             <div className="horizontal">
               <Button onClick={buyTicket} variant="contained">{t('action.buySeasonTicket')}</Button>
               {event && <Button onClick={memberMissed} variant="outlined">{t('action.memberMissed')}</Button>}

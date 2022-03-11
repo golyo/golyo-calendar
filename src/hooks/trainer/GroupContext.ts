@@ -8,6 +8,7 @@ interface GroupContextType {
   loadEvent: (eventId: string) => Promise<TrainerEvent>;
   removeMemberFromEvent: (eventId: string, memberId: string, ticketBack: boolean) => Promise<TrainerEvent>;
   group: TrainingGroupUIType | undefined;
+  groupMembers: MembershipType[];
   updateMembership: (membership: MembershipType) => Promise<void>;
   updateMembershipState: (membership: MembershipType, toState: MemberState | null) => Promise<any>;
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { TFunction, useTranslation } from 'react-i18next';
 import {
@@ -17,18 +17,19 @@ import { DEFAULT_MEMBER, MembershipType, useGroup, useTrainer } from '../../../h
 import LabelValue from '../../common/LabelValue';
 import TrainerActionsPopup from './TrainerActionsPopup';
 import { styled } from '@mui/material/styles';
+import { TicketSheet } from '../../../hooks/trainer/TrainerContext';
 
 export const TicketAlert = styled(Alert)(() => ({
   padding: '0px 6px',
   marginTop: '3px',
 }));
 
-export function TicketNoWarning({ member, t }: { member: MembershipType, t: TFunction }) {
+export function TicketNoWarning({ sheet, t }: { sheet: TicketSheet, t: TFunction }) {
   return (
     <div>
-      {member.remainingEventNo > 0 && <TicketAlert variant="outlined" severity="info">{t('event.remainingEventNo', { ticketNo: member.remainingEventNo })}</TicketAlert>}
-      {member.remainingEventNo <= 0 &&
-        <TicketAlert variant="outlined" severity="error">{t(member.remainingEventNo < 0 ? 'event.owesTicket' : 'event.noMoreEvent', { ticketNo: -member.remainingEventNo })}</TicketAlert>
+      {sheet.remainingEventNo > 0 && <TicketAlert variant="outlined" severity="info">{t('event.remainingEventNo', { ticketNo: sheet.remainingEventNo })}</TicketAlert>}
+      {sheet.remainingEventNo <= 0 &&
+        <TicketAlert variant="outlined" severity="error">{t(sheet.remainingEventNo < 0 ? 'event.owesTicket' : 'event.noMoreEvent', { ticketNo: -sheet.remainingEventNo })}</TicketAlert>
       }
     </div>
   );
@@ -52,6 +53,9 @@ export default function EventPage() {
     return event.members.map((m) => members!.find((gm) => gm.id === m.id) || DEFAULT_MEMBER);
   }, [event, group, members]);
 
+  const findSheet = useCallback((member: MembershipType) => member.ticketSheets.find((sheet) =>
+    sheet.type === group!.groupType)!, [group]);
+
   useEffect(() => {
     if (!eventId) {
       return;
@@ -74,7 +78,12 @@ export default function EventPage() {
       <List>
         {activeMembers.map((eMember, idx) => (
           <ListItem key={idx}
-                    secondaryAction={isStarted && <TrainerActionsPopup member={eMember} event={event} setEvent={setEvent} />}
+                    secondaryAction={isStarted && <TrainerActionsPopup
+                      group={group!}
+                      member={eMember}
+                      event={event}
+                      setEvent={setEvent}
+                    />}
                     divider
           >
             <ListItemAvatar>
@@ -82,7 +91,7 @@ export default function EventPage() {
             </ListItemAvatar>
             <div>
               <Typography variant="subtitle1">{eMember.name}</Typography>
-              <TicketNoWarning member={eMember} t={t} />
+              <TicketNoWarning sheet={findSheet(eMember)} t={t} />
             </div>
           </ListItem>
         ))}

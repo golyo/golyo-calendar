@@ -4,36 +4,60 @@ import { User as AuthUser } from 'firebase/auth';
 
 import {
   changeItemByEqual,
-  deleteObject,
+  deleteObject, doQuery,
   loadObject,
   removeItemByEqual,
   updateObject,
   useFirestore,
 } from '../firestore/firestore';
 import { useAuth } from '../auth/AuthProvider';
-import UserContext, { User, UserGroupMembership } from './UserContext';
+import UserContext, { User, TrainerContact, TrainerContactMembership } from './UserContext';
 import { useFirebase } from '../firebase';
-import { MembershipType, MemberState, TrainingGroupType } from '../trainer';
+import {
+  MembershipType,
+  MemberState,
+  TrainingGroupType,
+  TrainerProvider,
+  TrainingGroupUIType,
+  DEFAULT_MEMBER,
+} from '../trainer';
 import { Firestore, where } from 'firebase/firestore';
-import { TrainerProvider } from '../trainer';
 import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
 import { createCronConverter } from './cronUtils';
 import { createUserEventProvider, getInterval, TrainerEvent } from '../event';
 
-export const loadGroup = (firestore: Firestore, trainerId: string, groupId: string) =>
-  loadObject(firestore, `trainers/${trainerId}/groups`, groupId);
+export const loadGroups = (firestore: Firestore, trainerId: string) =>
+  doQuery(firestore, `trainers/${trainerId}/groups`);
 
-export const loadMembership = (firestore: Firestore, trainerId: string, groupId: string, userId: string) =>
-  loadObject(firestore, `trainers/${trainerId}/groups/${groupId}/members`, userId);
+export const loadMembership = (firestore: Firestore, trainerId: string, userId: string) =>
+  loadObject(firestore, `trainers/${trainerId}/members`, userId);
 
-const setMember = (firestore: Firestore, user: User, membership: UserGroupMembership) => {
+const setMember = (firestore: Firestore, user: User, membership: TrainerContactMembership) => {
   const member: MembershipType = {
+
     ...membership.membership,
     id: user.id,
     name: user.name,
     avatar: user.photoURL,
   };
-  return updateObject(firestore, `trainers/${membership.trainerId}/groups/${membership.groupId}/members`, member);
+  return updateObject(firestore, `trainers/${membership.trainer.trainerId}/members`, member);
+};
+
+const addUserRequest = (firestore: Firestore, trainerId: string, user: User, group: TrainingGroupUIType) => {
+  const membership: MembershipType = {
+    ...DEFAULT_MEMBER,
+    state: MemberState.USER_REQUEST,
+    name: user!.name,
+    id: user!.id,
+    groups: [ group.id ],
+    ticketSheets:  [{
+      type: group.groupType,
+      remainingEventNo: 0,
+      presenceNo: 0,
+      purchasedTicketNo: 0,
+    }],
+  };
+  return updateObject(firestore, `trainers/${trainerId}/members`, membership, false);
 };
 
 const DEFAULT_USER_VALUES = {
@@ -51,13 +75,23 @@ const createDBUser = (authUser: AuthUser) => ({
   ...DEFAULT_USER_VALUES,
 });
 
-const userGroupEqual = (a: UserGroupMembership, b: UserGroupMembership) => a.trainerId === b.trainerId && a.groupId === b.groupId;
+const isTrainerEqual = (a: TrainerContactMembership, b: TrainerContactMembership) => a.trainer.trainerId === b.trainer.trainerId;
+
+const createMembership = (trainer: TrainerContact, membership: MembershipType, trainerGroups: TrainingGroupType[]) => {
+  const dbGroups = trainerGroups.filter((group) => membership.groups.includes(group.id) ||
+    group.attachedGroups?.some((aid) => membership.groups.includes(aid)));
+  return {
+    membership,
+    dbGroups,
+    trainer,
+  };
+};
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
   const utils = useUtils();
 
   const [state, setState] = useState<{ initialized: boolean; user: User | undefined }>( { initialized: false, user: undefined });
-  const [groupMemberships, setGroupMemberships] = useState<UserGroupMembership[]>([]);
+  const [groupMemberships, setGroupMemberships] = useState<TrainerContactMembership[]>([]);
   const { authUser } = useAuth();
 
   const userSrv = useFirestore<User>('users');
@@ -91,15 +125,15 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const userEventProvider = useMemo(() => createUserEventProvider(firestore, activeMemberships), [firestore, activeMemberships]);
 
-  const deleteUserGroupState = useCallback(async (userGroup: UserGroupMembership) => {
-    const idx = user!.memberships.findIndex((m) => m.trainerId === userGroup.trainerId && m.groupId === userGroup.groupId);
+  const deleteTrainerContactState = useCallback(async (membership: TrainerContactMembership) => {
+    const idx = user!.memberships.findIndex((m) => m.trainerId === membership.trainer.trainerId);
     if (idx >= 0) {
       user!.memberships.splice(idx, 1);
     }
     await userSrv.save(user);
     changeUser(user!);
-    await deleteObject(firestore, `trainers/${userGroup.trainerId}/groups/${userGroup.groupId}/members`, user!.id);
-    setGroupMemberships((prev) => removeItemByEqual(prev, userGroup, userGroupEqual));
+    await deleteObject(firestore, `trainers/${membership.trainer.trainerId}/members`, membership.membership.id);
+    setGroupMemberships((prev) => removeItemByEqual(prev, membership, isTrainerEqual));
   }, [changeUser, firestore, user, userSrv]);
 
   const getDateRangeStr = useCallback((event: TrainerEvent) => {
@@ -107,16 +141,16 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     return utils.format(udate, 'fullDate') + ' ' + getInterval(event);
   }, [utils]);
 
-  const changeUserGroupState = useCallback(async (userGroup: UserGroupMembership, toState: MemberState | null) => {
+  const changeTrainerContactState = useCallback(async (membership: TrainerContactMembership, toState: MemberState | null) => {
     if (!toState) {
-      await deleteUserGroupState(userGroup);
+      await deleteTrainerContactState(membership);
       return;
     }
-    userGroup.membership.state = toState;
-    await setMember(firestore, user!, userGroup);
+    membership.membership.state = toState;
+    await setMember(firestore, user!, membership);
     setGroupMemberships((prev) =>
-      changeItemByEqual(prev, userGroup, userGroupEqual));
-  }, [deleteUserGroupState, firestore, user]);
+      changeItemByEqual(prev, membership, isTrainerEqual));
+  }, [deleteTrainerContactState, firestore, user]);
 
   const membershipChanged = useCallback(() => {
     setGroupMemberships((prev) => [...prev]);
@@ -127,29 +161,42 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     Promise.all(
-      dbUser.memberships.map(async (userGroup) => {
-        const group = await loadGroup(firestore, userGroup.trainerId, userGroup.groupId) as TrainingGroupType;
-        const membership = await loadMembership(firestore, userGroup.trainerId, userGroup.groupId, dbUser.id) as MembershipType;
-        const userGroupMembersip: UserGroupMembership = {
-          ...userGroup,
-          group,
-          membership,
-        };
-        return userGroupMembersip;
+      dbUser.memberships.map(async (trainerContact) => {
+        const membership = await loadMembership(firestore, trainerContact.trainerId, dbUser.id) as MembershipType;
+        const groups = await loadGroups(firestore, trainerContact.trainerId);
+        return createMembership(trainerContact, membership, groups);
       }),
-    ).then((userGroups) => {
-      setGroupMemberships(userGroups);
+    ).then((memberships) => {
+      setGroupMemberships(memberships);
     });
   }, [firestore]);
 
-  const addGroupMembership = useCallback((trainer: User, groupId: string) => {
-    user!.memberships.push({
-      trainerId: trainer.id,
-      trainerName: trainer.name,
-      groupId,
+  const leaveGroup = useCallback((membership: TrainerContactMembership, group: TrainingGroupType) => {
+    const groupIdx = membership.membership.groups.indexOf(group.id);
+    membership.membership.groups.splice(groupIdx, 1);
+    return setMember(firestore, user!, membership).then(() => {
+      const idx = membership.dbGroups.findIndex((dg) => dg.id === group.id);
+      membership.dbGroups.splice(idx, 1);
+      group.attachedGroups.forEach((groupId) => {
+        if (!membership.dbGroups.some((dg) => dg.attachedGroups.includes(groupId))) {
+          const aidx = membership.dbGroups.findIndex((dg) => dg.id === groupId);
+          membership.dbGroups.splice(aidx, 1);
+        }
+      });
+      setGroupMemberships((prev) => changeItemByEqual(prev, membership, isTrainerEqual));
     });
-    return saveUser(user!);
-  }, [saveUser, user]);
+  }, [firestore, user]);
+
+  const addGroupMembership = useCallback((trainer: User, group: TrainingGroupUIType) => {
+    if (!user!.memberships.some((m) => m.trainerId === trainer.id)) {
+      user!.memberships.push({
+        trainerId: trainer.id,
+        trainerName: trainer.name,
+      });
+      saveUser(user!);
+    }
+    return addUserRequest(firestore, trainer.id, user!, group).then(() => loadMemberships(user!));
+  }, [firestore, loadMemberships, saveUser, user]);
 
   const loadUser = useCallback(() => {
     userSrv.get(authUser!.email!).then((dbUser) => {
@@ -202,11 +249,12 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   const ctx = {
     addGroupMembership,
     activeMemberships,
-    changeUserGroupState,
+    changeTrainerContactState,
     cronConverter,
     getDateRangeStr,
     groupMemberships,
     loadTrainers,
+    leaveGroup,
     membershipChanged,
     saveUser,
     user: user,

@@ -26,13 +26,25 @@ const NextEvents = () => {
     return user && event.members && !!event.members.find((member) => member.id === user.id);
   }, [user]);
 
-  const remainingEventNos: number[] = useMemo(() => events.map((event) => activeMemberships.find(
-    (gm) => gm.groupId === event.groupId)!.membership.remainingEventNo), [activeMemberships, events]);
+  const findGroupToEvent = useCallback((event: TrainerEvent) => {
+    const membership = activeMemberships.find((gm) => gm.trainer.trainerId === event.trainerId)!;
+    return membership.dbGroups.find((gr) => gr.id === event.groupId)!;
+  }, [activeMemberships]);
+
+  const getRemainingEventNo = useCallback((event: TrainerEvent) => {
+    const membership = activeMemberships.find((gm) => gm.trainer.trainerId === event.trainerId)!;
+    const groupType = membership.dbGroups.find((gr) => gr.id === event.groupId)!.groupType;
+    return membership.membership.ticketSheets?.find((sh) => sh.type === groupType)?.remainingEventNo || 0;
+  }, [activeMemberships]);
+
+  const remainingEventNos: number[] = useMemo(() => events.map((event) => getRemainingEventNo(event)),
+    [events, getRemainingEventNo]);
 
   const handleChange = useCallback((event: TrainerEvent) => (e: any) => {
     const isAdd = e.target.checked;
-    const membership = activeMemberships.find((gm) => gm.groupId === event.groupId);
-    const maxDiff = membership!.group.cancellationDeadline * 60 * 60 * 1000;
+    const group = findGroupToEvent(event);
+    const membership = activeMemberships.find((gm) => gm.trainer.trainerId === event.trainerId)!;
+    const maxDiff = group.cancellationDeadline * 60 * 60 * 1000;
     if (!isAdd && (Date.now() + maxDiff > event.startDate.getTime())) {
       showDialog({
         title: 'common.warning',
@@ -47,22 +59,23 @@ const NextEvents = () => {
       });
       return;
     }
-    if (isAdd && membership!.membership.remainingEventNo <= 0 && hasChecked(event)) {
+    if (isAdd && getRemainingEventNo(event) <= 0 && hasChecked(event)) {
       showDialog({
         title: 'common.warning',
         description: 'warning.selectionExistsNoTicket',
       });
       return;
     }
+    const remainingEventNo = membership.membership.ticketSheets.find((sh) => sh.type === group.groupType)?.remainingEventNo || 0;
     checkIfConfirmDialog({
       description: t('confirm.noMoreTicket'),
-      isShowDialog: () => isAdd && membership!.membership.remainingEventNo <= 0,
+      isShowDialog: () => isAdd && remainingEventNo <= 0,
       doCallback: () => {
         showBackdrop();
         changeMembershipToEvent(firestore, event, user!, membership!, isAdd).then(() => {
           membershipChanged();
           hideBackdrop(isAdd ? 'membership.checkinApproved' : 'membership.checkoutApproved');
-          if (isAdd && membership!.membership.remainingEventNo === 0) {
+          if (isAdd && remainingEventNo === 0) {
             showDialog({
               title: 'common.warning',
               description: 'warning.consultTrainer',
@@ -81,7 +94,20 @@ const NextEvents = () => {
         });
       },
     });
-  }, [activeMemberships, checkIfConfirmDialog, firestore, hasChecked, hideBackdrop, membershipChanged, showBackdrop, showDialog, t, user]);
+  }, [
+    activeMemberships,
+    checkIfConfirmDialog,
+    findGroupToEvent,
+    firestore,
+    getRemainingEventNo,
+    hasChecked,
+    hideBackdrop,
+    membershipChanged,
+    showBackdrop,
+    showDialog,
+    t,
+    user,
+  ]);
 
   useEffect(() => {
     userEventProvider.getEvents(new Date(), getNextEventTo()).then((tevents: TrainerEvent[]) => setEvents(tevents));

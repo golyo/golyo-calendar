@@ -133,11 +133,13 @@ export const cloneObject = (firestore: Firestore, fromPath: string, toPath: stri
   });  
 };
 
-export const cloneCollection = (firestore: Firestore, fromPath: string, toPath: string) => {
+export const cloneCollection = (firestore: Firestore, fromPath: string, toPath: string, transform?: (data: any) => any) => {
   const fromRef = getCollectionRef(firestore, fromPath);
   getDocs(fromRef).then((querySnapshot) => {
     querySnapshot.docs.forEach((document) => {
-      updateObject(firestore, toPath, document.data()).then(() => {
+      const data = document.data();
+      const transformed = transform ? transform(data) : data;
+      updateObject(firestore, toPath, transformed).then(() => {
         console.log('Object moved from collection', document.data(), false);
       });
     });

@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 
 import NewMemberPopup from './NewMemberPopup';
-import { MemberState, useGroup, useTrainer } from '../../../hooks/trainer';
+import { MembershipType, MemberState, useGroup } from '../../../hooks/trainer';
 import MemberDetailPopup from './MemberDetailPopup';
 import { TicketNoWarning } from '../events/EventPage';
 
@@ -24,19 +24,20 @@ const MembersList = () => {
   const { t } = useTranslation();
   const [selectedState, setSelectedState] = useState<MemberState | 0>(0);
 
-  const { members } = useTrainer();
-  const { updateMembershipState, buySeasonTicket } = useGroup();
+  const { group, groupMembers } = useGroup();
 
   const filteredMembers = useMemo(() => {
     if (!selectedState) {
-      return members;
+      return groupMembers;
     }
-    return members.filter((member) => member.state === selectedState);
-  }, [members, selectedState]);
+    return groupMembers.filter((member) => member.state === selectedState);
+  }, [groupMembers, selectedState]);
+
+  const findSheet = useCallback((member: MembershipType) => member.ticketSheets.find((sh) => sh.type === group!.groupType), [group]);
 
   const handleSelectChange = useCallback((event: React.ChangeEvent<any>) => setSelectedState(event.target.value), [setSelectedState]);
 
-  if (members) {
+  if (!groupMembers) {
     return null;
   }
   return (
@@ -58,7 +59,11 @@ const MembersList = () => {
         <Divider />
         {filteredMembers.map((member, idx) => (
           <ListItem key={idx}
-                    secondaryAction={<MemberDetailPopup updateMembershipState={updateMembershipState} member={member} buySeasonTicket={buySeasonTicket} />}
+                    secondaryAction={
+                      <MemberDetailPopup
+                        sheet={findSheet(member)!}
+                        member={member}
+                      />}
                     divider
           >
             <ListItemAvatar>
@@ -70,14 +75,14 @@ const MembersList = () => {
                 <Chip label={t(`memberState.${member.state}`)} color="primary" />
               </div>
               <div style={{ display: 'flex' }}>
-                <TicketNoWarning member={member} t={t} />
+                <TicketNoWarning sheet={findSheet(member)!} t={t} />
               </div>
             </div>
           </ListItem>
         ))}
       </List>
       <div>
-        <NewMemberPopup updateMembershipState={updateMembershipState}></NewMemberPopup>
+        <NewMemberPopup></NewMemberPopup>
       </div>
     </>
   );

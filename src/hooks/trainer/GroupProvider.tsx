@@ -2,7 +2,7 @@ import React, { ReactNode, useCallback, useContext, useMemo } from 'react';
 import GroupContext from './GroupContext';
 import { CronConverter, User, useUser } from '../user';
 import { changeItem, removeItemById, useFirestore } from '../firestore/firestore';
-import { UserGroup } from '../user/UserContext';
+import { TrainerContact } from '../user/UserContext';
 import { useTrainer } from './TrainerProvider';
 import { EVENT_DATE_PROPS, TrainerEvent } from '../event';
 import { GroupType, MembershipType, MemberState, TrainingGroupType, TrainingGroupUIType } from './TrainerContext';
@@ -37,18 +37,30 @@ export const convertGroupToUi: (data: TrainingGroupType, cronConverter: CronConv
     crons: data.crons.map((cron: string) => cronConverter.toUiCron(cron)),
   });
 
+const createSheet = (type: GroupType) => ({
+  type,
+  presenceNo: 0,
+  remainingEventNo: 0,
+  purchasedTicketNo: 0,
+});
+
 const GroupProvider = ({ groupId, children }: { groupId: string, children: ReactNode }) => {
   const { user, cronConverter } = useUser();
   const { groups, members, membershipChanged } = useTrainer();
 
   const eventSrv = useFirestore<TrainerEvent>(`trainers/${user!.id}/events`, EVENT_DATE_PROPS);
   const userSrv = useFirestore<User>('users');
-  const memberSrv = useFirestore<MembershipType>(`trainers/${user?.id}/groups/${groupId}/members`);
+  const memberSrv = useFirestore<MembershipType>(`trainers/${user?.id}/members`);
 
   const group = useMemo(() => {
     const dbGroup = groups.find((find) => find.id === groupId);
     return convertGroupToUi(dbGroup!, cronConverter);
   }, [cronConverter, groupId, groups]);
+
+  const groupMembers = useMemo(() => {
+    return members.filter((member) => member.groups.includes(group.id) ||
+      group.attachedGroups.some((attachedId) => member.groups.includes(attachedId)));
+  }, [group, members]);
 
   const attachedGroups = useMemo(() => {
     if (!group) {
@@ -57,23 +69,23 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
     return (group.attachedGroups || []).map((attachedId) => groups.find((dbGroup) => dbGroup.id === attachedId)!);
   }, [group, groups]);
 
-  const setUserMemberships = useCallback((userId: string, userGroup: UserGroup) => {
+  const setUserMemberships = useCallback((userId: string, trainerContact: TrainerContact) => {
     return userSrv.get(userId).then((dbUser) => {
       const addUser = dbUser || { id: userId, memberships: [] };
-      const dbGroupIdx = addUser.memberships.findIndex((dbUserGroup: UserGroup) => dbUserGroup.groupId === userGroup.groupId);
+      const dbGroupIdx = addUser.memberships.findIndex((dbTrainerContact: TrainerContact) => dbTrainerContact.trainerId === user!.id);
       if (dbGroupIdx < 0) {
-        addUser.memberships.push(userGroup);
+        addUser.memberships.push(trainerContact);
         userSrv.save(addUser, true, false);
       }
     });
-  }, [userSrv]);
+  }, [user, userSrv]);
 
   const removeUserMembership = useCallback((userId: string) => {
     userSrv.get(userId).then((dbUser) => {
       if (!dbUser) {
         return;
       }
-      const dbGroupIdx = dbUser.memberships.findIndex((dbUserGroup: UserGroup) => dbUserGroup.groupId === group!.id);
+      const dbGroupIdx = dbUser.memberships.findIndex((dbTrainerContact: TrainerContact) => dbTrainerContact.trainerId === user!.id);
       if (dbGroupIdx >= 0) {
         dbUser.memberships.splice(dbGroupIdx, 1);
         if (dbUser.memberships.length === 0 && !dbUser.registrationDate) {
@@ -83,49 +95,50 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
         }
       }
     });
-  }, [group, userSrv]);
+  }, [user, userSrv]);
 
   const createTrainerRequest = useCallback((requested: MembershipType) => {
-    if (members && members.findIndex((member) => member.id === requested.id) >= 0) {
-      // SHOW ERROR
-      return Promise.reject('Already exists');
+    const toSave = members.find((m) => m.id === requested.id) || requested;
+    if (!toSave.groups.includes(group.id)) {
+      toSave.groups.push(group.id);
     }
-    return memberSrv.save(requested).then(() => {
-      setUserMemberships(requested.id, {
-        groupId: groupId,
+    if (!toSave.ticketSheets.some((sheet) => sheet.type === group.groupType)) {
+      toSave.ticketSheets.push(createSheet(group.groupType));
+    }
+    return memberSrv.save(toSave).then(() => {
+      setUserMemberships(toSave.id, {
         trainerId: user!.id,
         trainerName: user!.name,
       });
-      membershipChanged(changeItem(members, requested));
+      membershipChanged(changeItem(members, toSave));
     });
-  }, [members, memberSrv, setUserMemberships, groupId, user, membershipChanged]);
+  }, [members, group.id, group.groupType, memberSrv, setUserMemberships, user, membershipChanged]);
 
   const loadEvent = useCallback((eventId: string) => eventSrv.get(eventId), [eventSrv]);
 
-  const buySeasonTicket = useCallback((memberId: string) => {
-    return memberSrv.getAndModify(memberId, (member) => ({
-      ...member,
-      purchasedTicketNo: member.purchasedTicketNo + 1,
-      remainingEventNo: member.remainingEventNo + group!.ticketLength,
-    })).then((member) => {
+  const changeMembershipValues = useCallback((memberId: string, ticketNoChanges: number, eventNoChanges: number, presenceNoChanges: number) => {
+    return memberSrv.getAndModify(memberId, (member) => {
+      const sheet = member.ticketSheets.find((sh) => sh.type === group.groupType)!;
+      sheet.purchasedTicketNo += ticketNoChanges;
+      sheet.remainingEventNo += eventNoChanges;
+      sheet.presenceNo += presenceNoChanges;
+      return member;
+    }).then((member) => {
       membershipChanged(changeItem(members, member));
       return member;
     });
-  }, [group, memberSrv, members, membershipChanged]);
+  }, [group.groupType, memberSrv, members, membershipChanged]);
+
+  const buySeasonTicket = useCallback((memberId: string) => changeMembershipValues(memberId, 1, group.ticketLength, 0),
+    [changeMembershipValues, group.ticketLength]);
 
   const removeMemberFromEvent = useCallback((eventId: string, memberId: string, ticketBack: boolean) => {
-    memberSrv.getAndModify(memberId, (member) => ({
-      ...member,
-      remainingEventNo: member.remainingEventNo + (ticketBack ? 1 : 0),
-      presenceNo: member.presenceNo - 1,
-    }), false).then((member) => {
-      membershipChanged(changeItem(members, member));
-    });
+    changeMembershipValues(memberId, 0, (ticketBack ? 1 : 0), -1);
     return eventSrv.getAndModify(eventId, (event) => ({
       ...event,
       members: removeItemById(event.members, memberId),
     }));
-  }, [eventSrv, memberSrv, members, membershipChanged]);
+  }, [changeMembershipValues, eventSrv]);
 
   const removeTrainerRequest = useCallback((requested: MembershipType) => {
     return memberSrv.remove(requested.id).then(() => {
@@ -157,6 +170,7 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
     buySeasonTicket,
     attachedGroups,
     group,
+    groupMembers,
     loadEvent,
     updateMembership,
     updateMembershipState,

@@ -131,32 +131,36 @@
     "modifyTicketNo": "Hátralevő alkalmak módosítása",
     "changeEventNo": "Változtatott érték",
     "purchasedTicketNo": "Megvett bérletek",
-    "cancelTrainerRequest": "Meghívás visszavonása"
+    "cancelTrainerRequest": "Meghívás visszavonása",
+    "addOtherGroupMember": "Tag hozzáaadása más csoportból",
+    "inviteMember": "Tag meghívása"
   },
   "confirm": {
     "setStateByTrainer": {
-      "ACCEPTED": "Biztosan felveszi a felhasználót a csoportba?",
+      "ACCEPTED": "Biztosan aktiválja a felhasználót?",
       "TRAINER_REQUEST": "Biztosan meghívja a felhasználót a csoportba?",
-      "TRAINER_SUSPENDED": "Biztosan felfüggeszti a felhasználó tagságát?",
-      "null": "Biztosan törli a felhasználót a csoportból?"
+      "TRAINER_SUSPENDED": "Biztosan felfüggeszti a felhasználót?",
+      "null": "Biztosan törli a felhasználót minden csoportból?"
     },
     "setStateByUser": {
       "ACCEPTED" : "Biztosan csatlakozni szeretne a csoporthoz?",
       "USER_REQUEST": "Biztosan szeretne csatlakozási kérelmet küldeni a csoporthoz?",
-      "USER_SUSPENDED": "Biztosan szünetelteti a csoport látogatását?",
-      "null": "Biztosan törli a csoport elérhetőségét?"
+      "USER_SUSPENDED": "Biztosan szünetelteti a csoportok látogatását?",
+      "null": "Biztosan törli az edzőt a kapcsolatai közül?"
     },
-    "noMoreTicket": "A rendelkezésre álló jegyei elfogytak. Biztosan bejelentkezik ?",
-    "buySeasonTicket": "Biztosan jóváírja a bérlet vásárlást ?",
-    "memberMissed": "Felszámolja a jegyet a hiányzónak ?",
-    "userRequest": "Biztosan csatlakozni szeretne a csoporthoz ?"
+    "noMoreTicket": "A rendelkezésre álló jegyei elfogytak. Biztosan bejelentkezik?",
+    "buySeasonTicket": "Biztosan jóváírja a bérlet vásárlást?",
+    "memberMissed": "Felszámolja a jegyet a hiányzónak?",
+    "userRequest": "Biztosan csatlakozni szeretne a csoporthoz?",
+    "removeFromGroup": "Biztosan törli a felhasználót a csoportból?",
+    "leaveGroup": "Biztosan kilép a csoportból?"
   },
   "warning": {
     "consultTrainer": "A rendelkezésre álló jegyei elfogytak, kérem egyeztessen az edzőjével!",
     "deleteGroup": "Kérem törölje a tagokat a csoport törlése előtt!",
     "selectionExistsNoTicket": "Amíg nem vesz bérletet, addig csak egy eseményre tud jelentkezni a csoportban!",
     "maxMembershipError": "Sajnos betelt a maximum létszám, próbálj regisztrálni másik időpontra!",
-    "membershipExists": "Már tagja ennek a csoportnak!",
+    "membershipExists": "Már csatlakozott az edző egy csoportjához, további csoportokhoz az edző adhatja hozzá!",
     "trainerOwnGroup": "Saját csoportjához nem csatlakozhat!",
     "groupInviteOnly": "Csak az edző meghívására csatlakozhatsz a csoporthoz!",
     "cancellationOutranged": "A visszamondásra szánt időkeret lejárt, egyeztessen edzőjével!",
@@ -174,7 +178,8 @@
     "suspendRequest": "Felfüggesztés",
     "rejectRequest": "Viszautasítás",
     "buySeasonTicket": "Bérlet vásárlás",
-    "memberMissed": "Nem volt ott"
+    "memberMissed": "Nem volt ott",
+    "removeFromGroup": "Törlés a csoportból"
   },
   "groupType": {
     "PERSONAL": "Személyi edzés",

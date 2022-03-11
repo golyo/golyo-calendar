@@ -6,15 +6,11 @@ import { User, useUser } from '../../hooks/user';
 import ModalContainer from '../common/ModalContainer';
 import {
   convertGroupToUi,
-  DEFAULT_MEMBER,
-  MembershipType,
-  MemberState,
   TrainingGroupType,
   TrainingGroupUIType,
 } from '../../hooks/trainer';
-import { updateObject, useFirestore } from '../../hooks/firestore/firestore';
 import { useDialog } from '../../hooks/dialog';
-import { useFirebase } from '../../hooks/firebase';
+import { useFirestore } from '../../hooks/firestore/firestore';
 
 interface Props {
   trainer: User;
@@ -24,7 +20,6 @@ const SearchGroupPopup = ({ trainer }: Props) => {
   const { t } = useTranslation();
   const groupService = useFirestore<TrainingGroupType>(`trainers/${trainer.id}/groups`);
   const { showConfirmDialog, showDialog } = useDialog();
-  const { firestore } = useFirebase();
 
   const { user, cronConverter, addGroupMembership } = useUser();
 
@@ -34,15 +29,6 @@ const SearchGroupPopup = ({ trainer }: Props) => {
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);
 
-  const addUserRequest = useCallback((group: TrainingGroupUIType) => {
-    const membership: MembershipType = {
-      ...DEFAULT_MEMBER,
-      state: MemberState.USER_REQUEST,
-      name: user!.name,
-      id: user!.id,
-    };
-    return updateObject(firestore, `trainers/${trainer.id}/groups/${group.id}/members`, membership, false);
-  }, [firestore, trainer.id, user]);
 
   const joinToGroup = useCallback((group: TrainingGroupUIType) => {
     if (user!.id === trainer.id) {
@@ -52,7 +38,7 @@ const SearchGroupPopup = ({ trainer }: Props) => {
       });
       return;
     }
-    if (user!.memberships && user!.memberships.some((member) => member.groupId === group.id)) {
+    if (user!.memberships && user!.memberships.some((member) => member.trainerId === trainer.id)) {
       showDialog({
         title: 'common.warning',
         description: 'warning.membershipExists',
@@ -69,13 +55,12 @@ const SearchGroupPopup = ({ trainer }: Props) => {
     showConfirmDialog({
       description: t('confirm.userRequest'),
       okCallback: () => {
-        addGroupMembership(trainer, group.id).then(() => {
-          addUserRequest(group);
+        addGroupMembership(trainer, group).then(() => {
           closeModal();
         });
       },
     });
-  }, [addGroupMembership, addUserRequest, closeModal, showConfirmDialog, showDialog, t, trainer, user]);
+  }, [addGroupMembership, closeModal, showConfirmDialog, showDialog, t, trainer, user]);
 
   useEffect(() => {
     groupService.listAll().then(

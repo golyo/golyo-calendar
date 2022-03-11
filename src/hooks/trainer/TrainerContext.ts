@@ -37,7 +37,7 @@ export const USER_STATE_MAP: Record<string, ActionButton[]> = {
     toState: MemberState.USER_REQUEST,
   }],
   [MemberState.ACCEPTED]: [{
-    label: 'action.leaveRequest',
+    label: 'action.suspendRequest',
     toState: MemberState.USER_SUSPENDED,
   }],
   [MemberState.USER_REQUEST]: [{
@@ -97,16 +97,30 @@ export const TRAINER_STATE_MAP: Record<string, ActionButton[]> = {
   }],
 };
 
+export interface TicketSheet {
+  type: GroupType;
+  presenceNo: number;
+  remainingEventNo: number;
+  purchasedTicketNo: number;
+}
+
 export interface MembershipType {
   //email
   id: string;
   name: string;
   avatar?: string;
   state: MemberState;
-  presenceNo: number;
-  remainingEventNo: number;
-  purchasedTicketNo: number;
+  groups: string[];
+  ticketSheets: TicketSheet[];
 }
+
+export const DEFAULT_MEMBER: MembershipType = {
+  id: '',
+  name: '',
+  state: MemberState.TRAINER_REQUEST,
+  groups: [],
+  ticketSheets: [],
+};
 
 interface TrainingGroupBase {
   id: string;

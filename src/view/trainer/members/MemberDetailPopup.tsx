@@ -7,22 +7,24 @@ import {
   MemberState,
   MembershipType,
   TRAINER_STATE_MAP,
-  getButtonVariant, ActionButton,
+  getButtonVariant,
+  ActionButton, useGroup,
 } from '../../../hooks/trainer';
 import LabelValue from '../../common/LabelValue';
 import { useDialog } from '../../../hooks/dialog';
 import ModifyTicketPopup from './ModifyTicketPopup';
+import { TicketSheet } from '../../../hooks/trainer/TrainerContext';
 
 interface Props {
+  sheet: TicketSheet;
   member: MembershipType;
-  updateMembershipState: (member: MembershipType, toState: MemberState | null) => Promise<void>;
-  buySeasonTicket: (memberId: string) => Promise<MembershipType>;
 }
 
-const MemberDetailPopup = ({ member, updateMembershipState, buySeasonTicket }: Props) => {
+const MemberDetailPopup = ({ sheet, member }: Props) => {
   const { t } = useTranslation();
   const { showConfirmDialog } = useDialog();
   const [open, setOpen] = useState(false);
+  const { group, updateMembershipState, buySeasonTicket, updateMembership } = useGroup();
 
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);
@@ -46,6 +48,19 @@ const MemberDetailPopup = ({ member, updateMembershipState, buySeasonTicket }: P
       },
     });
   }, [buySeasonTicket, closeModal, member.id, showConfirmDialog, t]);
+
+  const isRemoveabe = useMemo(() => member.groups.length > 1 && member.groups.includes(group!.id), [group, member.groups]);
+
+  const removeFromGroup = useCallback(() => {
+    showConfirmDialog({
+      description: t('confirm.removeFromGroup'),
+      okCallback: () => {
+        const idx = member.groups.indexOf(group!.id);
+        member.groups.splice(idx, 1);
+        updateMembership(member).then(() => closeModal());
+      },
+    });
+  }, [closeModal, group, member, showConfirmDialog, t, updateMembership]);
 
   const actionButtons = useMemo(() => {
     return TRAINER_STATE_MAP[member.state || ''];
@@ -72,17 +87,18 @@ const MemberDetailPopup = ({ member, updateMembershipState, buySeasonTicket }: P
               {t(`memberState.${member.state}`)}
             </LabelValue>
             <LabelValue label={t('membership.remainingEventNo')}>
-              <span style={{ paddingRight: '20px' }}>{member.remainingEventNo}</span>
-              <ModifyTicketPopup membership={member} />
+              <span style={{ paddingRight: '20px' }}>{sheet.remainingEventNo}</span>
+              <ModifyTicketPopup sheet={sheet} membership={member} />
             </LabelValue>
             <LabelValue label={t('membership.purchasedTicketNo')}>
-              {member.purchasedTicketNo}
+              {sheet.purchasedTicketNo}
             </LabelValue>
             <div className="horizontal">
               {member.state === MemberState.ACCEPTED && <Button onClick={buyTicket} variant="contained">{t('action.buySeasonTicket')}</Button>}
               {actionButtons.map((button, idx) => (
                 <Button key={idx} variant={getButtonVariant(idx)} onClick={() => doAction(button)}>{t(button.label)}</Button>
               ))}
+              {isRemoveabe && <Button onClick={removeFromGroup} variant="outlined">{t('action.removeFromGroup')}</Button>}
               <Button color="primary" onClick={closeModal}>
                 {t('common.cancel')}
               </Button>
