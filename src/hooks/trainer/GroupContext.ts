@@ -1,9 +1,10 @@
 import { createContext } from 'react';
 import { TrainerEvent } from '../event';
-import { MembershipType, MemberState, TrainingGroupType, TrainingGroupUIType } from './TrainerContext';
+import { MembershipType, MemberState, TicketSheet, TrainingGroupType, TrainingGroupUIType } from './TrainerContext';
 
 interface GroupContextType {
   attachedGroups: TrainingGroupType[];
+  findSheet: (membership: MembershipType) => TicketSheet;
   buySeasonTicket: (memberId: string) => Promise<MembershipType>;
   loadEvent: (eventId: string) => Promise<TrainerEvent>;
   removeMemberFromEvent: (eventId: string, memberId: string, ticketBack: boolean) => Promise<TrainerEvent>;

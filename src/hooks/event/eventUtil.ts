@@ -5,6 +5,7 @@ import { TrainerContact } from '../user/UserContext';
 import { Firestore, getDoc, doc, where, setDoc } from 'firebase/firestore';
 import { doQuery, getCollectionRef } from '../firestore/firestore';
 import { TrainingGroupType } from '../trainer';
+import { findOrCreateSheet } from '../trainer/GroupProvider';
 
 const NEXT_EVENT_DAYNO = 7;
 const NEXT_EVENTS_RANGE = NEXT_EVENT_DAYNO * 24 * 60 * 60 * 1000;
@@ -69,7 +70,7 @@ const changeCounterToMembership = (firestore: Firestore, user: User, groupMember
   const collectionRef = getCollectionRef(firestore, path);
   const docRef = doc(collectionRef, user.id);
   const modifier = isAdd ? 1 : -1;
-  const ticketSheet = groupMembership.membership.ticketSheets.find((sheet) => sheet.type === group.groupType)!;
+  const ticketSheet = findOrCreateSheet(group, groupMembership.membership);
   ticketSheet.presenceNo += modifier;
   ticketSheet.remainingEventNo += -modifier;
   // refresh name and avatar

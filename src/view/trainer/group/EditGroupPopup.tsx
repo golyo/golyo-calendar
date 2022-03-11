@@ -59,10 +59,9 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
   });
 
   const groupColor = watch('color');
-  const groupType = watch('groupType');
   const attachedGroups = watch('attachedGroups');
 
-  const attachableGroups = useMemo(() => groups.filter((gr) => gr.groupType === groupType ), [groups, groupType]);
+  const attachableGroups = useMemo(() => groups.filter((gr) => gr.id != trainingGroup.id ), [groups, trainingGroup.id]);
 
   useEffect(() => {
     reset(trainingGroup);

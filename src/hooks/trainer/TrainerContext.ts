@@ -122,7 +122,7 @@ export const DEFAULT_MEMBER: MembershipType = {
   ticketSheets: [],
 };
 
-interface TrainingGroupBase {
+export interface TrainingGroupBase {
   id: string;
   name: string;
   groupType: GroupType;

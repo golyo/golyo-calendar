@@ -11,7 +11,7 @@ const UserMemberships = () => {
   const { t } = useTranslation();
 
   const getRemainingNo = useCallback((membership: TrainerContactMembership, type: GroupType) =>
-    membership.membership.ticketSheets.find((sheet) => sheet.type === type)!.remainingEventNo, []);
+    membership.membership.ticketSheets.find((sheet) => sheet.type === type)?.remainingEventNo || 0, []);
 
   return (
     <div className="vertical">

@@ -87,7 +87,7 @@ const MemberDetailPopup = ({ sheet, member }: Props) => {
               {t(`memberState.${member.state}`)}
             </LabelValue>
             <LabelValue label={t('membership.remainingEventNo')}>
-              <span style={{ paddingRight: '20px' }}>{sheet.remainingEventNo}</span>
+              <span style={{ paddingRight: '20px' }}>{sheet?.remainingEventNo || 0}</span>
               <ModifyTicketPopup sheet={sheet} membership={member} />
             </LabelValue>
             <LabelValue label={t('membership.purchasedTicketNo')}>

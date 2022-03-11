@@ -5,7 +5,14 @@ import { changeItem, removeItemById, useFirestore } from '../firestore/firestore
 import { TrainerContact } from '../user/UserContext';
 import { useTrainer } from './TrainerProvider';
 import { EVENT_DATE_PROPS, TrainerEvent } from '../event';
-import { GroupType, MembershipType, MemberState, TrainingGroupType, TrainingGroupUIType } from './TrainerContext';
+import {
+  GroupType,
+  MembershipType,
+  MemberState,
+  TrainingGroupBase,
+  TrainingGroupType,
+  TrainingGroupUIType,
+} from './TrainerContext';
 
 export const DEFAULT_GROUP: TrainingGroupUIType = {
   id: '',
@@ -44,6 +51,16 @@ const createSheet = (type: GroupType) => ({
   purchasedTicketNo: 0,
 });
 
+export const findOrCreateSheet = (group: TrainingGroupBase, memberShip: MembershipType) => {
+  const sheet = memberShip.ticketSheets.find((sh) => sh.type === group.groupType);
+  if (sheet) {
+    return sheet;
+  }
+  const newSheet = createSheet(group.groupType);
+  memberShip.ticketSheets.push(newSheet);
+  return newSheet;
+};
+
 const GroupProvider = ({ groupId, children }: { groupId: string, children: ReactNode }) => {
   const { user, cronConverter } = useUser();
   const { groups, members, membershipChanged } = useTrainer();
@@ -56,6 +73,8 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
     const dbGroup = groups.find((find) => find.id === groupId);
     return convertGroupToUi(dbGroup!, cronConverter);
   }, [cronConverter, groupId, groups]);
+
+  const findSheet = useCallback((memberShip: MembershipType) => findOrCreateSheet(group, memberShip), [group]);
 
   const groupMembers = useMemo(() => {
     return members.filter((member) => member.groups.includes(group.id) ||
@@ -118,7 +137,7 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
 
   const changeMembershipValues = useCallback((memberId: string, ticketNoChanges: number, eventNoChanges: number, presenceNoChanges: number) => {
     return memberSrv.getAndModify(memberId, (member) => {
-      const sheet = member.ticketSheets.find((sh) => sh.type === group.groupType)!;
+      const sheet = findSheet(member);
       sheet.purchasedTicketNo += ticketNoChanges;
       sheet.remainingEventNo += eventNoChanges;
       sheet.presenceNo += presenceNoChanges;
@@ -127,7 +146,7 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
       membershipChanged(changeItem(members, member));
       return member;
     });
-  }, [group.groupType, memberSrv, members, membershipChanged]);
+  }, [findSheet, memberSrv, members, membershipChanged]);
 
   const buySeasonTicket = useCallback((memberId: string) => changeMembershipValues(memberId, 1, group.ticketLength, 0),
     [changeMembershipValues, group.ticketLength]);
@@ -167,6 +186,7 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
   }, [createTrainerRequest, memberSrv, members, membershipChanged, removeTrainerRequest]);
 
   const ctx = {
+    findSheet,
     buySeasonTicket,
     attachedGroups,
     group,

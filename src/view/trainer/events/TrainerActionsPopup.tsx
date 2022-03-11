@@ -1,4 +1,4 @@
-import { MembershipType, TrainingGroupUIType, useGroup } from '../../../hooks/trainer';
+import { MembershipType, useGroup } from '../../../hooks/trainer';
 import { Avatar, Button, IconButton, Modal } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import ModalContainer from '../../common/ModalContainer';
@@ -9,20 +9,19 @@ import { useDialog } from '../../../hooks/dialog';
 import { TrainerEvent } from '../../../hooks/event';
 
 type ActionPopupProps = {
-  group: TrainingGroupUIType,
   member: MembershipType;
   event: TrainerEvent;
   setEvent?: (event: TrainerEvent) => void;
 };
 
-const TrainerActionsPopup = ({ group, member, event, setEvent } : ActionPopupProps) => {
+const TrainerActionsPopup = ({ member, event, setEvent } : ActionPopupProps) => {
   const { t } = useTranslation();
-  const { buySeasonTicket, removeMemberFromEvent } = useGroup();
+  const { buySeasonTicket, removeMemberFromEvent, findSheet } = useGroup();
   const { showDialog, showConfirmDialog } = useDialog();
 
   const [open, setOpen] = useState(false);
 
-  const sheet = useMemo(() => member.ticketSheets.find((sh) => sh.type === group.groupType), [group, member]);
+  const sheet = useMemo(() => findSheet(member), [findSheet, member]);
 
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);

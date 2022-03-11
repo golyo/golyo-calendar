@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { TFunction, useTranslation } from 'react-i18next';
 import {
@@ -13,7 +13,7 @@ import {
 
 import { TrainerEvent } from '../../../hooks/event';
 import { useUser } from '../../../hooks/user';
-import { DEFAULT_MEMBER, MembershipType, useGroup, useTrainer } from '../../../hooks/trainer';
+import { DEFAULT_MEMBER, useGroup, useTrainer } from '../../../hooks/trainer';
 import LabelValue from '../../common/LabelValue';
 import TrainerActionsPopup from './TrainerActionsPopup';
 import { styled } from '@mui/material/styles';
@@ -27,8 +27,8 @@ export const TicketAlert = styled(Alert)(() => ({
 export function TicketNoWarning({ sheet, t }: { sheet: TicketSheet, t: TFunction }) {
   return (
     <div>
-      {sheet.remainingEventNo > 0 && <TicketAlert variant="outlined" severity="info">{t('event.remainingEventNo', { ticketNo: sheet.remainingEventNo })}</TicketAlert>}
-      {sheet.remainingEventNo <= 0 &&
+      {sheet?.remainingEventNo > 0 && <TicketAlert variant="outlined" severity="info">{t('event.remainingEventNo', { ticketNo: sheet.remainingEventNo })}</TicketAlert>}
+      {sheet?.remainingEventNo <= 0 &&
         <TicketAlert variant="outlined" severity="error">{t(sheet.remainingEventNo < 0 ? 'event.owesTicket' : 'event.noMoreEvent', { ticketNo: -sheet.remainingEventNo })}</TicketAlert>
       }
     </div>
@@ -40,7 +40,7 @@ export default function EventPage() {
   const { t } = useTranslation();
   const { getDateRangeStr } = useUser();
   const { members } = useTrainer();
-  const { group, loadEvent } = useGroup();
+  const { group, loadEvent, findSheet } = useGroup();
 
   const [event, setEvent] = useState<TrainerEvent | undefined>(undefined);
 
@@ -52,9 +52,6 @@ export default function EventPage() {
     }
     return event.members.map((m) => members!.find((gm) => gm.id === m.id) || DEFAULT_MEMBER);
   }, [event, group, members]);
-
-  const findSheet = useCallback((member: MembershipType) => member.ticketSheets.find((sheet) =>
-    sheet.type === group!.groupType)!, [group]);
 
   useEffect(() => {
     if (!eventId) {
@@ -79,7 +76,6 @@ export default function EventPage() {
         {activeMembers.map((eMember, idx) => (
           <ListItem key={idx}
                     secondaryAction={isStarted && <TrainerActionsPopup
-                      group={group!}
                       member={eMember}
                       event={event}
                       setEvent={setEvent}
