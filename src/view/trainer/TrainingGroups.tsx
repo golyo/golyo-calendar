@@ -12,7 +12,7 @@ import { TrainingGroupUIType } from '../../hooks/trainer';
 import { Link } from 'react-router-dom';
 import EditGroupPopup from './group/EditGroupPopup';
 import { convertGroupToUi, DEFAULT_GROUP, useTrainer } from '../../hooks/trainer';
-import { doQuery, updateObject } from '../../hooks/firestore/firestore';
+import { doQuery } from '../../hooks/firestore/firestore';
 import { useFirebase } from '../../hooks/firebase';
 
 const TrainingGroups = () => {
@@ -39,19 +39,19 @@ const TrainingGroups = () => {
   }, [sendEmail]);
 
   const doMove = useCallback(() => {
-    doQuery(firestore, '/users').then((users) => {
-      users.map((dbus: any) => {
-        dbus.memberships = dbus.memberships.map((membership: any) => ({
-          trainerId: membership.trainerId,
-          trainerName: membership.trainerName,
+    doQuery(firestore, '/trainers/bodylali.no1@gmail.com/members').then((members) => {
+      members.map((member: any) => {
+        console.log('XXXXemailto', member);
+        sendEmail(member.id, t('email.trainerRequest.subject'), t('email.trainerRequest.html', {
+          trainer: 'Lajos Keserű',
+          link: 'https://camp-fire-d8b07.firebaseapp.com/',
         }));
-        updateObject(firestore, '/users', dbus);
       });
     });
-  }, [firestore]);
+  }, [firestore, sendEmail, t]);
 
   if (!user) {
-    console.log('XXXXtestEMail', testEmail);
+    console.log('XXXXtestEMail', testEmail, doMove);
     return null;
   }
   return (
@@ -86,7 +86,6 @@ const TrainingGroups = () => {
       </List>
       <div><Button onClick={openPopup} variant="contained" startIcon={<AddCircle />}>{t('trainer.newGroup')}</Button></div>
       <EditGroupPopup trainingGroup={{ ...DEFAULT_GROUP }} closePopup={closePopup} isOpen={edit} saveGroup={saveEvent} />
-      <Button onClick={doMove}>DO MOVE</Button>
     </div>
   );
 };

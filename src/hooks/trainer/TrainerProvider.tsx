@@ -46,28 +46,15 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
   }, [cronConverter, groupSrv]);
 
   const sendEmail = useCallback((to: string, subject: string, html: string) => {
+    console.log('Send email', to, subject, html);
     const mail = {
-      id: undefined,
       to,
       message: {
         subject: subject,
         html: html,
       },
     };
-    const mail2 = {
-      id: undefined,
-      to,
-      template: {
-        name: 'invite',
-        data: {
-          username: 'ada',
-          name: 'Ada Lovelace',
-        },
-      },
-    };
-
-    const toSend = true ? mail2 : mail;
-    return insertObject(firestore, 'mail', toSend);
+    return insertObject(firestore, 'mail', mail);
   }, [firestore]);
 
   const deleteGroup = useCallback((groupId: string) => groupSrv.remove(groupId).then(() => setState((prev) => ({

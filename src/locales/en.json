@@ -196,5 +196,11 @@
     "remainingEventNo": "There are {{ ticketNo }} tickets left",
     "owesTicket": "Owes  {{ ticketNo }} tickets",
     "noMoreEvent": "No more ticket left"
+  },
+  "email": {
+    "trainerRequest": {
+      "subject": "Training Join Request",
+      "html": "<p>{{ trainer }} asked you to join the trainings.</p><p>Log in at the link below and accept the invitation!</p><p>{{ link }}</p><p>Best regards,<br/>The Trainer Sheet team.</p>"
+    }
   }
 }

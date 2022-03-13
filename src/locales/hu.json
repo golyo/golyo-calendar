@@ -193,5 +193,11 @@
     "remainingEventNo": "Még van {{ ticketNo }} jegye.",
     "owesTicket": "{{ ticketNo }} jeggyel tartozik!",
     "noMoreEvent": "Nincs több jegye!"
+  },
+  "email": {
+    "trainerRequest": {
+      "subject": "Csatlakozz a csoporthoz",
+      "html": "<p>{{ trainer }} felkért, hogy csatlakozz az edzéseihez.</p><p>Jelentkezz be az alábbi linken, és fogadd el a felkérést !</p><p>{{ link }}</p><p>Üdvözlettel,<br/>A Trainer Sheet csapata.</p>"
+    }
   }
 }

@@ -13,6 +13,7 @@ import {
   TrainingGroupType,
   TrainingGroupUIType,
 } from './TrainerContext';
+import { useTranslation } from 'react-i18next';
 
 export const DEFAULT_GROUP: TrainingGroupUIType = {
   id: '',
@@ -62,8 +63,9 @@ export const findOrCreateSheet = (group: TrainingGroupBase, memberShip: Membersh
 };
 
 const GroupProvider = ({ groupId, children }: { groupId: string, children: ReactNode }) => {
+  const { t } = useTranslation();
   const { user, cronConverter } = useUser();
-  const { groups, members, membershipChanged } = useTrainer();
+  const { groups, members, membershipChanged, sendEmail } = useTrainer();
 
   const eventSrv = useFirestore<TrainerEvent>(`trainers/${user!.id}/events`, EVENT_DATE_PROPS);
   const userSrv = useFirestore<User>('users');
@@ -117,6 +119,7 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
   }, [user, userSrv]);
 
   const createTrainerRequest = useCallback((requested: MembershipType) => {
+    console.log('XXX CreateTrainerRequest');
     const toSave = members.find((m) => m.id === requested.id) || requested;
     if (!toSave.groups.includes(group.id)) {
       toSave.groups.push(group.id);
@@ -130,8 +133,12 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
         trainerName: user!.name,
       });
       membershipChanged(changeItem(members, toSave));
+      sendEmail(requested.id, t('email.trainerRequest.subject'), t('email.trainerRequest.html', {
+        trainer: user!.name,
+        link: 'https://camp-fire-d8b07.firebaseapp.com/',
+      }));
     });
-  }, [members, group.id, group.groupType, memberSrv, setUserMemberships, user, membershipChanged]);
+  }, [members, group.id, group.groupType, memberSrv, setUserMemberships, user, membershipChanged, sendEmail, t]);
 
   const loadEvent = useCallback((eventId: string) => eventSrv.get(eventId), [eventSrv]);
 

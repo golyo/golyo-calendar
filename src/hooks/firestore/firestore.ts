@@ -93,14 +93,6 @@ export const loadObject = (firestore: Firestore, path: string, id: string) => {
   });
 };
 
-export const insertObject = <T extends { id?: string }>(firestore: Firestore, path: string, object: T) => {
-  const collectionRef = collection(firestore, path);
-  return addDoc(collectionRef, object).then((docRef) => {
-    object.id = docRef.id;
-    return object;
-  });
-};
-
 export const deleteObject = (firestore: Firestore, path: string, id: string) => {
   const docRef = doc(firestore, path, id);
   return deleteDoc(docRef);
@@ -120,6 +112,14 @@ export const getCollectionRef = (firestore: Firestore, path: string, datePropert
 export const doQuery = (firestore: Firestore, path: string, dateProperties?: string[], ...queryConstraints: QueryConstraint[]) => {
   return getDocs(query(getCollectionRef(firestore, path, dateProperties), ...queryConstraints))
     .then((querySnapshot) => querySnapshot.docs.map((document) => document.data()));
+};
+
+export const insertObject = (firestore: Firestore, path: string, object: any) => {
+  const collectionRef = getCollectionRef(firestore, path);
+  return addDoc(collectionRef, object).then((docRef) => {
+    object.id = docRef.id;
+    return object;
+  });
 };
 
 export const cloneObject = (firestore: Firestore, fromPath: string, toPath: string, id: string) => {
