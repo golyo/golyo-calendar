@@ -24,6 +24,14 @@ const isEqual = (val1: string | null, val2: string | null) => {
   return (!val1 && !val2) || (val1 === val2);
 };
 
+const NOT_AUTH_PAGES = [
+  '/login',
+  '/verification',
+  '/register',
+  '/changePassword',
+  '/resetPassword',
+];
+
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { auth } = useFirebase();
   const navigate = useNavigate();
@@ -57,10 +65,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [auth]);
 
   useEffect(() => {
-    if (!state.authUser && authState !== AuthState.INIT) {
-      navigate('/login');
+    if (!authUser) {
+      if (authState !== AuthState.INIT && !NOT_AUTH_PAGES.includes(location.pathname)) {
+        navigate('/login');
+      }
     }
-  }, [authState, navigate, state.authUser]);
+  }, [authState, navigate, authUser]);
 
   const login = useCallback((email, password) => {
     return signInWithEmailAndPassword(auth, email, password);
@@ -106,8 +116,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [navigate]);
 
   const sendVerifyEmail = useCallback(() => {
-    return sendEmailToUser(state.authUser, false);
-  }, [state.authUser, sendEmailToUser]);
+    return sendEmailToUser(authUser, false);
+  }, [authUser, sendEmailToUser]);
 
   const register = useCallback((email, password, displayName) => {
     return createUserWithEmailAndPassword(auth, email, password).then((result) => {

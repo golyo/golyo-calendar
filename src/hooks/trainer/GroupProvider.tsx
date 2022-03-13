@@ -119,7 +119,6 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
   }, [user, userSrv]);
 
   const createTrainerRequest = useCallback((requested: MembershipType) => {
-    console.log('XXX CreateTrainerRequest');
     const toSave = members.find((m) => m.id === requested.id) || requested;
     if (!toSave.groups.includes(group.id)) {
       toSave.groups.push(group.id);

@@ -8,11 +8,11 @@ import {
   Edit, Event as EventIcon,
 } from '@mui/icons-material';
 import { useUser } from '../../hooks/user';
-import { TrainingGroupUIType } from '../../hooks/trainer';
+import { MembershipType, TrainingGroupUIType } from '../../hooks/trainer';
 import { Link } from 'react-router-dom';
 import EditGroupPopup from './group/EditGroupPopup';
 import { convertGroupToUi, DEFAULT_GROUP, useTrainer } from '../../hooks/trainer';
-import { doQuery } from '../../hooks/firestore/firestore';
+import { doQuery, loadObject } from '../../hooks/firestore/firestore';
 import { useFirebase } from '../../hooks/firebase';
 
 const TrainingGroups = () => {
@@ -27,7 +27,6 @@ const TrainingGroups = () => {
   const closePopup = useCallback(() => setEdit(false), []);
   const openPopup = useCallback(() => setEdit(true), []);
 
-
   const saveEvent = useCallback((modified: TrainingGroupUIType) => {
     return saveGroup(modified).then(() => {
       closePopup();
@@ -40,15 +39,21 @@ const TrainingGroups = () => {
 
   const doMove = useCallback(() => {
     doQuery(firestore, '/trainers/bodylali.no1@gmail.com/members').then((members) => {
-      members.map((member: any) => {
-        console.log('XXXXemailto', member);
-        sendEmail(member.id, t('email.trainerRequest.subject'), t('email.trainerRequest.html', {
-          trainer: 'Lajos Keserű',
-          link: 'https://camp-fire-d8b07.firebaseapp.com/',
-        }));
+      members.forEach((member: MembershipType) => {
+        loadObject(firestore, 'users', member.id).then((mu: any) => {
+          if (!mu.memberships || !mu.memberships.some((ms: any) => ms.trainerId === 'bodylali.no1@gmail.com')) {
+            // console.log('HIBAS USER', mu);
+            mu.memberships = [{
+              trainerId: 'bodylali.no1@gmail.com',
+              trainerName: 'Lajos Keserű',
+            }];
+            // updateObject(firestore, 'users', mu);
+            console.log(mu.id);
+          }
+        });
       });
     });
-  }, [firestore, sendEmail, t]);
+  }, [firestore]);
 
   if (!user) {
     console.log('XXXXtestEMail', testEmail, doMove);

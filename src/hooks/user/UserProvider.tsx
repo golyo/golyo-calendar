@@ -29,8 +29,9 @@ import { createUserEventProvider, getInterval, TrainerEvent } from '../event';
 export const loadGroups = (firestore: Firestore, trainerId: string) =>
   doQuery(firestore, `trainers/${trainerId}/groups`);
 
-export const loadMembership = (firestore: Firestore, trainerId: string, userId: string) =>
-  loadObject(firestore, `trainers/${trainerId}/members`, userId);
+export const loadMembership = (firestore: Firestore, trainerId: string, userId: string) => {
+  return loadObject(firestore, `trainers/${trainerId}/members`, userId);
+};
 
 const setMember = (firestore: Firestore, user: User, membership: TrainerContactMembership) => {
   const member: MembershipType = {
@@ -86,6 +87,10 @@ const createMembership = (trainer: TrainerContact, membership: MembershipType, t
     trainer,
   };
 };
+
+// const HACK_USER = 'bodylali.no1@gmail.com';
+// const HACK_USER = 'dettimici.bml@gmail.com';
+const HACK_USER = undefined;
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
   const utils = useUtils();
@@ -199,10 +204,13 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   }, [firestore, loadMemberships, saveUser, user]);
 
   const loadUser = useCallback(() => {
-    userSrv.get(authUser!.email!).then((dbUser) => {
+    userSrv.get(HACK_USER || authUser!.email!).then((dbUser) => {
       if (dbUser) {
         if (!dbUser.registrationDate) {
-          const toSave = createDBUser(authUser!);
+          const toSave = {
+            ...createDBUser(authUser!),
+            ...dbUser,
+          };
           userSrv.save(toSave, true, false).then(() => changeUser(dbUser));
         } else {
           changeUser(dbUser);

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
-  Link, Route, Routes, useLocation, useNavigate,
+  Link, Route, Routes,
 } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@mui/styles';
@@ -58,8 +58,6 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
   const classes = useStyles();
   const { logout } = useAuth();
   const { user } = useUser();
-  const navigate = useNavigate();
-  const location = useLocation();
   const { t } = useTranslation();
   const [state, setState] = useState({ anchorLeft: null, anchorRight: null });
 
@@ -76,16 +74,13 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
 
   const handleLeftMenu = useCallback((event: any) => {
     if (!user) {
-      if (location.pathname !== '/login') {
-        navigate('/login');
-      }
-    } else {
-      setState((prev) => ({
-        ...prev,
-        anchorLeft: event.currentTarget,
-      }));
+      return;
     }
-  }, [location.pathname, navigate, user]);
+    setState((prev) => ({
+      ...prev,
+      anchorLeft: event.currentTarget,
+    }));
+  }, [user]);
 
   const handleClose = useCallback(() => {
     setState((prev) => ({ ...prev, anchorLeft: null, anchorRight: null }));
