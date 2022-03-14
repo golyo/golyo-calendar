@@ -75,7 +75,7 @@ const MemberDetailPopup = ({ sheet, member }: Props) => {
         open={open}
         onClose={closeModal}
       >
-        <ModalContainer variant="big" close={closeModal} title={t('membership.details')}>
+        <ModalContainer variant="big" open={open} close={closeModal} title={t('membership.details')}>
           <div className="vertical">
             <LabelValue label={t('login.email')}>
               { member.id }

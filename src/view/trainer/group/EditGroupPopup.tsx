@@ -95,7 +95,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
       open={!!isOpen}
       onClose={closePopup}
     >
-      <ModalContainer variant="big" title={(
+      <ModalContainer variant="big" open={!!isOpen} title={(
         <>
           <Avatar sx={{ bgcolor: groupColor }}>
             <EventIcon></EventIcon>

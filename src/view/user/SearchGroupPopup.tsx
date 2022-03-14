@@ -34,17 +34,17 @@ const SearchGroupPopup = ({ trainer, closeModal }: Props) => {
       });
       return;
     }
-    if (user!.memberships && user!.memberships.some((member) => member.trainerId === trainer!.id)) {
-      showDialog({
-        title: 'common.warning',
-        description: 'warning.membershipExists',
-      });
-      return;
-    }
     if (group.inviteOnly) {
       showDialog({
         title: 'common.warning',
         description: 'warning.groupInviteOnly',
+      });
+      return;
+    }
+    if (user!.memberships && user!.memberships.some((member) => member.trainerId === trainer!.id)) {
+      showDialog({
+        title: 'common.warning',
+        description: 'warning.membershipExists',
       });
       return;
     }
@@ -74,7 +74,7 @@ const SearchGroupPopup = ({ trainer, closeModal }: Props) => {
       open={!!trainer}
       onClose={closeModal}
     >
-      <ModalContainer variant="big" close={closeModal} title={trainer?.name}>
+      <ModalContainer variant="big" close={closeModal} title={trainer?.name} open={!!trainer}>
         <Typography variant="h5">{t('trainer.groups')}</Typography>
         <List sx={{ width: 'max(70vw, 320px)', bgcolor: 'background.paper', borderColor: 'divider' }}>
           {groups.map((group, idx) => (

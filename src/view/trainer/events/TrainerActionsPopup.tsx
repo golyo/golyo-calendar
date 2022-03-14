@@ -74,7 +74,7 @@ const TrainerActionsPopup = ({ member, event, setEvent } : ActionPopupProps) => 
         open={open}
         onClose={closeModal}
       >
-        <ModalContainer variant="small" close={closeModal} title={
+        <ModalContainer variant="small" open={open} close={closeModal} title={
           (<span className="horizontal">
             <Avatar src={member.avatar} />
             <span>{member.name}</span>

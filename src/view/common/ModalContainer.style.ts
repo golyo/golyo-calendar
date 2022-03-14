@@ -1,14 +1,18 @@
 import { createStyles } from '@mui/styles';
 
 export default (theme: any) => createStyles({
-  root: {
+  outer: {
     position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    height: '100vh',
+    width: '100vw',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  root: {
     outline: 'none',
     maxHeight: '100vh',
     overflow: 'auto',
+    alignSelf: 'center',
     backgroundColor: theme.palette.background.paper,
   },
   modalContent: {

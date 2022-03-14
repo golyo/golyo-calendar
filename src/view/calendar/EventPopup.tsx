@@ -19,7 +19,7 @@ const EventPopup = ({ event, resetEvent, detailsAction }: { event: TrainerEvent 
       open={!!event}
       onClose={resetEvent}
     >
-      <ModalContainer variant="small" close={resetEvent} title={(
+      <ModalContainer variant="small" open={!!event} close={resetEvent} title={(
         <>
           <Avatar sx={{ bgcolor: event?.color }}>
             <EventIcon></EventIcon>

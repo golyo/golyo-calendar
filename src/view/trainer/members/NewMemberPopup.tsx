@@ -61,7 +61,7 @@ const NewMemberPopup = () => {
         open={open}
         onClose={closeModal}
       >
-        <ModalContainer variant="big" close={closeModal} title={t('membership.newMember')}>
+        <ModalContainer variant="big" close={closeModal} open={open} title={t('membership.newMember')}>
           {possibleMembers.length > 0 && <div className="vertical">
             <Typography variant="h5">{t('membership.addOtherGroupMember')}</Typography>
             <Select onChange={onSelectMember} size="small" defaultValue={'-'}>
