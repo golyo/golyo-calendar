@@ -194,7 +194,7 @@ export default function WeekView({ eventProvider, eventClick, weekLabel = 'Week'
                 <div>
                   <span className={classes.headerLabel}>{yearLabel}</span>
                   <IconButton onClick={goPrevYear} size="small" color="success"><ArrowBackIcon /></IconButton>
-                  <Chip label={ year } color="primary" size="small"/>
+                  <Chip label={ year } color="primary" size="small" />
                   <IconButton onClick={goNextYear} size="small" color="success"><ArrowForwardIcon /></IconButton>
                 </div>
               </div>

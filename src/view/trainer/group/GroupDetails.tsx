@@ -4,7 +4,7 @@ import { Avatar } from '@mui/material';
 import { Event as EventIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
-export default function GroupDetails({ group }: { group: TrainingGroupUIType }) {
+export default function GroupDetails({ group, showParts }: { group: TrainingGroupUIType, showParts?: boolean }) {
   const { t } = useTranslation();
 
   return (
@@ -12,18 +12,18 @@ export default function GroupDetails({ group }: { group: TrainingGroupUIType }) 
       <LabelValue label={t('trainingGroup.duration')}>
         { group.duration }&nbsp;{t('common.min')}
       </LabelValue>
-      <LabelValue label={t('trainingGroup.groupType')}>
+      {!showParts && <LabelValue label={t('trainingGroup.groupType')}>
         {t(`groupType.${group.groupType}`)}
-      </LabelValue>
+      </LabelValue>}
       <LabelValue label={t('trainingGroup.maxMember')}>
         { group.maxMember }
       </LabelValue>
-      <LabelValue label={t('trainingGroup.inviteOnly')}>
+      {!showParts && <LabelValue label={t('trainingGroup.inviteOnly')}>
         { t(`common.${group.inviteOnly.toString()}`) }
-      </LabelValue>
-      <LabelValue label={t('trainingGroup.cancellationDeadline')}>
+      </LabelValue>}
+      {!showParts && <LabelValue label={t('trainingGroup.cancellationDeadline')}>
         { group.cancellationDeadline + ' ' + t('common.hour') }
-      </LabelValue>
+      </LabelValue>}
       <LabelValue label={t('trainingGroup.ticketLength')}>
         { group.ticketLength }&nbsp;{t('common.pcs')}
       </LabelValue>

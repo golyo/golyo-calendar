@@ -47,7 +47,7 @@ export interface UserContextType {
   getDateRangeStr: (event: TrainerEvent) => string;
   groupMemberships: TrainerContactMembership[];
   loadTrainers: () => Promise<User[]>;
-  leaveGroup: (membership: TrainerContactMembership, group: TrainingGroupType) => Promise<void>;
+  leaveGroup: (membership: TrainerContactMembership, groupId: string) => Promise<void>;
   membershipChanged: () => void;
   saveUser: (user: User) => Promise<any>;
   user?: User;

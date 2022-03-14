@@ -1,6 +1,18 @@
 import { useTranslation } from 'react-i18next';
-import { Avatar, Badge, Chip, List, ListItem, ListItemAvatar, Switch, Typography } from '@mui/material';
-import { Event as EventIcon } from '@mui/icons-material';
+import {
+  Alert,
+  Avatar,
+  Badge,
+  Chip,
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Switch,
+  Typography,
+} from '@mui/material';
+import { Event as EventIcon, Visibility } from '@mui/icons-material';
 
 import { useUser } from '../../hooks/user';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -9,6 +21,8 @@ import { getNextEventTo, changeMembershipToEvent } from '../../hooks/event';
 import { TrainerEvent } from '../../hooks/event';
 import { useDialog } from '../../hooks/dialog';
 import { isMaxMembershipError } from '../../hooks/event/eventUtil';
+import { MemberState } from '../../hooks/trainer';
+import { Link } from 'react-router-dom';
 
 const NextEvents = () => {
   const { t } = useTranslation();
@@ -16,7 +30,9 @@ const NextEvents = () => {
   const { showBackdrop, hideBackdrop, checkIfConfirmDialog, showDialog } = useDialog();
   const [events, setEvents] = useState<TrainerEvent[]>([]);
 
-  const { userEventProvider, activeMemberships, getDateRangeStr, user, membershipChanged } = useUser();
+  const { activeMemberships, userEventProvider, groupMemberships, getDateRangeStr, user, membershipChanged } = useUser();
+
+  const requestedMemberships = useMemo(() => groupMemberships.filter((m) => m.membership.state === MemberState.TRAINER_REQUEST), [groupMemberships]);
 
   const hasChecked = useCallback((event: TrainerEvent) => events.some(
     (check) => check.groupId === event.groupId && check.members.some(
@@ -117,6 +133,28 @@ const NextEvents = () => {
     <div className="vertical">
       <Typography variant="h3">{t('trainer.nextEvents')}</Typography>
       <List>
+        {requestedMemberships.map((membership, idx) =>
+          membership.dbGroups.map((dbGroup, grIdx) => (
+            <ListItem key={idx + '-' + grIdx}
+                      component={Link}
+                      to={'/memberships/' + dbGroup.id}
+                      secondaryAction={
+                        <IconButton color="primary"><Visibility /></IconButton>
+                      }
+            >
+              <ListItemAvatar>
+                <Avatar sx={{ bgcolor: dbGroup.color }}>
+                  <EventIcon></EventIcon>
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText>
+                <Alert severity="warning">
+                  {t('warning.trainerRequestExists', { trainer: membership.trainer.trainerName })}
+                </Alert>
+              </ListItemText>
+            </ListItem>
+          )))
+        }
         {events.map((event, idx) => (
           <ListItem key={idx}
                     secondaryAction={

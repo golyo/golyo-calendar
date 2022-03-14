@@ -7,6 +7,8 @@ export default (theme: any) => createStyles({
     left: '50%',
     transform: 'translate(-50%, -50%)',
     outline: 'none',
+    maxHeight: '100vh',
+    overflow: 'auto',
     backgroundColor: theme.palette.background.paper,
   },
   modalContent: {

@@ -1,42 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import { Avatar, Divider, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Avatar, Divider, IconButton, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { User, useUser } from '../../hooks/user';
 import SearchGroupPopup from './SearchGroupPopup';
+import { Visibility } from '@mui/icons-material';
 
 export default function SearchTrainer() {
   const { t } = useTranslation();
   const { loadTrainers } = useUser();
   const [trainers, setTrainers] = useState<User[]>([]);
+  const [trainer, setTrainer] = useState<User>();
 
   useEffect(() => {
     loadTrainers().then((dbTrainers) => setTrainers(dbTrainers));
   }, [loadTrainers]);
+
+  const closeModal = useCallback(() => setTrainer(undefined), []);
 
   return (
     <div className="vertical">
       <Typography variant="h3">{t('menu.searchTrainer')}</Typography>
       <List>
         <Divider />
-        {trainers.map((trainer, idx) => (
+        {trainers.map((tr, idx) => (
           <ListItem key={idx}
-                    secondaryAction={<SearchGroupPopup trainer={trainer} />}
+                    onClick={() => setTrainer(tr)}
+                    style={{ cursor: 'pointer' }}
+                    secondaryAction={
+                      <IconButton color="primary">
+                        <Visibility />
+                      </IconButton>
+                    }
                     divider
           >
             <ListItemAvatar>
-              <Avatar src={trainer.photoURL} />
+              <Avatar src={tr.photoURL} />
             </ListItemAvatar>
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
               <div>
-                <Typography variant="subtitle1">{trainer.name}</Typography>
+                <Typography variant="subtitle1">{tr.name}</Typography>
               </div>
               <div>
-                <Typography variant="subtitle2">{ trainer.location }</Typography>
+                <Typography variant="subtitle2">{ tr.location }</Typography>
               </div>
             </div>
           </ListItem>
         ))}
       </List>
+      <SearchGroupPopup trainer={trainer} closeModal={closeModal}/>
     </div>
   );
 }

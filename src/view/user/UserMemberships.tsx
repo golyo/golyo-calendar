@@ -1,14 +1,31 @@
-import { Avatar, Chip, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
+import { Avatar, Chip, IconButton, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
 import { TrainerContactMembership, useUser } from '../../hooks/user';
 import UserMembershipDetailPopup from './UserMembershipDetailsPopup';
-import { Event as EventIcon } from '@mui/icons-material';
+import { Event as EventIcon, Visibility } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { GroupType } from '../../hooks/trainer';
+import { useParams } from 'react-router-dom';
 
 const UserMemberships = () => {
   const { groupMemberships, changeTrainerContactState, leaveGroup, cronConverter } = useUser();
   const { t } = useTranslation();
+  const { groupId } = useParams<{ groupId: string }>();
+
+  const [popupState, setPopupState] = useState<{ groupMembership?: TrainerContactMembership, groupId?: string }>({
+    groupMembership: groupMemberships.find((grm) => grm.dbGroups.some((gr) => gr.id === groupId)),
+    groupId: groupId,
+  });
+
+  const onSelect = useCallback((groupMembership: TrainerContactMembership, grId: string) => setPopupState({
+    groupMembership,
+    groupId: grId,
+  }), []);
+
+  const closePopup = useCallback(() => setPopupState({
+    groupMembership: undefined,
+    groupId: undefined,
+  }), []);
 
   const getRemainingNo = useCallback((membership: TrainerContactMembership, type: GroupType) =>
     membership.membership.ticketSheets.find((sheet) => sheet.type === type)?.remainingEventNo || 0, []);
@@ -20,12 +37,12 @@ const UserMemberships = () => {
         {groupMemberships && groupMemberships.map((groupMembership, idx) =>
           groupMembership.dbGroups.map((group, gidx) => (
             <ListItem key={`${idx}-${gidx}`}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => onSelect(groupMembership, group.id)}
                       secondaryAction={
-                        <UserMembershipDetailPopup groupMembership={groupMembership}
-                                                   group={group}
-                                                   handleRequest={changeTrainerContactState}
-                                                   leaveGroup={leaveGroup}
-                                                   cronConverter={cronConverter} />
+                        <IconButton color="primary">
+                          <Visibility />
+                        </IconButton>
                       }
                       divider
             >
@@ -52,6 +69,13 @@ const UserMemberships = () => {
             </ListItem>
           )))}
       </List>
+      <UserMembershipDetailPopup groupMembership={popupState.groupMembership}
+                                 groupId={popupState.groupId}
+                                 closeModal={closePopup}
+                                 handleRequest={changeTrainerContactState}
+                                 leaveGroup={leaveGroup}
+                                 cronConverter={cronConverter}
+      />
     </div>
   );
 };

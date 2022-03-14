@@ -74,6 +74,8 @@ const STYLE = (theme: any) => {
       position: 'absolute',
       bottom: '0px',
       right: '0px',
+      fontSize: '0.56rem',
+      height: '15px',
     },
     chipContent: {
       height: '100%',

@@ -192,6 +192,7 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
             <Route path="searchTrainer" element={<SearchTrainer />} />
             <Route path="test" element={<ManageAccounts />} />
             <Route path="memberships" element={<UserMemberships />} />
+            <Route path="memberships/:groupId" element={<UserMemberships />} />
             <Route path="profile" element={<Profile />} />
             <Route path="groups" element={<TrainingGroups />} />
             <Route path="trainerEvents" element={<TrainerEvents />} />

@@ -89,7 +89,7 @@ const createMembership = (trainer: TrainerContact, membership: MembershipType, t
 };
 
 // const HACK_USER = 'bodylali.no1@gmail.com';
-// const HACK_USER = 'dettimici.bml@gmail.com';
+// const HACK_USER = 'jeva2791@gmail.com';
 const HACK_USER = undefined;
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
@@ -176,15 +176,16 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     });
   }, [firestore]);
 
-  const leaveGroup = useCallback((membership: TrainerContactMembership, group: TrainingGroupType) => {
-    const groupIdx = membership.membership.groups.indexOf(group.id);
+  const leaveGroup = useCallback((membership: TrainerContactMembership, groupId: string) => {
+    const groupIdx = membership.membership.groups.indexOf(groupId);
     membership.membership.groups.splice(groupIdx, 1);
+    const idx = membership.dbGroups.findIndex((dg) => dg.id === groupId);
+    const group = membership.dbGroups[idx];
+    membership.dbGroups.splice(idx, 1);
     return setMember(firestore, user!, membership).then(() => {
-      const idx = membership.dbGroups.findIndex((dg) => dg.id === group.id);
-      membership.dbGroups.splice(idx, 1);
-      group.attachedGroups.forEach((groupId) => {
-        if (!membership.dbGroups.some((dg) => dg.attachedGroups.includes(groupId))) {
-          const aidx = membership.dbGroups.findIndex((dg) => dg.id === groupId);
+      group.attachedGroups.forEach((agroupId) => {
+        if (!membership.dbGroups.some((dg) => dg.attachedGroups.includes(agroupId))) {
+          const aidx = membership.dbGroups.findIndex((dg) => dg.id === agroupId);
           membership.dbGroups.splice(aidx, 1);
         }
       });
