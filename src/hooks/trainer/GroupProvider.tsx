@@ -8,12 +8,12 @@ import { EVENT_DATE_PROPS, TrainerEvent } from '../event';
 import {
   GroupType,
   MembershipType,
-  MemberState,
-  TrainingGroupBase,
+  MemberState, TrainingGroupBase,
   TrainingGroupType,
   TrainingGroupUIType,
 } from './TrainerContext';
 import { useTranslation } from 'react-i18next';
+import { findOrCreateSheet } from './useTrainerEvents';
 
 export const DEFAULT_GROUP: TrainingGroupUIType = {
   id: '',
@@ -45,21 +45,9 @@ export const convertGroupToUi: (data: TrainingGroupType, cronConverter: CronConv
     crons: data.crons.map((cron: string) => cronConverter.toUiCron(cron)),
   });
 
-const createSheet = (type: GroupType) => ({
-  type,
-  presenceNo: 0,
-  remainingEventNo: 0,
-  purchasedTicketNo: 0,
-});
-
-export const findOrCreateSheet = (group: TrainingGroupBase, memberShip: MembershipType) => {
-  const sheet = memberShip.ticketSheets.find((sh) => sh.type === group.groupType);
-  if (sheet) {
-    return sheet;
-  }
-  const newSheet = createSheet(group.groupType);
-  memberShip.ticketSheets.push(newSheet);
-  return newSheet;
+export const getGroupMembers = (members: MembershipType[], group: TrainingGroupBase) => {
+  return members.filter((member) => member.groups.includes(group.id) ||
+    group.attachedGroups.some((attachedId) => member.groups.includes(attachedId)));
 };
 
 const GroupProvider = ({ groupId, children }: { groupId: string, children: ReactNode }) => {
@@ -72,16 +60,11 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
   const memberSrv = useFirestore<MembershipType>(`trainers/${user?.id}/members`);
 
   const group = useMemo(() => {
-    const dbGroup = groups.find((find) => find.id === groupId);
-    return convertGroupToUi(dbGroup!, cronConverter);
+    const dbGroup = groups.find((find) => find.id === groupId)!;
+    return convertGroupToUi(dbGroup, cronConverter);
   }, [cronConverter, groupId, groups]);
 
-  const findSheet = useCallback((memberShip: MembershipType) => findOrCreateSheet(group, memberShip), [group]);
-
-  const groupMembers = useMemo(() => {
-    return members.filter((member) => member.groups.includes(group.id) ||
-      group.attachedGroups.some((attachedId) => member.groups.includes(attachedId)));
-  }, [group, members]);
+  const groupMembers = useMemo(() => getGroupMembers(members, group!), [group, members]);
 
   const attachedGroups = useMemo(() => {
     if (!group) {
@@ -123,9 +106,7 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
     if (!toSave.groups.includes(group.id)) {
       toSave.groups.push(group.id);
     }
-    if (!toSave.ticketSheets.some((sheet) => sheet.type === group.groupType)) {
-      toSave.ticketSheets.push(createSheet(group.groupType));
-    }
+    findOrCreateSheet(toSave, group!.groupType);
     return memberSrv.save(toSave).then(() => {
       setUserMemberships(toSave.id, {
         trainerId: user!.id,
@@ -137,33 +118,9 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
         link: 'https://camp-fire-d8b07.firebaseapp.com/',
       }));
     });
-  }, [members, group.id, group.groupType, memberSrv, setUserMemberships, user, membershipChanged, sendEmail, t]);
+  }, [members, group, memberSrv, setUserMemberships, user, membershipChanged, sendEmail, t]);
 
   const loadEvent = useCallback((eventId: string) => eventSrv.get(eventId), [eventSrv]);
-
-  const changeMembershipValues = useCallback((memberId: string, ticketNoChanges: number, eventNoChanges: number, presenceNoChanges: number) => {
-    return memberSrv.getAndModify(memberId, (member) => {
-      const sheet = findSheet(member);
-      sheet.purchasedTicketNo += ticketNoChanges;
-      sheet.remainingEventNo += eventNoChanges;
-      sheet.presenceNo += presenceNoChanges;
-      return member;
-    }).then((member) => {
-      membershipChanged(changeItem(members, member));
-      return member;
-    });
-  }, [findSheet, memberSrv, members, membershipChanged]);
-
-  const buySeasonTicket = useCallback((memberId: string) => changeMembershipValues(memberId, 1, group.ticketLength, 0),
-    [changeMembershipValues, group.ticketLength]);
-
-  const removeMemberFromEvent = useCallback((eventId: string, memberId: string, ticketBack: boolean) => {
-    changeMembershipValues(memberId, 0, (ticketBack ? 1 : 0), -1);
-    return eventSrv.getAndModify(eventId, (event) => ({
-      ...event,
-      members: removeItemById(event.members, memberId),
-    }));
-  }, [changeMembershipValues, eventSrv]);
 
   const removeTrainerRequest = useCallback((requested: MembershipType) => {
     return memberSrv.remove(requested.id).then(() => {
@@ -192,15 +149,12 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
   }, [createTrainerRequest, memberSrv, members, membershipChanged, removeTrainerRequest]);
 
   const ctx = {
-    findSheet,
-    buySeasonTicket,
     attachedGroups,
     group,
     groupMembers,
     loadEvent,
     updateMembership,
     updateMembershipState,
-    removeMemberFromEvent,
   };
 
   if (!user || !group) {

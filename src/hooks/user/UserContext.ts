@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import { MembershipType, MemberState, TrainingGroupType, TrainingGroupUIType } from '../trainer';
 import { EventProvider, TrainerEvent } from '../event';
-import { IUtils } from '@date-io/core/IUtils';
+import { MuiPickersAdapter } from '@mui/lab/LocalizationProvider/LocalizationProvider';
 
 export interface UiCronType {
   days: string[];
@@ -39,7 +39,7 @@ export interface User {
   memberships: TrainerContact[];
 }
 
-export interface UserContextType {
+export interface UserContextType<T> {
   addGroupMembership: (trainer: User, group: TrainingGroupUIType) => Promise<void>;
   activeMemberships: TrainerContactMembership[];
   changeTrainerContactState: (group: TrainerContactMembership, toState: MemberState | null) => Promise<any>;
@@ -52,9 +52,9 @@ export interface UserContextType {
   saveUser: (user: User) => Promise<any>;
   user?: User;
   userEventProvider: EventProvider;
-  utils: IUtils<any>;
+  utils: MuiPickersAdapter<T>;
 }
 
-const UserContext = createContext<UserContextType>({} as UserContextType);
+const UserContext = createContext<UserContextType<any>>({} as UserContextType<any>);
 
 export default UserContext;

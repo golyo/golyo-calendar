@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { IUtils } from '@date-io/core/IUtils';
 import {
   Table,
   TableBody,
@@ -15,18 +14,29 @@ import { makeStyles, useTheme } from '@mui/styles';
 import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { MuiPickersAdapter } from '@mui/lab/LocalizationProvider/LocalizationProvider';
 
 import { Breakpoints, useBreakpoint } from '../../hooks/breakpoint';
 import { IThemeOptions, WeekTablePalette } from '../../theme/weekTableTheme';
 import { CalendarEvent, EventProvider } from '../../hooks/event';
 import styles, { breakpointLineHeightMap } from './WeekView.style';
+import { changeItem, removeItemById } from '../../hooks/firestore/firestore';
+
+export const WEEK_EVENT_CHANGED = 'weekEventChanged';
+export enum WeekEventType {
+  ADDED = 'ADDED',
+  CHANGED = 'CHANGED',
+  REMOVED = 'REMOVED',
+}
 
 const useStyles = makeStyles(styles, { name: 'WeekView' });
 
 const WEEK_ARRAY = Array.from(Array(7));
 
-const getActualWeek = (utils: IUtils<any>, startDay: any) => WEEK_ARRAY.map((e, i) =>
-  utils.formatByString(utils.addDays(startDay, i), utils.formats.shortDate));
+function getActualWeek<T>(utils: MuiPickersAdapter<T>, startDay: T) {
+  return WEEK_ARRAY.map((e, i) =>
+    utils.formatByString(utils.addDays(startDay, i), utils.formats.shortDate));
+}
 
 type HourEvent = {
   topPercent: number;
@@ -112,20 +122,21 @@ const convertToWeekView = (events: CalendarEvent[], weekPalette: WeekTablePalett
   return rows;
 };
 
-type WeekViewProp = {
+type WeekViewProp<T> = {
   eventProvider: EventProvider;
   eventClick?: (event: CalendarEvent) => void;
+  newEventClick?: (startDate: T) => void;
   weekLabel?: string;
   yearLabel?: string;
   todayLabel?: string;
 };
 
-export default function WeekView({ eventProvider, eventClick, weekLabel = 'Week', yearLabel = 'Year', todayLabel = 'Today' } : WeekViewProp) {
+export default function WeekView<T>({ eventProvider, eventClick, newEventClick, weekLabel = 'Week', yearLabel = 'Year', todayLabel = 'Today' } : WeekViewProp<T>) {
   const classes = useStyles();
-  const utils = useUtils();
+  const utils = useUtils<T>();
   const { palette: { weekPalette } } = useTheme() as IThemeOptions;
   const breakpoint = useBreakpoint();
-  const [firstWeekDay, setFirstWeekDay] = useState<any>(utils.startOfWeek(utils.date()));
+  const [firstWeekDay, setFirstWeekDay] = useState<T>(utils.startOfWeek(utils.date()!));
   const [events, setEvents] = useState<CalendarEvent[]>([]);
 
   const weekDays = useMemo(() => utils.getWeekdays(), [utils]);
@@ -134,16 +145,53 @@ export default function WeekView({ eventProvider, eventClick, weekLabel = 'Week'
 
   const goPrevYear = useCallback(() => setFirstWeekDay((prev: any) => utils.startOfWeek(utils.addMonths(prev, -12))), [utils]);
   const goPrevWeek = useCallback(() => setFirstWeekDay((prev: any) => utils.addDays(prev, -7)), [utils]);
-  const goToday = useCallback(() => setFirstWeekDay(utils.startOfWeek(utils.date())), [utils]);
+  const goToday = useCallback(() => setFirstWeekDay(utils.startOfWeek(utils.date()!)), [utils]);
   const goNextWeek = useCallback(() => setFirstWeekDay((prev: any) => utils.addDays(prev, 7)), [utils]);
   const goNextYear = useCallback(() => setFirstWeekDay((prev: any) => utils.startOfWeek(utils.addMonths(prev, 12))), [utils]);
 
   const lastWeekDay = useMemo(() => utils.endOfDay(utils.addDays(firstWeekDay, 6)) as any, [firstWeekDay, utils]);
 
   const todayInrange = useMemo(() => {
-    const now = utils.date();
+    const now = utils.date()!;
     return !utils.isAfter(firstWeekDay, now) && !utils.isBefore(lastWeekDay, now);
   }, [firstWeekDay, lastWeekDay, utils]);
+
+  const handleEventChanged = useCallback((e: any) => {
+    const { detail : { changedEvent, type } } = e;
+    setEvents((prev) => {
+      switch (type) {
+        case WeekEventType.ADDED: {
+          const toArray = changeItem(prev, changedEvent);
+          toArray.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+          return toArray;
+        }
+        case WeekEventType.REMOVED: {
+          return removeItemById(prev, changedEvent.id);
+        }
+        default: {
+          return changeItem(prev, changedEvent);
+        }
+      }
+    });
+  }, []);
+
+  const tableRows = useMemo(() => convertToWeekView(events, weekPalette, utils.toJsDate(firstWeekDay)), [events, firstWeekDay, utils, weekPalette]);
+
+  const lineHeight: number = useMemo(() => breakpointLineHeightMap[breakpoint as keyof Record<Breakpoints, number>], [breakpoint]);
+
+  const onTableCellClicked = useCallback((event, rowIdx: number, cellIdx: number) => {
+    if (newEventClick && event.target.tagName === 'TD') {
+      const startDate = utils.setHours(utils.addDays(firstWeekDay, cellIdx), parseInt(tableRows[rowIdx].hour) - 1);
+      newEventClick(startDate);
+    }
+  }, [firstWeekDay, newEventClick, tableRows, utils]);
+
+  useEffect(() => {
+    window.addEventListener(WEEK_EVENT_CHANGED, handleEventChanged);
+    return () => {
+      window.removeEventListener(WEEK_EVENT_CHANGED, handleEventChanged);
+    };
+  }, [handleEventChanged]);
 
   useEffect(() => {
     // if language changed, utils changed, and firstWeekDay could changed
@@ -157,10 +205,6 @@ export default function WeekView({ eventProvider, eventClick, weekLabel = 'Week'
     const endDay = utils.endOfDay(utils.addDays(firstWeekDay, 6));
     eventProvider.getEvents(utils.toJsDate(firstWeekDay), utils.toJsDate(endDay)).then((result) => setEvents(result));
   },  [eventProvider, firstWeekDay, utils]);
-
-  const tableRows = useMemo(() => convertToWeekView(events, weekPalette, utils.toJsDate(firstWeekDay)), [events, firstWeekDay, utils, weekPalette]);
-
-  const lineHeight: number = useMemo(() => breakpointLineHeightMap[breakpoint as keyof Record<Breakpoints, number>], [breakpoint]);
 
   return (
     <TableContainer className={classes.root}>
@@ -225,7 +269,7 @@ export default function WeekView({ eventProvider, eventClick, weekLabel = 'Week'
                 </div>
               </TableCell>
               { row.weekEvents.map((weekEvent, j) => (
-                <TableCell key={i + '-' + j} className={classes.weekCell}>
+                <TableCell key={i + '-' + j} className={classes.weekCell} onClick={(e) => onTableCellClicked(e, i, j)}>
                   { weekEvent && weekEvent.dayEvents.map((hourEvent, k) => (
                     <div className={classes.eventContent} key={i + '-' + j + '-' + k} style={{
                       top: hourEvent.topPercent * lineHeight,
@@ -233,7 +277,12 @@ export default function WeekView({ eventProvider, eventClick, weekLabel = 'Week'
                       backgroundColor: hourEvent.color,
                     }} onClick={() => eventClick ? eventClick(hourEvent.event) : null}>
                       { hourEvent.event.title }
-                      {hourEvent.event.badge && <Chip className={classes.eventBadge} size="small" label={hourEvent.event.badge} color="primary" />}
+                      {hourEvent.event.badge && <Chip
+                        className={classes.eventBadge}
+                        size="small"
+                        label={hourEvent.event.isDeleted ? 'X' : hourEvent.event.badge}
+                        color={hourEvent.event.isDeleted ? 'error' : 'primary'}
+                      />}
                     </div>
                   )) }
                 </TableCell>

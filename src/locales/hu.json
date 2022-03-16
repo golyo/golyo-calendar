@@ -10,6 +10,9 @@
     "save": "Mentés",
     "logout": "Kilépés",
     "cancel": "Mégsem",
+    "close": "Bezár",
+    "create": "Létrehoz",
+    "date": "Dátum",
     "back": "Vissza",
     "register": "Jelentkezés",
     "modify": "Módosítás",
@@ -21,7 +24,8 @@
     "warning": "Figyelmeztetés",
     "modifySuccess": "Módosítás sikeres",
     "insertSuccess": "Létrehozás sikeres",
-    "removeSuccess": "Eltávolítás sikeres"
+    "removeSuccess": "Eltávolítás sikeres",
+    "activate": "Aktiválás"
   },
   "menu": {
     "myCalendar": "Edzés naptár",
@@ -79,7 +83,7 @@
     "email": "Nem megfelelő email"
   },
   "trainer": {
-    "nextEvents": "Következő 7 nap eseményei",
+    "nextEvents": "Következő 28 nap eseményei",
     "calendar": "Edzés naptár",
     "registrationInfo": "Ha edző szeretne lenni, kérjük adja meg a helyszínt, regisztráljon, és várja meg a jóváhagyást.",
     "title": "Edző",
@@ -150,10 +154,12 @@
     },
     "noMoreTicket": "A rendelkezésre álló jegyei elfogytak. Biztosan bejelentkezik?",
     "buySeasonTicket": "Biztosan jóváírja a bérlet vásárlást?",
-    "memberMissed": "Felszámolja a jegyet a hiányzónak?",
+    "memberMissed": "Visszaadja a jegyet a hiányzónak?",
     "userRequest": "Biztosan csatlakozni szeretne a csoporthoz?",
     "removeFromGroup": "Biztosan törli a felhasználót a csoportból?",
-    "leaveGroup": "Biztosan kilép a csoportból?"
+    "leaveGroup": "Biztosan kilép a csoportból?",
+    "deleteEvent": "Biztosan törli az eseményt, és visszadja a jelentkezett tagoknak a jegyét?",
+    "activateEvent": "Biztosan aktiválja az eseményt, és elérhetővé teszi a tagok számára?"
   },
   "warning": {
     "consultTrainer": "A rendelkezésre álló jegyei elfogytak, kérem egyeztessen az edzőjével!",
@@ -180,7 +186,8 @@
     "rejectRequest": "Viszautasítás",
     "buySeasonTicket": "Bérlet vásárlás",
     "memberMissed": "Nem volt ott",
-    "removeFromGroup": "Törlés a csoportból"
+    "removeFromGroup": "Törlés a csoportból",
+    "removeMember": "Tag eltávolítása"
   },
   "groupType": {
     "PERSONAL": "Személyi edzés",
@@ -188,9 +195,13 @@
     "MASS": "Tömeg sport"
   },
   "event": {
+    "addMember": "Tag hozzáadása",
+    "createNew": "Új esemény létrehozása",
+    "chooseMember": "Válassza ki, és adja hozzá a tagot az eseményhez!",
     "details": "Esemény részletek",
     "members": "Résztvevők",
     "time": "Időpont",
+    "startHour": "Kezdés",
     "remainingEventNo": "Még van {{ ticketNo }} jegye.",
     "owesTicket": "{{ ticketNo }} jeggyel tartozik!",
     "noMoreEvent": "Nincs több jegye!"

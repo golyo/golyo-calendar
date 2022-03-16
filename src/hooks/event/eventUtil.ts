@@ -4,13 +4,12 @@ import { CalendarEvent, EventProvider, TrainerEvent } from './EventContext';
 import { TrainerContact } from '../user/UserContext';
 import { Firestore, getDoc, doc, where, setDoc } from 'firebase/firestore';
 import { doQuery, getCollectionRef } from '../firestore/firestore';
-import { TrainingGroupType } from '../trainer';
-import { findOrCreateSheet } from '../trainer/GroupProvider';
+import { TrainingGroupType, findOrCreateSheet } from '../trainer';
 
-const NEXT_EVENT_DAYNO = 7;
+const NEXT_EVENT_DAYNO = 28;
 const NEXT_EVENTS_RANGE = NEXT_EVENT_DAYNO * 24 * 60 * 60 * 1000;
 
-const EVENT_COMPARE = (event1: CalendarEvent, event2: CalendarEvent) => event1.startDate.getTime() - event2.endDate.getTime();
+const EVENT_COMPARE = (event1: CalendarEvent, event2: CalendarEvent) => event1.startDate.getTime() - event2.startDate.getTime();
 
 export const getNextEventTo = () => new Date(Date.now() + NEXT_EVENTS_RANGE);
 export const getNextEventFrom = (minutes: number) => new Date(Date.now() - minutes * 60 * 1000);
@@ -24,13 +23,13 @@ const getCronInterval = (cronStr: string, from: Date, to: Date) => {
   return parser.parseExpression(cronStr, options);
 };
 
-const generateCronEvent = (group: TrainingGroupType, trainer: TrainerContact, startDate: Date) => {
+export const generateCronEvent = (group: TrainingGroupType, trainer: TrainerContact, startDate: Date) => {
   return {
     id: startDate.getTime().toString(),
+    isDeleted: false,
     groupId: group.id,
     trainerId: trainer.trainerId,
     title: trainer.trainerName,
-    maxMember: group.maxMember,
     text: group.name,
     startDate: startDate,
     endDate: new Date(startDate.getTime() + (group.duration * 60 * 1000)),
@@ -70,7 +69,7 @@ const changeCounterToMembership = (firestore: Firestore, user: User, groupMember
   const collectionRef = getCollectionRef(firestore, path);
   const docRef = doc(collectionRef, user.id);
   const modifier = isAdd ? 1 : -1;
-  const ticketSheet = findOrCreateSheet(group, groupMembership.membership);
+  const ticketSheet = findOrCreateSheet(groupMembership.membership, group.groupType);
   ticketSheet.presenceNo += modifier;
   ticketSheet.remainingEventNo += -modifier;
   // refresh name and avatar
@@ -80,6 +79,7 @@ const changeCounterToMembership = (firestore: Firestore, user: User, groupMember
 };
 
 const MAX_MEMBERSHIP_ERROR = 'error.maxMembershipRiched';
+const EVENT_DELETED_ERROR = 'error.eventDeleted';
 export const isMaxMembershipError = (error: string) => error === MAX_MEMBERSHIP_ERROR;
 
 export const EVENT_DATE_PROPS = ['startDate', 'endDate'];
@@ -92,6 +92,10 @@ export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: Trai
   return new Promise<void>((resolve, reject) => {
     getDoc(docRef).then(docSnapshot => {
       const data = (docSnapshot.data() || trainerEvent) as TrainerEvent;
+      if (data.isDeleted) {
+        reject(EVENT_DELETED_ERROR);
+        return;
+      }
       if (isAdd) {
         if (group.maxMember <= data.members.length) {
           reject(MAX_MEMBERSHIP_ERROR);

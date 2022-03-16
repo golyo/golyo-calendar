@@ -31,7 +31,7 @@ const ConfirmDialog = ({ title, description, buttons, open, hideDialog } : Confi
           </Typography>
           <div className="horizontal">
             { buttons?.map((button, idx) => (
-              <Button key={idx} onClick={onButtonClick(idx)}  variant={idx === 0 ? 'contained' : 'outlined'} >{t(button.label)}</Button>
+              <Button size="small" key={idx} onClick={onButtonClick(idx)}  variant={idx === 0 ? 'contained' : 'outlined'} >{t(button.label)}</Button>
             )) }
           </div>
         </div>

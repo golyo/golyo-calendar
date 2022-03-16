@@ -126,7 +126,7 @@ const NextEvents = () => {
   ]);
 
   useEffect(() => {
-    userEventProvider.getEvents(new Date(), getNextEventTo()).then((tevents: TrainerEvent[]) => setEvents(tevents));
+    userEventProvider.getEvents(new Date(), getNextEventTo()).then((tevents: TrainerEvent[]) => setEvents(tevents.filter((e) => !e.isDeleted )));
   }, [userEventProvider]);
 
   return (
@@ -178,7 +178,7 @@ const NextEvents = () => {
               <div>
                 <Typography variant="subtitle1">{event.title}</Typography>
                 <Typography variant="subtitle2">
-                  {event.text + ' - ' + getDateRangeStr(event)}
+                  {event.text} - {getDateRangeStr(event)}
                 </Typography>
               </div>
               <div>

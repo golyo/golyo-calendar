@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import TrainerContext, {
   MembershipType,
-  TrainerDataType,
+  TrainerDataType, TrainerState,
   TrainingGroupType, TrainingGroupUIType,
 } from './TrainerContext';
 import { useUser } from '../user';
@@ -9,24 +9,21 @@ import { changeItem, insertObject, removeItemById, useFirestore } from '../fires
 import { createTrainerEventProvider } from '../event/eventUtil';
 import { useFirebase } from '../firebase';
 import { convertGroupToFirestore } from './GroupProvider';
-
-interface TrainerState {
-  trainerData?: TrainerDataType;
-  groups?: TrainingGroupType[];
-  members?: MembershipType[];
-}
+import useTrainerEvents from './useTrainerEvents';
 
 const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
   const { firestore } = useFirebase();
   const { user, cronConverter } = useUser();
 
-  const [state, setState] = useState<TrainerState>({});
+  const [state, setState] = useState<TrainerState>({ groups: [] });
 
   const trainerSrv = useFirestore<TrainerDataType>('trainers');
   const groupSrv = useFirestore<TrainingGroupType>('trainers/' + user!.id + '/groups');
   const memberSrv = useFirestore<MembershipType>('trainers/' + user!.id + '/members');
 
   const { groups, trainerData, members } = state;
+
+  const { activateEvent, addMemberToEvent, buySeasonTicket, deleteEvent, removeMemberFromEvent, createEvent } = useTrainerEvents(user!, groups, setState);
 
   const eventProvider = useMemo(() => groups ? createTrainerEventProvider(firestore, user!, groups) : undefined, [firestore, groups, user]);
 
@@ -91,6 +88,12 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const ctx = {
+    activateEvent,
+    addMemberToEvent,
+    buySeasonTicket,
+    createEvent,
+    deleteEvent,
+    removeMemberFromEvent,
     trainerData,
     groups: groups!,
     members: members!,

@@ -10,6 +10,9 @@
     "save": "Save",
     "logout": "Logout",
     "cancel": "Cancel",
+    "close": "Close",
+    "create": "Create",
+    "date": "Date",
     "back": "Back",
     "delete": "Delete",
     "register": "Register",
@@ -22,7 +25,8 @@
     "warning": "Warning",
     "modifySuccess": "Modification Success",
     "insertSuccess": "Insert Success",
-    "removeSuccess": "Remove Success"
+    "removeSuccess": "Remove Success",
+    "activate": "Activate"
   },
   "menu": {
     "myCalendar": "My Calendar",
@@ -81,7 +85,7 @@
     "title": "Home"
   },
   "trainer": {
-    "nextEvents": "Next 7 day events",
+    "nextEvents": "Next 28 day events",
     "calendar": "Training Calendar",
     "registrationInfo": "If you want to be a trainer, please setup location, register and wait for approval.",
     "title": "Trainer",
@@ -152,10 +156,12 @@
     },
     "noMoreTicket": "You have run out of tickets. Are you sure to checkin?",
     "buySeasonTicket": "Are you sure, to add season ticket?",
-    "memberMissed": "Deduct the ticket of the missing member?",
+    "memberMissed": "Returns the ticket of the missing member?",
     "userRequest": "Are you sure, to join the selected group?",
     "removeFromGroup": "Are you sure, to remove user from group?",
-    "leaveGroup": "Are you sure, to leave group?"
+    "leaveGroup": "Are you sure, to leave group?",
+    "deleteEvent": "Are you sure to delete selected event, and give tickets back to members?",
+    "activateEvent": "Are you sure to activate event, and enable to join by members?"
   },
   "warning": {
     "consultTrainer": "Please consult your trainer about tickets!",
@@ -183,7 +189,8 @@
     "rejectRequest": "Reject",
     "buySeasonTicket": "Buy Season Ticket",
     "memberMissed": "Member missed",
-    "removeFromGroup": "Remove from group"
+    "removeFromGroup": "Remove from group",
+    "removeMember": "Remove member"
   },
   "groupType": {
     "PERSONAL": "Personal Training",
@@ -191,9 +198,13 @@
     "MASS": "Mass Training"
   },
   "event": {
+    "addMember": "Add Member",
+    "createNew": "Create new event",
+    "chooseMember": "Please choose, and add member to the event!",
     "details": "Event details",
     "members": "Members",
     "time": "Time",
+    "startHour": "Start Hour",
     "remainingEventNo": "There are {{ ticketNo }} tickets left",
     "owesTicket": "Owes  {{ ticketNo }} tickets",
     "noMoreEvent": "No more ticket left"

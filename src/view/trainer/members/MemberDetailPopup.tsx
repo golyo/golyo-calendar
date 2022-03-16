@@ -8,7 +8,7 @@ import {
   MembershipType,
   TRAINER_STATE_MAP,
   getButtonVariant,
-  ActionButton, useGroup,
+  ActionButton, useGroup, useTrainer,
 } from '../../../hooks/trainer';
 import LabelValue from '../../common/LabelValue';
 import { useDialog } from '../../../hooks/dialog';
@@ -24,7 +24,8 @@ const MemberDetailPopup = ({ sheet, member }: Props) => {
   const { t } = useTranslation();
   const { showConfirmDialog } = useDialog();
   const [open, setOpen] = useState(false);
-  const { group, updateMembershipState, buySeasonTicket, updateMembership } = useGroup();
+  const { buySeasonTicket } = useTrainer();
+  const { group, updateMembershipState, updateMembership } = useGroup();
 
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);
@@ -43,11 +44,11 @@ const MemberDetailPopup = ({ sheet, member }: Props) => {
     showConfirmDialog({
       description: t('confirm.buySeasonTicket'),
       okCallback: () => {
-        buySeasonTicket(member.id);
+        buySeasonTicket(member.id, group!.id);
         closeModal();
       },
     });
-  }, [buySeasonTicket, closeModal, member.id, showConfirmDialog, t]);
+  }, [buySeasonTicket, closeModal, group, member.id, showConfirmDialog, t]);
 
   const isRemoveabe = useMemo(() => member.groups.length > 1 && member.groups.includes(group!.id), [group, member.groups]);
 

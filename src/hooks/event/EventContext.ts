@@ -2,6 +2,7 @@ export interface CalendarEvent {
   id: string;
   title: string;
   text: string;
+  isDeleted?: boolean;
   badge?: string;
   startDate: Date;
   endDate: Date;
@@ -14,10 +15,10 @@ export interface EventMember {
 }
 
 export interface TrainerEvent extends CalendarEvent {
+  deletable?: boolean;
   trainerId: string;
   groupId: string;
   members: EventMember[];
-  maxMember: number;
 }
 
 export interface EventProvider {

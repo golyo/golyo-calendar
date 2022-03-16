@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 
 import NewMemberPopup from './NewMemberPopup';
-import { MemberState, useGroup } from '../../../hooks/trainer';
+import { MemberState, useGroup, findOrCreateSheet } from '../../../hooks/trainer';
 import MemberDetailPopup from './MemberDetailPopup';
 import { TicketNoWarning } from '../events/EventPage';
 
@@ -24,7 +24,7 @@ const MembersList = () => {
   const { t } = useTranslation();
   const [selectedState, setSelectedState] = useState<MemberState | 0>(0);
 
-  const { groupMembers, findSheet } = useGroup();
+  const { groupMembers, group } = useGroup();
 
   const filteredMembers = useMemo(() => {
     if (!selectedState) {
@@ -59,7 +59,7 @@ const MembersList = () => {
           <ListItem key={idx}
                     secondaryAction={
                       <MemberDetailPopup
-                        sheet={findSheet(member)!}
+                        sheet={findOrCreateSheet(member, group!.groupType)!}
                         member={member}
                       />}
                     divider
@@ -73,7 +73,7 @@ const MembersList = () => {
                 <Chip label={t(`memberState.${member.state}`)} color="primary" />
               </div>
               <div style={{ display: 'flex' }}>
-                <TicketNoWarning sheet={findSheet(member)!} t={t} />
+                <TicketNoWarning sheet={findOrCreateSheet(member, group!.groupType)!} t={t} />
               </div>
             </div>
           </ListItem>

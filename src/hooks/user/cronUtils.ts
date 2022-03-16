@@ -1,5 +1,5 @@
-import { IUtils } from '@date-io/core/IUtils';
 import { UiCronType } from './UserContext';
+import { MuiPickersAdapter } from '@mui/lab/LocalizationProvider/LocalizationProvider';
 
 const daysToWeekValue = (days: string[], weekDays: string[]) => days.map((dayIdx) => weekDays[parseInt(dayIdx)]);
 const daysToWeekIdx = (days: string[], weekDays: string[]) => days.map((dayName) => weekDays.indexOf(dayName));
@@ -21,7 +21,7 @@ const CRON_CONVERTER = {
   },
 };
 
-export const createCronConverter = (utils: IUtils<any>) => {
+export const createCronConverter = <T>(utils: MuiPickersAdapter<T>) => {
   const weekDays = utils.getWeekdays();
   if (utils.locale?.options?.weekStartsOn === 1) {
     weekDays.unshift(weekDays.pop()!);

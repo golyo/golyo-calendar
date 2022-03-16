@@ -89,7 +89,7 @@ const createMembership = (trainer: TrainerContact, membership: MembershipType, t
 };
 
 // const HACK_USER = 'bodylali.no1@gmail.com';
-// const HACK_USER = 'jeva2791@gmail.com';
+// const HACK_USER = 'domjan.edit@hotmail.com';
 const HACK_USER = undefined;
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
@@ -143,7 +143,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const getDateRangeStr = useCallback((event: TrainerEvent) => {
     const udate = utils.date(event.startDate);
-    return utils.format(udate, 'fullDate') + ' ' + getInterval(event);
+    return utils.format(udate, 'shortDate') + ' ' + getInterval(event);
   }, [utils]);
 
   const changeTrainerContactState = useCallback(async (membership: TrainerContactMembership, toState: MemberState | null) => {

@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { EventProvider } from '../event';
+import { EventProvider, TrainerEvent } from '../event';
 import { UiCronType } from '../user';
 
 export enum GroupType {
@@ -143,6 +143,12 @@ export interface TrainingGroupType extends TrainingGroupBase {
   crons: string[];
 }
 
+export interface TrainerState {
+  trainerData?: TrainerDataType;
+  groups: TrainingGroupType[];
+  members?: MembershipType[];
+}
+
 interface TrainerContextType {
   trainerData: TrainerDataType;
   saveTrainerData: (trainerData: TrainerDataType) => Promise<void>;
@@ -154,6 +160,13 @@ interface TrainerContextType {
   deleteGroup: (groupId: string) => Promise<void>;
   sendEmail: (to: string, title: string, message: string) => Promise<any>;
   membershipChanged: (membership: MembershipType[]) => void;
+
+  activateEvent: (toSave: TrainerEvent) => Promise<TrainerEvent>;
+  addMemberToEvent: (event: TrainerEvent, member: MembershipType) => Promise<TrainerEvent>;
+  buySeasonTicket: (memberId: string, groupId: string) => Promise<MembershipType>;
+  createEvent: (group:TrainingGroupType, startDate: Date) => Promise<TrainerEvent>;
+  deleteEvent: (toSave: TrainerEvent) => Promise<void>;
+  removeMemberFromEvent: (eventId: string, groupType: GroupType, memberId: string, ticketBack: boolean) => Promise<TrainerEvent>;
 }
 
 const TrainerContext = createContext<TrainerContextType>({} as TrainerContextType);

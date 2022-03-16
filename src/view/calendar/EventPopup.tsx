@@ -4,15 +4,13 @@ import Modal from '@mui/material/Modal';
 import { useMemo } from 'react';
 import ModalContainer from '../common/ModalContainer';
 import { getInterval, TrainerEvent } from '../../hooks/event';
-import { Avatar, Button, Divider } from '@mui/material';
+import { Avatar, Divider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Event as EventIcon } from '@mui/icons-material';
 
-const EventPopup = ({ event, resetEvent, detailsAction }: { event: TrainerEvent | null; resetEvent: () => void; detailsAction?: () => void }) => {
+const EventPopup = ({ event, resetEvent }: { event: TrainerEvent | null; resetEvent: () => void; }) => {
   const { t } = useTranslation();
   const interval = useMemo(() => event ? getInterval(event) : '', [event]);
-
-  const isStarted = useMemo(() => event && Date.now() >= event.startDate.getTime(), [event]);
 
   return (
     <Modal
@@ -34,7 +32,6 @@ const EventPopup = ({ event, resetEvent, detailsAction }: { event: TrainerEvent 
           {event?.members.map((member, idx) => (
             <Typography key={idx} variant="subtitle2">{member.name}</Typography>
           ))}
-          {isStarted && detailsAction && <div><Button onClick={detailsAction} variant="contained">{t('common.modify')}</Button></div>}
         </div>
       </ModalContainer>
     </Modal>

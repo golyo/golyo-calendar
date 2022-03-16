@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { TFunction, useTranslation } from 'react-i18next';
 import {
@@ -13,11 +13,10 @@ import {
 
 import { TrainerEvent } from '../../../hooks/event';
 import { useUser } from '../../../hooks/user';
-import { DEFAULT_MEMBER, useGroup, useTrainer } from '../../../hooks/trainer';
+import { DEFAULT_MEMBER, MembershipType, TicketSheet, useGroup, useTrainer, findOrCreateSheet } from '../../../hooks/trainer';
 import LabelValue from '../../common/LabelValue';
 import TrainerActionsPopup from './TrainerActionsPopup';
 import { styled } from '@mui/material/styles';
-import { TicketSheet } from '../../../hooks/trainer/TrainerContext';
 
 export const TicketAlert = styled(Alert)(() => ({
   padding: '0px 6px',
@@ -40,8 +39,9 @@ export default function EventPage() {
   const { t } = useTranslation();
   const { getDateRangeStr } = useUser();
   const { members } = useTrainer();
-  const { group, loadEvent, findSheet } = useGroup();
+  const { group, loadEvent } = useGroup();
 
+  const findSheet = useCallback((member: MembershipType) => findOrCreateSheet(member, group!.groupType), [group]);
   const [event, setEvent] = useState<TrainerEvent | undefined>(undefined);
 
   const isStarted = useMemo(() => event && Date.now() >= event.startDate.getTime(), [event]);
@@ -76,7 +76,8 @@ export default function EventPage() {
         {activeMembers.map((eMember, idx) => (
           <ListItem key={idx}
                     secondaryAction={isStarted && <TrainerActionsPopup
-                      member={eMember}
+                      memberId={eMember.id}
+                      groupType={group!.groupType}
                       event={event}
                       setEvent={setEvent}
                     />}

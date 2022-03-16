@@ -1,4 +1,4 @@
-import { MembershipType, useGroup } from '../../../hooks/trainer';
+import { GroupType, useTrainer } from '../../../hooks/trainer';
 import { Avatar, Button, IconButton, Modal } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import ModalContainer from '../../common/ModalContainer';
@@ -7,44 +7,47 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { TicketNoWarning } from './EventPage';
 import { useDialog } from '../../../hooks/dialog';
 import { TrainerEvent } from '../../../hooks/event';
+import { findOrCreateSheet } from '../../../hooks/trainer';
 
 type ActionPopupProps = {
-  member: MembershipType;
+  memberId: string;
+  groupType: GroupType;
   event: TrainerEvent;
-  setEvent?: (event: TrainerEvent) => void;
+  setEvent: (event: TrainerEvent) => void;
 };
 
-const TrainerActionsPopup = ({ member, event, setEvent } : ActionPopupProps) => {
+const TrainerActionsPopup = ({ memberId, event, groupType, setEvent } : ActionPopupProps) => {
   const { t } = useTranslation();
-  const { buySeasonTicket, removeMemberFromEvent, findSheet } = useGroup();
+  const { members, buySeasonTicket, removeMemberFromEvent } = useTrainer();
   const { showDialog, showConfirmDialog } = useDialog();
 
   const [open, setOpen] = useState(false);
 
-  const sheet = useMemo(() => findSheet(member), [findSheet, member]);
+  const isStarted = useCallback(() => event.startDate.getTime() < Date.now(), [event]);
+
+  const member = useMemo(() => members.find((m) => m.id === memberId)!, [memberId, members]);
+
+  const sheet = useMemo(() => findOrCreateSheet(member, groupType), [groupType, member]);
 
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);
   
-  const isDisabled = useCallback(() => {
-    return event.startDate.getTime() > Date.now();
-  }, [event]);
-
   const buyTicket = useCallback(() => {
     showConfirmDialog({
       description: t('confirm.buySeasonTicket'),
       okCallback: () => {
-        buySeasonTicket(member.id);
+        buySeasonTicket(member.id, event.groupId);
         closeModal();
       },
     });
-  }, [buySeasonTicket, closeModal, member.id, showConfirmDialog, t]);
+  }, [buySeasonTicket, closeModal, event.groupId, member.id, showConfirmDialog, t]);
 
   const removeMember = useCallback((ticketBack: boolean) => {
-    removeMemberFromEvent(event.id!, member.id, ticketBack).then((dbEvent) => setEvent!(dbEvent));
+    removeMemberFromEvent(event.id!, groupType, member.id, ticketBack).then((dbEvent) => setEvent!(dbEvent));
     closeModal();
-  }, [closeModal, event.id, member.id, removeMemberFromEvent, setEvent]);
+  }, [closeModal, event.id, groupType, member.id, removeMemberFromEvent, setEvent]);
 
+  const doRemoveMember = useCallback(() => removeMember(true), [removeMember]);
 
   const memberMissed = useCallback(() => {
     showDialog({
@@ -53,10 +56,10 @@ const TrainerActionsPopup = ({ member, event, setEvent } : ActionPopupProps) => 
       buttons: [
         { 
           label: 'common.yes',
-          onClick: () => removeMember(false),
+          onClick: () => removeMember(true),
         }, {
           label: 'common.no',
-          onClick: () => removeMember(true),
+          onClick: () => removeMember(false),
         }, {
           label: 'common.back',
         },
@@ -67,7 +70,7 @@ const TrainerActionsPopup = ({ member, event, setEvent } : ActionPopupProps) => 
 
   return (
     <>
-      <IconButton onClick={openModal} disabled={isDisabled()}>
+      <IconButton onClick={openModal} color="primary">
         <EditIcon />
       </IconButton>
       <Modal
@@ -83,9 +86,10 @@ const TrainerActionsPopup = ({ member, event, setEvent } : ActionPopupProps) => 
           <div className="vertical">
             <TicketNoWarning sheet={sheet!} t={t} />
             <div className="horizontal">
-              <Button onClick={buyTicket} variant="contained">{t('action.buySeasonTicket')}</Button>
-              {event && <Button onClick={memberMissed} variant="outlined">{t('action.memberMissed')}</Button>}
-              <Button onClick={closeModal} >{t('common.cancel')}</Button>
+              <Button size="small" onClick={buyTicket} variant="contained">{t('action.buySeasonTicket')}</Button>
+              {event && isStarted() && <Button size="small" onClick={memberMissed} variant="outlined">{t('action.memberMissed')}</Button>}
+              {event && !isStarted() && <Button size="small" onClick={doRemoveMember} variant="outlined">{t('action.removeMember')}</Button>}
+              <Button size="small" onClick={closeModal} >{t('common.cancel')}</Button>
             </div>
           </div>
         </ModalContainer>
