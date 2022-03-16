@@ -23,9 +23,16 @@ const TrainerEventPopup = ({ selectedEvent, groupType, resetEvent }: Props) => {
 
   const [event, setEvent] = useState<TrainerEvent>(selectedEvent);
 
-  const { activateEvent, deleteEvent } = useTrainer();
+  const { activateEvent, deleteEvent, members } = useTrainer();
   
   const { showConfirmDialog } = useDialog();
+
+  const memberNames = useMemo(() => {
+    if (!event) {
+      return [];
+    }
+    return event.memberIds.map((mid) => members.find((m) => m.id === mid)?.name || mid);
+  }, [event, members]);
 
   const interval = useMemo(() => event ? getInterval(event) : '', [event]);
 
@@ -63,22 +70,22 @@ const TrainerEventPopup = ({ selectedEvent, groupType, resetEvent }: Props) => {
           <Typography variant="subtitle2">{t('event.members')}</Typography>
           <Divider />
           <List>
-            {event?.members.map((member, idx) => (
+            {event?.memberIds.map((memberId, idx) => (
               <ListItem key={idx}
                         secondaryAction={<TrainerActionsPopup
-                          memberId={member.id}
+                          memberId={memberId}
                           event={event}
                           groupType={groupType}
                           setEvent={setEvent}
                         />}
                         divider
               >
-                <Typography key={idx} variant="subtitle2">{member.name}</Typography>
+                <Typography key={idx} variant="subtitle2">{memberNames[idx]}</Typography>
               </ListItem>
             ))}
           </List>
           <div className="horizontal">
-            {!isStarted && <NewEventMemberPopup event={event} eventChanged={setEvent} />}
+            {!isStarted && !event.isDeleted && <NewEventMemberPopup event={event} eventChanged={setEvent} />}
             {!isStarted && !event.isDeleted && <Button size="small" variant='outlined' onClick={doDeleteEvent}>{t('common.delete')}</Button>}
             {!isStarted && event.isDeleted && <Button size="small" onClick={doActivateEvent}>{t('common.activate')}</Button>}
             <Button size="small" onClick={resetEvent}>{t('common.close')}</Button>

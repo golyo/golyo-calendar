@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useCallback } from 'react';
-import { changeItem, removeItemById, useFirestore } from '../firestore/firestore';
+import { changeItem, removeStr, useFirestore } from '../firestore/firestore';
 import { GroupType, MembershipType, TrainerState, TrainingGroupType } from './TrainerContext';
 import { EVENT_DATE_PROPS, TrainerEvent } from '../event';
 import { User } from '../user';
@@ -23,7 +23,7 @@ export const findOrCreateSheet = (memberShip: MembershipType, type: GroupType) =
   return newSheet;
 };
 
-const useTrainerEvents = (user: User, groups: TrainingGroupType[], setState: Dispatch<SetStateAction<TrainerState>>) => {
+const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: MembershipType[], setState: Dispatch<SetStateAction<TrainerState>>) => {
   const eventSrv = useFirestore<TrainerEvent>(`trainers/${user.id}/events`, EVENT_DATE_PROPS);
   const memberSrv = useFirestore<MembershipType>(`trainers/${user.id}/members`);
   const findGroup = useCallback((groupId: string) => groups.find((g) => g.id === groupId)!, [groups]);
@@ -57,7 +57,7 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], setState: Dis
   }, [changeMembershipValues, findGroup]);
 
   const dispatchEventChanged = useCallback((changedEvent: TrainerEvent, type: WeekEventType) => {
-    changedEvent.badge = changedEvent.members.length.toString();
+    changedEvent.badge = changedEvent.memberIds.length.toString();
     const eventChanged = new CustomEvent(WEEK_EVENT_CHANGED, {
       detail: {
         changedEvent,
@@ -67,6 +67,10 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], setState: Dis
     window.dispatchEvent(eventChanged);
     return changedEvent;
   }, []);
+
+  const getMemberNames = useCallback((event: TrainerEvent) => {
+    return event.memberIds.map((memberId) => members.find((m) => m.id === memberId)?.name || '');
+  }, [members]);
 
   const createEvent = useCallback((group:TrainingGroupType, startDate: Date) => {
     const event = generateCronEvent(group,  {
@@ -82,7 +86,7 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], setState: Dis
     if (toSave.deletable) {
       return eventSrv.get(toSave.id).then((saved) => {
         if (saved) {
-          saved.members.forEach((member) => changeMembershipValues(member.id, group.groupType, 0, 1, -1));
+          saved.memberIds.forEach((memberId) => changeMembershipValues(memberId, group.groupType, 0, 1, -1));
           return eventSrv.remove(toSave.id).then(() => {
             dispatchEventChanged(toSave, WeekEventType.REMOVED);
           });
@@ -93,7 +97,7 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], setState: Dis
     }
     return eventSrv.getAndModify(toSave.id, (event) => {
       const modified = event || toSave;
-      modified.members.forEach((member) => changeMembershipValues(member.id, group.groupType, 0, 1, -1));
+      modified.memberIds.forEach((memberId) => changeMembershipValues(memberId, group.groupType, 0, 1, -1));
       return {
         ...modified,
         isDeleted: true,
@@ -114,21 +118,18 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], setState: Dis
   const addMemberToEvent = useCallback((event: TrainerEvent, member: MembershipType) => {
     const group = findGroup(event.groupId);
     changeMembershipValues(member.id, group.groupType, 0, -1, 1);
-    return eventSrv.getAndModify(event.id, (toSave) => ({
-      ...toSave,
-      members: changeItem(event.members, {
-        id: member.id,
-        name: member.name,
-      }),
-    })).then((result) => dispatchEventChanged(result, WeekEventType.CHANGED));
+    return eventSrv.getAndModify(event.id, (toSave) => {
+      toSave.memberIds.push(member.id);
+      return toSave;
+    }).then((result) => dispatchEventChanged(result, WeekEventType.CHANGED));
   }, [changeMembershipValues, dispatchEventChanged, eventSrv, findGroup]);
 
   const removeMemberFromEvent = useCallback((eventId: string, groupType: GroupType, memberId: string, ticketBack: boolean) => {
     changeMembershipValues(memberId, groupType, 0, (ticketBack ? 1 : 0), -1);
-    return eventSrv.getAndModify(eventId, (event) => ({
-      ...event,
-      members: removeItemById(event.members, memberId),
-    })).then((result) => dispatchEventChanged(result, WeekEventType.CHANGED));
+    return eventSrv.getAndModify(eventId, (event) => {
+      removeStr(event.memberIds, memberId);
+      return event;
+    }).then((result) => dispatchEventChanged(result, WeekEventType.CHANGED));
   }, [changeMembershipValues, dispatchEventChanged, eventSrv]);
 
   return {
@@ -137,6 +138,7 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], setState: Dis
     buySeasonTicket,
     createEvent,
     deleteEvent,
+    getMemberNames,
     removeMemberFromEvent,
   };
 };

@@ -34,7 +34,7 @@ export const generateCronEvent = (group: TrainingGroupType, trainer: TrainerCont
     startDate: startDate,
     endDate: new Date(startDate.getTime() + (group.duration * 60 * 1000)),
     color: group.color,
-    members: [],
+    memberIds: [],
   } as TrainerEvent;
 };
 
@@ -97,17 +97,14 @@ export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: Trai
         return;
       }
       if (isAdd) {
-        if (group.maxMember <= data.members.length) {
+        if (group.maxMember <= data.memberIds.length) {
           reject(MAX_MEMBERSHIP_ERROR);
           return;
         }
-        data.members.push({
-          id: user.id,
-          name: user.name,
-        });
+        data.memberIds.push(user.id);
       } else {
-        const idx = data.members.findIndex((m) => m.id === user.id);
-        data.members.splice(idx, 1);
+        const idx = data.memberIds.indexOf(user.id);
+        data.memberIds.splice(idx, 1);
       }
       setDoc(docRef, data).then(() => {
         changeCounterToMembership(firestore, user, membership, group, isAdd).then(() => resolve());
@@ -139,7 +136,7 @@ const createDBEventProvider = (firestore: Firestore, trainerGroups: TrainerGroup
       return doQuery(firestore, `trainers/${trainerGroup.trainer.trainerId}/events`, EVENT_DATE_PROPS, ...queries);
     })).then((data) => {
       const allEvent: TrainerEvent[] = [].concat.apply([], data as [][]);
-      allEvent.forEach((event) => event.badge = event.members?.length.toString() || '0');
+      allEvent.forEach((event) => event.badge = event.memberIds?.length.toString() || '0');
       allEvent.sort(EVENT_COMPARE);
       return allEvent;
     });

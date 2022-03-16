@@ -23,7 +23,14 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
 
   const { groups, trainerData, members } = state;
 
-  const { activateEvent, addMemberToEvent, buySeasonTicket, deleteEvent, removeMemberFromEvent, createEvent } = useTrainerEvents(user!, groups, setState);
+  const {
+    activateEvent,
+    addMemberToEvent,
+    buySeasonTicket,
+    deleteEvent,
+    removeMemberFromEvent,
+    createEvent,
+  } = useTrainerEvents(user!, groups, members || [], setState);
 
   const eventProvider = useMemo(() => groups ? createTrainerEventProvider(firestore, user!, groups) : undefined, [firestore, groups, user]);
 

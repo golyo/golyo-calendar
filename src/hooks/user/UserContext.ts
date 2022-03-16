@@ -26,6 +26,7 @@ export interface TrainerGroups {
 
 export interface TrainerContactMembership extends TrainerGroups {
   membership: MembershipType;
+  memberships: MembershipType[];
 }
 
 export interface User {

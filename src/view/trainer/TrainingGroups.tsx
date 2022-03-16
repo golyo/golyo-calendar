@@ -8,11 +8,11 @@ import {
   Edit, Event as EventIcon,
 } from '@mui/icons-material';
 import { useUser } from '../../hooks/user';
-import { MembershipType, TrainingGroupUIType } from '../../hooks/trainer';
+import { TrainingGroupUIType } from '../../hooks/trainer';
 import { Link } from 'react-router-dom';
 import EditGroupPopup from './group/EditGroupPopup';
 import { convertGroupToUi, DEFAULT_GROUP, useTrainer } from '../../hooks/trainer';
-import { doQuery, loadObject } from '../../hooks/firestore/firestore';
+import { doQuery, updateObject } from '../../hooks/firestore/firestore';
 import { useFirebase } from '../../hooks/firebase';
 
 const TrainingGroups = () => {
@@ -38,19 +38,16 @@ const TrainingGroups = () => {
   }, [sendEmail]);
 
   const doMove = useCallback(() => {
-    doQuery(firestore, '/trainers/bodylali.no1@gmail.com/members').then((members) => {
-      members.forEach((member: MembershipType) => {
-        loadObject(firestore, 'users', member.id).then((mu: any) => {
-          if (!mu.memberships || !mu.memberships.some((ms: any) => ms.trainerId === 'bodylali.no1@gmail.com')) {
-            // console.log('HIBAS USER', mu);
-            mu.memberships = [{
-              trainerId: 'bodylali.no1@gmail.com',
-              trainerName: 'Lajos Keserű',
-            }];
-            // updateObject(firestore, 'users', mu);
-            console.log(mu.id);
-          }
-        });
+    doQuery(firestore, '/trainers/bodylali.no1@gmail.com/events').then((events) => {
+      events.forEach((event: any) => {
+        if (event.members) {
+          event.memberIds = event.members.map((m: any) => m.id);
+          delete event.members;
+        } else {
+          event.memberIds = [];
+        }
+        console.log('XX2', event);
+        updateObject(firestore, '/trainers/bodylali.no1@gmail.com/events', event, false);
       });
     });
   }, [firestore]);

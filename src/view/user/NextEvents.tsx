@@ -35,11 +35,10 @@ const NextEvents = () => {
   const requestedMemberships = useMemo(() => groupMemberships.filter((m) => m.membership.state === MemberState.TRAINER_REQUEST), [groupMemberships]);
 
   const hasChecked = useCallback((event: TrainerEvent) => events.some(
-    (check) => check.groupId === event.groupId && check.members.some(
-      (member) => member.id === user!.id)), [events, user]);
+    (check) => check.groupId === event.groupId && check.memberIds.includes(user!.id)), [events, user]);
 
   const isAccepted = useCallback((event: TrainerEvent) => {
-    return user && event.members && !!event.members.find((member) => member.id === user.id);
+    return user && event.memberIds && event.memberIds.includes(user.id);
   }, [user]);
 
   const findGroupToEvent = useCallback((event: TrainerEvent) => {
@@ -158,7 +157,7 @@ const NextEvents = () => {
         {events.map((event, idx) => (
           <ListItem key={idx}
                     secondaryAction={
-                      <Badge badgeContent={event.members.length.toString()} color="primary">
+                      <Badge badgeContent={event.memberIds.length.toString()} color="primary">
                         <Switch
                           color="secondary"
                           checked={isAccepted(event)}

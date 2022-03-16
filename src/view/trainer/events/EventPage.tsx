@@ -50,7 +50,7 @@ export default function EventPage() {
     if (!event || !group || !members) {
       return [];
     }
-    return event.members.map((m) => members!.find((gm) => gm.id === m.id) || DEFAULT_MEMBER);
+    return event.memberIds.map((mid) => members!.find((gm) => gm.id === mid) || DEFAULT_MEMBER);
   }, [event, group, members]);
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function EventPage() {
     <div className="vertical">
       <Typography variant="h5">{t('event.details')}</Typography>
       <LabelValue label={t('event.time')}>{getDateRangeStr(event)}</LabelValue>
-      <LabelValue label={t('event.members')}>{event.members.length}</LabelValue>
+      <LabelValue label={t('event.members')}>{event.memberIds.length}</LabelValue>
       <Divider/>
       <List>
         {activeMembers.map((eMember, idx) => (

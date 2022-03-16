@@ -33,6 +33,14 @@ const idConverter: FirestoreDataConverter<any> = {
   },
 };
 
+export const removeStr = (items: string[], value: string) => {
+  const idx = items.indexOf(value);
+  if (idx >= 0) {
+    items.splice(idx, 1);
+  }
+  return items;
+};
+
 export const removeItemByCheck : <T> (items: T[], check: (item: T) => boolean) => T[] = (items, check) => {
   const cutted = [...items];
   const idx = cutted.findIndex((item) => check(item));

@@ -5,7 +5,6 @@ import { User as AuthUser } from 'firebase/auth';
 import {
   changeItemByEqual,
   deleteObject, doQuery,
-  loadObject,
   removeItemByEqual,
   updateObject,
   useFirestore,
@@ -29,8 +28,8 @@ import { createUserEventProvider, getInterval, TrainerEvent } from '../event';
 export const loadGroups = (firestore: Firestore, trainerId: string) =>
   doQuery(firestore, `trainers/${trainerId}/groups`);
 
-export const loadMembership = (firestore: Firestore, trainerId: string, userId: string) => {
-  return loadObject(firestore, `trainers/${trainerId}/members`, userId);
+export const loadMemberships = (firestore: Firestore, trainerId: string) => {
+  return doQuery(firestore, `trainers/${trainerId}/members`);
 };
 
 const setMember = (firestore: Firestore, user: User, membership: TrainerContactMembership) => {
@@ -78,10 +77,12 @@ const createDBUser = (authUser: AuthUser) => ({
 
 const isTrainerEqual = (a: TrainerContactMembership, b: TrainerContactMembership) => a.trainer.trainerId === b.trainer.trainerId;
 
-const createMembership = (trainer: TrainerContact, membership: MembershipType, trainerGroups: TrainingGroupType[]) => {
+const createMembership = (userId: string, trainer: TrainerContact, memberships: MembershipType[], trainerGroups: TrainingGroupType[]) => {
+  const membership = memberships.find((m) => m.id === userId)!;
   const dbGroups = trainerGroups.filter((group) => membership.groups.includes(group.id) ||
     group.attachedGroups?.some((aid) => membership.groups.includes(aid)));
   return {
+    memberships,
     membership,
     dbGroups,
     trainer,
@@ -161,15 +162,15 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     setGroupMemberships((prev) => [...prev]);
   }, []);
 
-  const loadMemberships = useCallback((dbUser: User) => {
+  const loadGroupMemberships = useCallback((dbUser: User) => {
     if (!dbUser.memberships || dbUser.memberships.length === 0) {
       return;
     }
     Promise.all(
       dbUser.memberships.map(async (trainerContact) => {
-        const membership = await loadMembership(firestore, trainerContact.trainerId, dbUser.id) as MembershipType;
+        const memberships = await loadMemberships(firestore, trainerContact.trainerId) as MembershipType[];
         const groups = await loadGroups(firestore, trainerContact.trainerId);
-        return createMembership(trainerContact, membership, groups);
+        return createMembership(dbUser!.id, trainerContact, memberships, groups);
       }),
     ).then((memberships) => {
       setGroupMemberships(memberships);
@@ -201,8 +202,8 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
       });
       saveUser(user!);
     }
-    return addUserRequest(firestore, trainer.id, user!, group).then(() => loadMemberships(user!));
-  }, [firestore, loadMemberships, saveUser, user]);
+    return addUserRequest(firestore, trainer.id, user!, group).then(() => loadGroupMemberships(user!));
+  }, [firestore, loadGroupMemberships, saveUser, user]);
 
   const loadUser = useCallback(() => {
     userSrv.get(HACK_USER || authUser!.email!).then((dbUser) => {
@@ -215,7 +216,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
           userSrv.save(toSave, true, false).then(() => changeUser(dbUser));
         } else {
           changeUser(dbUser);
-          loadMemberships(dbUser);
+          loadGroupMemberships(dbUser);
         }
       } else {
         const toSave = createDBUser(authUser!);
@@ -224,7 +225,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
         });
       }
     });
-  }, [authUser, changeUser, loadMemberships, userSrv]);
+  }, [authUser, changeUser, loadGroupMemberships, userSrv]);
 
   useEffect(() => {
     // user lost set initialized false

@@ -13,8 +13,8 @@ const NewEventMemberPopup = ({ event, eventChanged }: { event: TrainerEvent; eve
   const [memberId, setMemberId] = useState<string>('');
 
   const possibleMembers = useMemo(() => {
-    return members.filter((m) => !event.members.some((em) => em.id === m.id));
-  }, [event.members, members]);
+    return members.filter((m) => !event.memberIds.includes(m.id));
+  }, [event.memberIds, members]);
 
   const [open, setOpen] = useState(false);
 

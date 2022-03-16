@@ -27,7 +27,7 @@ export default function TrainerEvents() {
           <ListItem key={idx}
                     secondaryAction={
                       <IconButton component={Link} to={`/group/${event.groupId}/event/${event.id}`}>
-                        <Badge badgeContent={event.members.length.toString()} color="primary">
+                        <Badge badgeContent={event.memberIds.length.toString()} color="primary">
                           <Groups />
                         </Badge>
                       </IconButton>

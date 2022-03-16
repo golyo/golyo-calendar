@@ -18,7 +18,7 @@ export interface TrainerEvent extends CalendarEvent {
   deletable?: boolean;
   trainerId: string;
   groupId: string;
-  members: EventMember[];
+  memberIds: string[];
 }
 
 export interface EventProvider {
