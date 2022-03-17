@@ -46,7 +46,6 @@ const TrainingGroups = () => {
         } else {
           event.memberIds = [];
         }
-        console.log('XX2', event);
         updateObject(firestore, '/trainers/bodylali.no1@gmail.com/events', event, false);
       });
     });

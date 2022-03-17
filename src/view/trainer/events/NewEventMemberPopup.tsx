@@ -5,39 +5,58 @@ import { AddCircle } from '@mui/icons-material';
 import ModalContainer from '../../common/ModalContainer';
 import { useTrainer } from '../../../hooks/trainer';
 import { TrainerEvent } from '../../../hooks/event';
+import { getGroupMembers } from '../../../hooks/trainer/GroupProvider';
 
 const NewEventMemberPopup = ({ event, eventChanged }: { event: TrainerEvent; eventChanged: (event: TrainerEvent) => void; }) => {
   const { t } = useTranslation();
-  const { members, addMemberToEvent } = useTrainer();
+  const { groups, members, addMemberToEvent } = useTrainer();
+
+  const [groupMemberId, setGroupMemberId] = useState<string>('');
 
   const [memberId, setMemberId] = useState<string>('');
 
-  const possibleMembers = useMemo(() => {
-    return members.filter((m) => !event.memberIds.includes(m.id));
-  }, [event.memberIds, members]);
+  const group = useMemo(() => groups.find((g) => g.id === event.groupId)!, [event.groupId, groups]);
+
+  const groupMembers = useMemo(() => getGroupMembers(members, group), [group, members]);
+
+  const possibleGroupMembers = useMemo(() => groupMembers.filter((m) =>
+    !event.memberIds.includes(m.id)), [event.memberIds, groupMembers]);
+
+  const possibleMembers = useMemo(() => members.filter((m) =>
+    !event.memberIds.includes(m.id) && !groupMembers.some((gm) => gm.id === m.id)),
+  [event.memberIds, groupMembers, members]);
 
   const [open, setOpen] = useState(false);
 
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => {
     setMemberId('');
+    setGroupMemberId('');
     setOpen(false);
   }, []);
 
   const onSelectMember = useCallback((e: SelectChangeEvent) => {
     setMemberId(e.target.value);
+    setGroupMemberId('');
+  }, []);
+
+  const onSelectGroupMember = useCallback((e: SelectChangeEvent) => {
+    setGroupMemberId(e.target.value);
+    setMemberId('');
   }, []);
 
   const doAddMemberToEvent = useCallback(() => {
-    if (!memberId) {
+    const toAdd = memberId || groupMemberId;
+    if (!toAdd) {
       return;
     }
-    addMemberToEvent(event, members.find((m) => m.id === memberId)!).then((saved) => {
+    addMemberToEvent(event, members.find((m) => m.id === toAdd)!).then((saved) => {
       setMemberId('');
+      setGroupMemberId('');
       eventChanged(saved);
       closeModal();
     });
-  }, [addMemberToEvent, closeModal, event, eventChanged, memberId, members]);
+  }, [addMemberToEvent, closeModal, event, eventChanged, groupMemberId, memberId, members]);
 
   return (
     <>
@@ -46,8 +65,15 @@ const NewEventMemberPopup = ({ event, eventChanged }: { event: TrainerEvent; eve
         open={open}
         onClose={closeModal}
       >
-        <ModalContainer close={closeModal} open={open} title={t('event.addMember')}>
+        <ModalContainer variant="small" close={closeModal} open={open} title={t('event.addMember')}>
           <div className="vertical">
+            <Typography variant="h5">{t('event.chooseGroupMember')}</Typography>
+            <Select onChange={onSelectGroupMember} size="small" value={groupMemberId}>
+              <MenuItem value={''}></MenuItem>
+              {possibleGroupMembers.map((pm, idx) => (
+                <MenuItem key={idx} value={pm.id}>{pm.name}</MenuItem>
+              ))}
+            </Select>
             <Typography variant="h5">{t('event.chooseMember')}</Typography>
             <Select onChange={onSelectMember} size="small" value={memberId}>
               <MenuItem value={''}></MenuItem>

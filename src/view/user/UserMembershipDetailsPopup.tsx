@@ -31,7 +31,7 @@ const UserMembershipDetailPopup = ({ groupMembership, handleRequest, leaveGroup,
     if (!groupMembership) {
       return undefined;
     }
-    return convertGroupToUi(groupMembership?.dbGroups.find((gr) => gr.id === groupId)!, cronConverter);
+    return convertGroupToUi(groupMembership?.trainerGroups.find((gr) => gr.id === groupId)!, cronConverter);
   }, [cronConverter, groupId, groupMembership]);
 
   const actionButtons = useMemo(() => {

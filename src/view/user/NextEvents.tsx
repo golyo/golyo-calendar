@@ -43,12 +43,12 @@ const NextEvents = () => {
 
   const findGroupToEvent = useCallback((event: TrainerEvent) => {
     const membership = activeMemberships.find((gm) => gm.trainer.trainerId === event.trainerId)!;
-    return membership.dbGroups.find((gr) => gr.id === event.groupId)!;
+    return membership.trainerGroups.find((gr) => gr.id === event.groupId)!;
   }, [activeMemberships]);
 
   const getRemainingEventNo = useCallback((event: TrainerEvent) => {
     const membership = activeMemberships.find((gm) => gm.trainer.trainerId === event.trainerId)!;
-    const groupType = membership.dbGroups.find((gr) => gr.id === event.groupId)!.groupType;
+    const groupType = membership.trainerGroups.find((gr) => gr.id === event.groupId)!.groupType;
     return membership.membership.ticketSheets?.find((sh) => sh.type === groupType)?.remainingEventNo || 0;
   }, [activeMemberships]);
 
@@ -133,7 +133,7 @@ const NextEvents = () => {
       <Typography variant="h3">{t('trainer.nextEvents')}</Typography>
       <List>
         {requestedMemberships.map((membership, idx) =>
-          membership.dbGroups.map((dbGroup, grIdx) => (
+          membership.contactGroups.map((dbGroup, grIdx) => (
             <ListItem key={idx + '-' + grIdx}
                       component={Link}
                       to={'/memberships/' + dbGroup.id}

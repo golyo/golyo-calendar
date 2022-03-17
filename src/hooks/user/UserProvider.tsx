@@ -23,7 +23,7 @@ import {
 import { Firestore, where } from 'firebase/firestore';
 import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
 import { createCronConverter } from './cronUtils';
-import { createUserEventProvider, getInterval, TrainerEvent } from '../event';
+import { createUserEventProvider, EventProvider, getInterval, TrainerEvent } from '../event';
 
 export const loadGroups = (firestore: Firestore, trainerId: string) =>
   doQuery(firestore, `trainers/${trainerId}/groups`);
@@ -79,14 +79,15 @@ const isTrainerEqual = (a: TrainerContactMembership, b: TrainerContactMembership
 
 const createMembership = (userId: string, trainer: TrainerContact, memberships: MembershipType[], trainerGroups: TrainingGroupType[]) => {
   const membership = memberships.find((m) => m.id === userId)!;
-  const dbGroups = trainerGroups.filter((group) => membership.groups.includes(group.id) ||
-    group.attachedGroups?.some((aid) => membership.groups.includes(aid)));
+  const contactGroups = trainerGroups.filter((group) => membership.groups.includes(group.id) ||
+      group.attachedGroups?.some((aid) => membership.groups.includes(aid)));
   return {
     memberships,
     membership,
-    dbGroups,
+    contactGroups,
+    trainerGroups,
     trainer,
-  };
+  } as TrainerContactMembership;
 };
 
 // const HACK_USER = 'bodylali.no1@gmail.com';
@@ -129,7 +130,12 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const saveUser = useCallback((toSave: User) => userSrv.save(toSave).then(() => changeUser(toSave)), [changeUser, userSrv]);
 
-  const userEventProvider = useMemo(() => createUserEventProvider(firestore, activeMemberships), [firestore, activeMemberships]);
+  const userEventProvider = useMemo(() => {
+    if (!user) {
+      return {} as EventProvider;
+    }
+    return createUserEventProvider(firestore, user, activeMemberships);
+  }, [firestore, user, activeMemberships]);
 
   const deleteTrainerContactState = useCallback(async (membership: TrainerContactMembership) => {
     const idx = user!.memberships.findIndex((m) => m.trainerId === membership.trainer.trainerId);
@@ -180,14 +186,14 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   const leaveGroup = useCallback((membership: TrainerContactMembership, groupId: string) => {
     const groupIdx = membership.membership.groups.indexOf(groupId);
     membership.membership.groups.splice(groupIdx, 1);
-    const idx = membership.dbGroups.findIndex((dg) => dg.id === groupId);
-    const group = membership.dbGroups[idx];
-    membership.dbGroups.splice(idx, 1);
+    const idx = membership.trainerGroups.findIndex((dg) => dg.id === groupId);
+    const group = membership.contactGroups[idx];
+    membership.contactGroups.splice(idx, 1);
     return setMember(firestore, user!, membership).then(() => {
       group.attachedGroups.forEach((agroupId) => {
-        if (!membership.dbGroups.some((dg) => dg.attachedGroups.includes(agroupId))) {
-          const aidx = membership.dbGroups.findIndex((dg) => dg.id === agroupId);
-          membership.dbGroups.splice(aidx, 1);
+        if (!membership.contactGroups.some((dg) => dg.attachedGroups.includes(agroupId))) {
+          const aidx = membership.contactGroups.findIndex((dg) => dg.id === agroupId);
+          membership.contactGroups.splice(aidx, 1);
         }
       });
       setGroupMemberships((prev) => changeItemByEqual(prev, membership, isTrainerEqual));

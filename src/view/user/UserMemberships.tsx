@@ -13,7 +13,7 @@ const UserMemberships = () => {
   const { groupId } = useParams<{ groupId: string }>();
 
   const [popupState, setPopupState] = useState<{ groupMembership?: TrainerContactMembership, groupId?: string }>({
-    groupMembership: groupMemberships.find((grm) => grm.dbGroups.some((gr) => gr.id === groupId)),
+    groupMembership: groupMemberships.find((grm) => grm.contactGroups.some((gr) => gr.id === groupId)),
     groupId: groupId,
   });
 
@@ -35,7 +35,7 @@ const UserMemberships = () => {
       <Typography variant="h3">{t('trainer.groups')}</Typography>
       <List>
         {groupMemberships && groupMemberships.map((groupMembership, idx) =>
-          groupMembership.dbGroups.map((group, gidx) => (
+          groupMembership.contactGroups.map((group, gidx) => (
             <ListItem key={`${idx}-${gidx}`}
                       style={{ cursor: 'pointer' }}
                       onClick={() => onSelect(groupMembership, group.id)}

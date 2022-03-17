@@ -200,7 +200,8 @@
   "event": {
     "addMember": "Add Member",
     "createNew": "Create new event",
-    "chooseMember": "Please choose, and add member to the event!",
+    "chooseGroupMember": "Choose group member!",
+    "chooseMember": "Choose outside member!",
     "details": "Event details",
     "members": "Members",
     "time": "Time",

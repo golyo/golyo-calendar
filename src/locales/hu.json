@@ -197,7 +197,8 @@
   "event": {
     "addMember": "Tag hozzáadása",
     "createNew": "Új esemény létrehozása",
-    "chooseMember": "Válassza ki, és adja hozzá a tagot az eseményhez!",
+    "chooseGroupMember": "Válasszon csoport tagot!",
+    "chooseMember": "Válasszon külsős tagot!",
     "details": "Esemény részletek",
     "members": "Résztvevők",
     "time": "Időpont",

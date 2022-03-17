@@ -47,7 +47,7 @@ export const convertGroupToUi: (data: TrainingGroupType, cronConverter: CronConv
 
 export const getGroupMembers = (members: MembershipType[], group: TrainingGroupBase) => {
   return members.filter((member) => member.groups.includes(group.id) ||
-    group.attachedGroups.some((attachedId) => member.groups.includes(attachedId)));
+    (group.attachedGroups && group.attachedGroups.some((attachedId) => member.groups.includes(attachedId))));
 };
 
 const GroupProvider = ({ groupId, children }: { groupId: string, children: ReactNode }) => {

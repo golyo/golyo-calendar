@@ -88,7 +88,7 @@ export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: Trai
   const path = `trainers/${trainerEvent.trainerId}/events`;
   const collectionRef = getCollectionRef(firestore, path, EVENT_DATE_PROPS);
   const docRef = doc(collectionRef, trainerEvent.id);
-  const group = membership.dbGroups.find((gr) => gr.id === trainerEvent.groupId)!;
+  const group = membership.trainerGroups.find((gr) => gr.id === trainerEvent.groupId)!;
   return new Promise<void>((resolve, reject) => {
     getDoc(docRef).then(docSnapshot => {
       const data = (docSnapshot.data() || trainerEvent) as TrainerEvent;
@@ -113,7 +113,7 @@ export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: Trai
   });
 };
 
-const createDBEventProvider = (firestore: Firestore, trainerGroups: TrainerGroups[]) => {
+const createDBEventProvider = (firestore: Firestore, userId: string, trainerGroups: TrainerGroups[]) => {
   let groupRestriction: string | undefined = undefined;
 
   const getEvents = (from: Date, to: Date) => {
@@ -121,19 +121,18 @@ const createDBEventProvider = (firestore: Firestore, trainerGroups: TrainerGroup
       return Promise.resolve([]);
     }
     return Promise.all(trainerGroups.map((trainerGroup) => {
-      const groups = trainerGroup.dbGroups.map((gr) => gr.id);
-      const filtered = groupRestriction ? (groups.includes(groupRestriction) ? [groupRestriction] : []) : groups;
-      if (filtered.length <= 0) {
-        return Promise.resolve([]);
-      }
       const queries = [
         where('startDate', '>=', from.getTime()),
         where('startDate', '<=', to.getTime()),
       ];
-      if (!trainerGroup.isAllGroup || groupRestriction) {
-        queries.push(where('groupId', 'in', filtered));
-      }
-      return doQuery(firestore, `trainers/${trainerGroup.trainer.trainerId}/events`, EVENT_DATE_PROPS, ...queries);
+      return doQuery(firestore, `trainers/${trainerGroup.trainer.trainerId}/events`, EVENT_DATE_PROPS, ...queries).then((result) => {
+        if (!trainerGroup.isAllGroup) {
+          const groups = trainerGroup.contactGroups.map((gr) => gr.id);
+          const filtered = groupRestriction ? (groups.includes(groupRestriction) ? [groupRestriction] : []) : groups;
+          return result.filter((r) => r.memberIds.includes(userId) || filtered.includes(r.groupId));
+        }
+        return result;
+      });
     })).then((data) => {
       const allEvent: TrainerEvent[] = [].concat.apply([], data as [][]);
       allEvent.forEach((event) => event.badge = event.memberIds?.length.toString() || '0');
@@ -152,8 +151,8 @@ const createDBEventProvider = (firestore: Firestore, trainerGroups: TrainerGroup
   } as EventProvider;
 };
 
-const createEventProvider = (firestore: Firestore, trainerGroups: TrainerGroups[]) => {
-  const dbEventProvider = createDBEventProvider(firestore, trainerGroups);
+const createEventProvider = (firestore: Firestore, userId: string, trainerGroups: TrainerGroups[]) => {
+  const dbEventProvider = createDBEventProvider(firestore, userId, trainerGroups);
   let groupRestriction: string | undefined = undefined;
 
   const getEvents = (from: Date, to: Date) => {
@@ -166,7 +165,7 @@ const createEventProvider = (firestore: Firestore, trainerGroups: TrainerGroups[
         return events;
       }
       trainerGroups.forEach((trainerGroup) => {
-        const filtered = groupRestriction ? trainerGroup.dbGroups.filter((m) => m.id === groupRestriction) : trainerGroup.dbGroups;
+        const filtered = groupRestriction ? trainerGroup.contactGroups.filter((m) => m.id === groupRestriction) : trainerGroup.contactGroups;
         filtered.forEach((group) => appendCronEvents(events, group, trainerGroup.trainer, now > from ? now : from, to));
       });
       events.sort(EVENT_COMPARE);
@@ -185,17 +184,17 @@ const createEventProvider = (firestore: Firestore, trainerGroups: TrainerGroups[
   } as EventProvider;
 };
 
-export const createUserEventProvider = (firestore: Firestore, memberships: TrainerContactMembership[]) =>
-  createEventProvider(firestore, memberships);
+export const createUserEventProvider = (firestore: Firestore, user: User, memberships: TrainerContactMembership[]) =>
+  createEventProvider(firestore, user.id, memberships);
 
-export const createTrainerEventProvider = (firestore: Firestore, trainer: User, dbGroups: TrainingGroupType[]) => {
+export const createTrainerEventProvider = (firestore: Firestore, trainer: User, contactGroups: TrainingGroupType[]) => {
   const trainerGroup: TrainerGroups = {
     isAllGroup: true,
     trainer: {
       trainerId: trainer.id,
       trainerName: trainer.name,
     },
-    dbGroups,
+    contactGroups,
   };
-  return createEventProvider(firestore, [trainerGroup]);
+  return createEventProvider(firestore, trainer.id, [trainerGroup]);
 };

@@ -21,12 +21,13 @@ export interface TrainerContact {
 export interface TrainerGroups {
   isAllGroup?: boolean;
   trainer: TrainerContact;
-  dbGroups: TrainingGroupType[];
+  contactGroups: TrainingGroupType[];
 }
 
 export interface TrainerContactMembership extends TrainerGroups {
   membership: MembershipType;
   memberships: MembershipType[];
+  trainerGroups: TrainingGroupType[];
 }
 
 export interface User {
