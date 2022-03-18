@@ -32,7 +32,8 @@ const NextEvents = () => {
 
   const { activeMemberships, userEventProvider, groupMemberships, getDateRangeStr, user, membershipChanged } = useUser();
 
-  const requestedMemberships = useMemo(() => groupMemberships.filter((m) => m.membership.state === MemberState.TRAINER_REQUEST), [groupMemberships]);
+  const requestedMemberships = useMemo(() => groupMemberships.filter((m) => m.membership.state === MemberState.TRAINER_REQUEST &&
+    m.trainerGroups.some((tg) => m.membership.groups.includes(tg.id))), [groupMemberships]);
 
   const hasChecked = useCallback((event: TrainerEvent) => events.some(
     (check) => check.groupId === event.groupId && check.memberIds.includes(user!.id)), [events, user]);
@@ -125,35 +126,30 @@ const NextEvents = () => {
   ]);
 
   useEffect(() => {
-    userEventProvider.getEvents(new Date(), getNextEventTo()).then((tevents: TrainerEvent[]) => setEvents(tevents.filter((e) => !e.isDeleted )));
+    if (userEventProvider.getEvents) {
+      userEventProvider.getEvents(new Date(), getNextEventTo()).then((tevents: TrainerEvent[]) => setEvents(tevents.filter((e) => !e.isDeleted )));
+    }
   }, [userEventProvider]);
 
   return (
     <div className="vertical">
       <Typography variant="h3">{t('trainer.nextEvents')}</Typography>
       <List>
-        {requestedMemberships.map((membership, idx) =>
-          membership.contactGroups.map((dbGroup, grIdx) => (
-            <ListItem key={idx + '-' + grIdx}
-                      component={Link}
-                      to={'/memberships/' + dbGroup.id}
-                      secondaryAction={
-                        <IconButton color="primary"><Visibility /></IconButton>
-                      }
-            >
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: dbGroup.color }}>
-                  <EventIcon></EventIcon>
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText>
-                <Alert severity="warning">
-                  {t('warning.trainerRequestExists', { trainer: membership.trainer.trainerName })}
-                </Alert>
-              </ListItemText>
-            </ListItem>
-          )))
-        }
+        {requestedMemberships.map((membership, idx) => (
+          <ListItem key={idx}
+                    component={Link}
+                    to={'/memberships'}
+                    secondaryAction={
+                      <IconButton color="primary"><Visibility /></IconButton>
+                    }
+          >
+            <ListItemText>
+              <Alert severity="warning">
+                {t('warning.trainerRequestExists', { trainer: membership.trainer.trainerName })}
+              </Alert>
+            </ListItemText>
+          </ListItem>
+        ))}
         {events.map((event, idx) => (
           <ListItem key={idx}
                     secondaryAction={
