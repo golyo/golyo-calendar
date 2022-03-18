@@ -17,14 +17,14 @@ const STYLE = (theme: Theme) => createStyles({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    transform: 'rotate(0deg)',
+    transform: 'rotate(-90deg)',
   },
   menuButtonIconOpen: {
     transition: theme.transitions.create(['transform'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    transform: 'rotate(180deg)',
+    transform: 'rotate(90deg)',
   },
   hide: {
     display: 'none',

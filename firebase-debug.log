@@ -1,0 +1,54 @@
+[debug] [2022-03-18T13:03:05.674Z] ----------------------------------------------------------------------
+[debug] [2022-03-18T13:03:05.676Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Sonrisa\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2022-03-18T13:03:05.676Z] CLI Version:   10.3.1
+[debug] [2022-03-18T13:03:05.676Z] Platform:      win32
+[debug] [2022-03-18T13:03:05.676Z] Node Version:  v14.17.5
+[debug] [2022-03-18T13:03:05.677Z] Time:          Fri Mar 18 2022 14:03:05 GMT+0100 (közép-európai téli idő)
+[debug] [2022-03-18T13:03:05.677Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-03-18T13:03:05.743Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-03-18T13:03:05.743Z] > authorizing via signed-in user (szetamas@gmail.com)
+[debug] [2022-03-18T13:03:05.743Z] [iam] checking project camp-fire-d8b07 for permissions ["cloudconfig.configs.get","cloudconfig.configs.update","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2022-03-18T13:03:05.745Z] > refreshing access token with scopes: []
+[debug] [2022-03-18T13:03:05.746Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-03-18T13:03:06.006Z] <<< HTTP RESPONSE 200 {"cache-control":"no-cache, no-store, max-age=0, must-revalidate","pragma":"no-cache","expires":"Mon, 01 Jan 1990 00:00:00 GMT","date":"Fri, 18 Mar 2022 13:03:05 GMT","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-03-18T13:03:06.021Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/camp-fire-d8b07:testIamPermissions [none]
+[debug] [2022-03-18T13:03:06.022Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/camp-fire-d8b07:testIamPermissions {"permissions":["cloudconfig.configs.get","cloudconfig.configs.update","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2022-03-18T13:03:06.885Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/camp-fire-d8b07:testIamPermissions 200
+[debug] [2022-03-18T13:03:06.885Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/camp-fire-d8b07:testIamPermissions {"permissions":["cloudconfig.configs.get","cloudconfig.configs.update","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2022-03-18T13:03:06.887Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/camp-fire-d8b07 [none]
+[debug] [2022-03-18T13:03:07.307Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/camp-fire-d8b07 200
+[debug] [2022-03-18T13:03:07.307Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/camp-fire-d8b07 {"projectId":"camp-fire-d8b07","projectNumber":"257295642389","displayName":"camp-fire","name":"projects/camp-fire-d8b07","resources":{"hostingSite":"camp-fire-d8b07","storageBucket":"camp-fire-d8b07.appspot.com","locationId":"europe-west"},"state":"ACTIVE"}
+[info] 
+[info] === Deploying to 'camp-fire-d8b07'...
+[info] 
+[info] i  deploying firestore, hosting, remoteconfig 
+[info] i  firestore: reading indexes from firestore.indexes.json... 
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2022-03-18T13:03:07.313Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/camp-fire-d8b07:test [none]
+[debug] [2022-03-18T13:03:07.313Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/camp-fire-d8b07:test [omitted]
+[debug] [2022-03-18T13:03:08.180Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/camp-fire-d8b07:test 200
+[debug] [2022-03-18T13:03:08.180Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/camp-fire-d8b07:test {}
+[info] +  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2022-03-18T13:03:08.181Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/camp-fire-d8b07 [none]
+[debug] [2022-03-18T13:03:08.596Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/camp-fire-d8b07 200
+[debug] [2022-03-18T13:03:08.596Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/camp-fire-d8b07 {"projectId":"camp-fire-d8b07","projectNumber":"257295642389","displayName":"camp-fire","name":"projects/camp-fire-d8b07","resources":{"hostingSite":"camp-fire-d8b07","storageBucket":"camp-fire-d8b07.appspot.com","locationId":"europe-west"},"state":"ACTIVE"}
+[debug] [2022-03-18T13:03:08.598Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/257295642389/sites/camp-fire-d8b07/versions [none]
+[debug] [2022-03-18T13:03:08.598Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/257295642389/sites/camp-fire-d8b07/versions {"config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2022-03-18T13:03:10.251Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/257295642389/sites/camp-fire-d8b07/versions 200
+[debug] [2022-03-18T13:03:10.251Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/257295642389/sites/camp-fire-d8b07/versions {"name":"projects/257295642389/sites/camp-fire-d8b07/versions/1db02cd9ef4feea3","status":"CREATED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2022-03-18T13:03:10.253Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2022-03-18T13:03:10.253Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-03-18T13:03:10.433Z] <<< HTTP RESPONSE 200 {"cache-control":"no-cache, no-store, max-age=0, must-revalidate","pragma":"no-cache","expires":"Mon, 01 Jan 1990 00:00:00 GMT","date":"Fri, 18 Mar 2022 13:03:10 GMT","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-03-18T13:03:10.447Z] >>> HTTP REQUEST GET https://firebaseremoteconfig.googleapis.com/v1/projects/257295642389/remoteConfig  
+ 
+[debug] [2022-03-18T13:03:10.929Z] <<< HTTP RESPONSE 200 {"etag":"etag-257295642389-31","content-type":"application/json; charset=UTF-8","vary":"Origin, X-Origin, Referer","content-encoding":"gzip","date":"Fri, 18 Mar 2022 13:03:10 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","transfer-encoding":"chunked"}
+[debug] [2022-03-18T13:03:10.930Z] > refreshing access token with scopes: []
+[debug] [2022-03-18T13:03:10.930Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-03-18T13:03:10.932Z] >>> HTTP REQUEST GET https://firestore.googleapis.com/v1/projects/camp-fire-d8b07/databases/(default)/collectionGroups/-/indexes  
+ 
+[debug] [2022-03-18T13:03:11.111Z] <<< HTTP RESPONSE 200 {"expires":"Mon, 01 Jan 1990 00:00:00 GMT","date":"Fri, 18 Mar 2022 13:03:11 GMT","pragma":"no-cache","cache-control":"no-cache, no-store, max-age=0, must-revalidate","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-03-18T13:03:11.124Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/camp-fire-d8b07/releases pageSize=10&pageToken=

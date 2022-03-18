@@ -9,14 +9,13 @@ import {
   Avatar,
   Button,
   CssBaseline,
-  IconButton,
   ListItemIcon,
   ListItemText,
   Menu,
-  MenuItem,
+  MenuItem, SvgIcon,
   Toolbar, Typography,
 } from '@mui/material';
-import { AccountCircle, Logout, ManageAccounts, Menu as MenuIcon } from '@mui/icons-material';
+import { AccountCircle, Logout, ManageAccounts } from '@mui/icons-material';
 import styles from './MenuDrawer.style';
 import Login from '../view/login/Login';
 import Verification from '../view/login/Verification';
@@ -38,6 +37,7 @@ import TrainerCalendar from '../view/trainer/events/TrainerCalendar';
 import EventPage from '../view/trainer/events/EventPage';
 import TrainerEvents from '../view/trainer/events/TrainerEvents';
 import SearchTrainer from '../view/user/SearchTrainer';
+import { ReactComponent as TrainingSheet }  from './training-sheet.svg';
 
 const useStyles = makeStyles(styles, { name: 'MenuDrawer' });
 
@@ -108,7 +108,15 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
 
       <AppBar position="fixed">
         <Toolbar disableGutters>
-          <IconButton
+          <Button
+            startIcon={<SvgIcon
+              color="inherit"
+              component={TrainingSheet}
+              inheritViewBox
+              classes={{
+                root: isLeftOpen ? classes.menuButtonIconOpen : classes.menuButtonIconClosed,
+              }}
+            />}
             color="inherit"
             aria-label="Open drawer"
             aria-controls={isLeftOpen ? 'composition-menu' : undefined}
@@ -117,12 +125,8 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
             onClick={handleLeftMenu}
             className={classes.menuButton}
           >
-            <MenuIcon
-              classes={{
-                root: isLeftOpen ? classes.menuButtonIconOpen : classes.menuButtonIconClosed,
-              }}
-            />
-          </IconButton>
+            Trainer Sheet
+          </Button>
           <Menu
             id="menu-left"
             anchorEl={anchorLeft}
