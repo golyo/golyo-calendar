@@ -80,7 +80,8 @@
   "error": {
     "required": "Mező megadása kötelező",
     "numberType": "Nem megfelelő szám",
-    "email": "Nem megfelelő email"
+    "email": "Nem megfelelő email",
+    "unknownError": "Ismeretlen hiba, kérem vegye fel a kapcsolatot a rendszer üzemeltetőjével!"
   },
   "trainer": {
     "nextEvents": "Következő 28 nap eseményei",

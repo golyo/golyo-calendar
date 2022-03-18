@@ -16,6 +16,7 @@ import {
   updateProfile,
   User as AuthUser,
 } from 'firebase/auth';
+import * as Sentry from '@sentry/react';
 import i18n from '../../i18n';
 import { useFirebase } from '../firebase/FirebaseProvider';
 import AuthContext, { AuthState } from './AuthContext';
@@ -50,11 +51,13 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     auth.onAuthStateChanged(dbUser => {
       if (dbUser) {
+        Sentry.setUser({ email: dbUser.email! });
         setState({
           authState: dbUser.emailVerified ? AuthState.VERIFIED : AuthState.AUTHORIZED,
           authUser: dbUser,
         });
       } else {
+        Sentry.setUser({ email: 'undefined' });
         setState({
           authState: AuthState.UNAUTHORIZED,
           authUser: undefined,

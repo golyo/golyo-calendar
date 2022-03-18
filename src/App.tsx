@@ -22,6 +22,7 @@ import weekTableTheme, { IThemeOptions } from './theme/weekTableTheme';
 import { BreakpointProvider } from './hooks/breakpoint';
 import { UserProvider } from './hooks/user';
 import { DialogProvider } from './hooks/dialog';
+import ErrorBoundary from './view/common/ErrorBoundary';
 
 const theme = responsiveFontSizes(createTheme(weekTableTheme as IThemeOptions));
 
@@ -116,7 +117,9 @@ function App() {
               <FirebaseProvider>
                 <AuthProvider>
                   <UserProvider>
-                    <MenuDrawer leftMenu={leftMenu} rightMenu={rightMenu}/>
+                    <ErrorBoundary>
+                      <MenuDrawer leftMenu={leftMenu} rightMenu={rightMenu}/>
+                    </ErrorBoundary>
                   </UserProvider>
                 </AuthProvider>
               </FirebaseProvider>

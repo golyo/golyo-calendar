@@ -12,14 +12,11 @@ import { TrainingGroupUIType } from '../../hooks/trainer';
 import { Link } from 'react-router-dom';
 import EditGroupPopup from './group/EditGroupPopup';
 import { convertGroupToUi, DEFAULT_GROUP, useTrainer } from '../../hooks/trainer';
-import { doQuery, updateObject } from '../../hooks/firestore/firestore';
-import { useFirebase } from '../../hooks/firebase';
 
 const TrainingGroups = () => {
   const { t } = useTranslation();
-  const { firestore } = useFirebase();
   const { user, cronConverter } = useUser();
-  const { groups, saveGroup, sendEmail } = useTrainer();
+  const { groups, saveGroup } = useTrainer();
 
   const traningUiGroups = useMemo(() => groups.map((group) => convertGroupToUi(group, cronConverter)), [groups, cronConverter]);
   const [edit, setEdit] = useState<boolean>(false);
@@ -33,28 +30,15 @@ const TrainingGroups = () => {
     });
   }, [saveGroup, closePopup]);
 
-  const testEmail = useCallback(() => {
-    sendEmail('szetamas75@gmail.com', 'testÜzi', 'testCOntent');
-  }, [sendEmail]);
-
   const doMove = useCallback(() => {
-    doQuery(firestore, '/trainers/bodylali.no1@gmail.com/events').then((events) => {
-      events.forEach((event: any) => {
-        if (event.members) {
-          event.memberIds = event.members.map((m: any) => m.id);
-          delete event.members;
-        } else {
-          event.memberIds = [];
-        }
-        updateObject(firestore, '/trainers/bodylali.no1@gmail.com/events', event, false);
-      });
-    });
-  }, [firestore]);
+    throw new Error('Alma');
+  }, []);
 
   if (!user) {
-    console.log('XXXXtestEMail', testEmail, doMove);
+    console.log('XXXXtestEMail', doMove);
     return null;
   }
+
   return (
     <div className="vertical">
       <Typography variant="h3">{t('trainer.groups')}</Typography>

@@ -79,7 +79,8 @@
   "error": {
     "required": "Field is required",
     "numberType": "Not valid integer",
-    "email": "Not valid email"
+    "email": "Not valid email",
+    "unknownError": "Unknown Error, Please contact your administrator!"
   },
   "home": {
     "title": "Home"
