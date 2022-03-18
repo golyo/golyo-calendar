@@ -80,7 +80,8 @@
     "required": "Field is required",
     "numberType": "Not valid integer",
     "email": "Not valid email",
-    "unknownError": "Unknown Error, Please contact your administrator!"
+    "unknownError": "Unknown Error, Please contact your administrator!",
+    "update": "Error while update"
   },
   "home": {
     "title": "Home"
@@ -162,7 +163,8 @@
     "removeFromGroup": "Are you sure, to remove user from group?",
     "leaveGroup": "Are you sure, to leave group?",
     "deleteEvent": "Are you sure to delete selected event, and give tickets back to members?",
-    "activateEvent": "Are you sure to activate event, and enable to join by members?"
+    "activateEvent": "Are you sure to activate event, and enable to join by members?",
+    "removeFromEvent": "Are you sure to remove member from event?"
   },
   "warning": {
     "consultTrainer": "Please consult your trainer about tickets!",

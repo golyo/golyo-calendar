@@ -1,10 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, IconButton, Modal } from '@mui/material';
-import { Visibility } from '@mui/icons-material';
+import { AddCircle, Visibility } from '@mui/icons-material';
 import ModalContainer from '../../common/ModalContainer';
 import {
-  MemberState,
   MembershipType,
   TRAINER_STATE_MAP,
   getButtonVariant,
@@ -92,10 +91,10 @@ const MemberDetailPopup = ({ sheet, member }: Props) => {
               <ModifyTicketPopup sheet={sheet} membership={member} />
             </LabelValue>
             <LabelValue label={t('membership.purchasedTicketNo')}>
-              {sheet.purchasedTicketNo}
+              <span style={{ paddingRight: '20px' }}>{sheet.purchasedTicketNo}</span>
+              <IconButton color="primary" onClick={buyTicket}><AddCircle /></IconButton>
             </LabelValue>
             <div className="horizontal">
-              {member.state === MemberState.ACCEPTED && <Button onClick={buyTicket} variant="contained">{t('action.buySeasonTicket')}</Button>}
               {actionButtons.map((button, idx) => (
                 <Button key={idx} variant={getButtonVariant(idx)} onClick={() => doAction(button)}>{t(button.label)}</Button>
               ))}

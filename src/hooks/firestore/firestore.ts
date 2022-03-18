@@ -162,6 +162,11 @@ export const useFirestore = <T extends { id: string }>(path: string, datePropert
 
   const getDocRef = useCallback((id: string) => doc(collectionRef, id), [collectionRef]);
 
+  const hiddeError = useCallback((err: any, messageKey?: string) => {
+    hideBackdrop(messageKey);
+    throw err;
+  }, [hideBackdrop]);
+
   const save = useCallback((data: any, merge = true, useMessage = true) => {
     showBackdrop();
     if (data.id) {
@@ -175,9 +180,9 @@ export const useFirestore = <T extends { id: string }>(path: string, datePropert
         data.id = docRef.id;
         hideBackdrop(useMessage && 'common.insertSuccess');
         return docRef;
-      });
+      }, (err) => hiddeError(err, useMessage ? 'error.update' : undefined));
     }
-  }, [collectionRef, getDocRef, hideBackdrop, showBackdrop]);
+  }, [collectionRef, getDocRef, hiddeError, hideBackdrop, showBackdrop]);
 
   const getAndModify: (id: string, modifier: (item: T) => T, useMessage?: boolean) => Promise<T> =
     useCallback((id: string, modifier: (item: T) => T, useMessage = true) => {
@@ -189,15 +194,17 @@ export const useFirestore = <T extends { id: string }>(path: string, datePropert
           setDoc(docRef, modified).then(() => {
             hideBackdrop(useMessage ? 'common.modifySuccess' : '');
             resolve(modified);
-          });
+          }, (err) => hiddeError(err, useMessage ? 'error.update' : undefined));
         });
       });
-    }, [getDocRef, hideBackdrop, showBackdrop]);
+    }, [getDocRef, hiddeError, hideBackdrop, showBackdrop]);
 
   const remove = useCallback((id: string, useMessage = true) => {
     showBackdrop();
-    return deleteDoc(getDocRef(id)).then(() => hideBackdrop(useMessage && 'common.removeSuccess'));
-  }, [getDocRef, hideBackdrop, showBackdrop]);
+    return deleteDoc(getDocRef(id)).then(
+      () => hideBackdrop(useMessage && 'common.removeSuccess'),
+      (err) => hiddeError(err, useMessage ? 'error.update' : undefined));
+  }, [getDocRef, hiddeError, hideBackdrop, showBackdrop]);
 
   const listAll = useCallback((...queryConstraints: QueryConstraint[]) => {
     showBackdrop();

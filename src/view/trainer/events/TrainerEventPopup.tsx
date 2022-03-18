@@ -85,9 +85,9 @@ const TrainerEventPopup = ({ selectedEvent, groupType, resetEvent }: Props) => {
             ))}
           </List>
           <div className="horizontal">
-            {!isStarted && !event.isDeleted && <NewEventMemberPopup event={event} eventChanged={setEvent} />}
+            {!event.isDeleted && <NewEventMemberPopup event={event} eventChanged={setEvent} />}
             {!isStarted && !event.isDeleted && <Button size="small" variant='outlined' onClick={doDeleteEvent}>{t('common.delete')}</Button>}
-            {!isStarted && event.isDeleted && <Button size="small" onClick={doActivateEvent}>{t('common.activate')}</Button>}
+            {!isStarted && event.isDeleted && <Button size="small" variant='outlined' onClick={doActivateEvent}>{t('common.activate')}</Button>}
             <Button size="small" onClick={resetEvent}>{t('common.close')}</Button>
           </div>
         </div>

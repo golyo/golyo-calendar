@@ -1,6 +1,6 @@
 import { GroupType, useTrainer } from '../../../hooks/trainer';
 import { Avatar, Button, IconButton, Modal } from '@mui/material';
-import { Edit as EditIcon } from '@mui/icons-material';
+import { AddCircle, Edit as EditIcon } from '@mui/icons-material';
 import ModalContainer from '../../common/ModalContainer';
 import { useTranslation } from 'react-i18next';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -8,6 +8,7 @@ import { TicketNoWarning } from './EventPage';
 import { useDialog } from '../../../hooks/dialog';
 import { TrainerEvent } from '../../../hooks/event';
 import { findOrCreateSheet } from '../../../hooks/trainer';
+import LabelValue from '../../common/LabelValue';
 
 type ActionPopupProps = {
   memberId: string;
@@ -43,9 +44,14 @@ const TrainerActionsPopup = ({ memberId, event, groupType, setEvent } : ActionPo
   }, [buySeasonTicket, closeModal, event.groupId, member.id, showConfirmDialog, t]);
 
   const removeMember = useCallback((ticketBack: boolean) => {
-    removeMemberFromEvent(event.id!, groupType, member.id, ticketBack).then((dbEvent) => setEvent!(dbEvent));
-    closeModal();
-  }, [closeModal, event.id, groupType, member.id, removeMemberFromEvent, setEvent]);
+    showConfirmDialog({
+      description: t('confirm.removeFromEvent'),
+      okCallback: () => {
+        removeMemberFromEvent(event.id!, groupType, member.id, ticketBack).then((dbEvent) => setEvent!(dbEvent));
+        closeModal();
+      },
+    });
+  }, [closeModal, event.id, groupType, member.id, removeMemberFromEvent, setEvent, showConfirmDialog, t]);
 
   const doRemoveMember = useCallback(() => removeMember(true), [removeMember]);
 
@@ -84,11 +90,14 @@ const TrainerActionsPopup = ({ memberId, event, groupType, setEvent } : ActionPo
           </span>)
         }>
           <div className="vertical">
-            <TicketNoWarning sheet={sheet!} t={t} />
+            <LabelValue label={t('membership.remainingEventNo')}><TicketNoWarning sheet={sheet!} t={t} /></LabelValue>
+            <LabelValue label={t('membership.purchasedTicketNo')}>
+              <span style={{ paddingRight: '20px' }}>{sheet.purchasedTicketNo}</span>
+              <IconButton color="primary" onClick={buyTicket}><AddCircle /></IconButton>
+            </LabelValue>
             <div className="horizontal">
-              <Button size="small" onClick={buyTicket} variant="contained">{t('action.buySeasonTicket')}</Button>
-              {event && isStarted() && <Button size="small" onClick={memberMissed} variant="outlined">{t('action.memberMissed')}</Button>}
-              {event && !isStarted() && <Button size="small" onClick={doRemoveMember} variant="outlined">{t('action.removeMember')}</Button>}
+              {event && isStarted() && <Button size="small" onClick={memberMissed} variant="contained">{t('action.memberMissed')}</Button>}
+              {event && !isStarted() && <Button size="small" onClick={doRemoveMember} variant="contained">{t('action.removeMember')}</Button>}
               <Button size="small" onClick={closeModal} >{t('common.cancel')}</Button>
             </div>
           </div>

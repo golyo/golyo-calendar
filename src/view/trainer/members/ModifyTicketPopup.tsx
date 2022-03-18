@@ -38,17 +38,16 @@ const ModifyTicketPopup = ({ membership, sheet }: { membership: MembershipType, 
             <LabelValue label={t('membership.remainingEventNo')}>
               { sheet.remainingEventNo }
             </LabelValue>
-            <div>
+            <LabelValue label={t('membership.changeEventNo')}>
               <TextField
                 sx={{ width: '150px' }}
                 size="small"
                 value={newValue}
-                label={t('membership.changeEventNo')}
                 variant="outlined"
                 type="number"
                 onChange={(e) => setNewValue(parseInt(e.target.value))}
               />
-            </div>
+            </LabelValue>
             <div className="horizontal">
               <Button color="primary" variant="contained" onClick={updateTicketEvent}>
                 {t('common.save')}

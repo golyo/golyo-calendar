@@ -81,7 +81,8 @@
     "required": "Mező megadása kötelező",
     "numberType": "Nem megfelelő szám",
     "email": "Nem megfelelő email",
-    "unknownError": "Ismeretlen hiba, kérem vegye fel a kapcsolatot a rendszer üzemeltetőjével!"
+    "unknownError": "Ismeretlen hiba, kérem vegye fel a kapcsolatot a rendszer üzemeltetőjével!",
+    "update": "Hiba a mentéskor"
   },
   "trainer": {
     "nextEvents": "Következő 28 nap eseményei",
@@ -160,7 +161,8 @@
     "removeFromGroup": "Biztosan törli a felhasználót a csoportból?",
     "leaveGroup": "Biztosan kilép a csoportból?",
     "deleteEvent": "Biztosan törli az eseményt, és visszadja a jelentkezett tagoknak a jegyét?",
-    "activateEvent": "Biztosan aktiválja az eseményt, és elérhetővé teszi a tagok számára?"
+    "activateEvent": "Biztosan aktiválja az eseményt, és elérhetővé teszi a tagok számára?",
+    "removeFromEvent": "Biztosan eltávolítja a felhasználót az eseményről?"
   },
   "warning": {
     "consultTrainer": "A rendelkezésre álló jegyei elfogytak, kérem egyeztessen az edzőjével!",
