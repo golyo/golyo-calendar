@@ -6,6 +6,7 @@ export interface CalendarEvent {
   badge?: string;
   startDate: Date;
   endDate: Date;
+  checked?: boolean;
   color?: string;
 }
 

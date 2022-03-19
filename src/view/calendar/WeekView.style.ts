@@ -76,6 +76,16 @@ const STYLE = (theme: any) => {
       right: '0px',
       fontSize: '0.56rem',
       height: '15px',
+      '& .MuiChip-label': {
+        paddingLeft: '5px',
+        paddingRight: '5px',
+      },
+    },
+    checkBadge: {
+      position: 'absolute',
+      bottom: '0px',
+      left: '0px',
+      fontSize: '1.2rem',
     },
     chipContent: {
       height: '100%',

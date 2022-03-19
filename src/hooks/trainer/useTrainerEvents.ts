@@ -101,7 +101,7 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: Memb
       return {
         ...modified,
         isDeleted: true,
-        members: [],
+        memberIds: [],
       };
     }).then((event) => {
       dispatchEventChanged(event, WeekEventType.CHANGED);

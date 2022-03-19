@@ -21,6 +21,7 @@ import { IThemeOptions, WeekTablePalette } from '../../theme/weekTableTheme';
 import { CalendarEvent, EventProvider } from '../../hooks/event';
 import styles, { breakpointLineHeightMap } from './WeekView.style';
 import { changeItem, removeItemById } from '../../hooks/firestore/firestore';
+import { Check } from '@mui/icons-material';
 
 export const WEEK_EVENT_CHANGED = 'weekEventChanged';
 export enum WeekEventType {
@@ -277,6 +278,7 @@ export default function WeekView<T>({ eventProvider, eventClick, newEventClick, 
                       backgroundColor: hourEvent.color,
                     }} onClick={() => eventClick ? eventClick(hourEvent.event) : null}>
                       { hourEvent.event.title }
+                      {hourEvent.event.checked && <Check className={classes.checkBadge} color="primary"/>}
                       {hourEvent.event.badge && <Chip
                         className={classes.eventBadge}
                         size="small"

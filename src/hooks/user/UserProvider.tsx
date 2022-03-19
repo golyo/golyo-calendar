@@ -91,7 +91,7 @@ const createMembership = (userId: string, trainer: TrainerContact, memberships: 
 };
 
 // const HACK_USER = 'bodylali.no1@gmail.com';
-// const HACK_USER = 'takacsjozsef58@gmail.com';
+// const HACK_USER = 'horvathmarta369@gmail.com';
 const HACK_USER = undefined;
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
