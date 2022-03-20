@@ -1,43 +1,34 @@
-import React, { useCallback, useMemo } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Button, MenuItem, Paper, Select, TextField, Typography } from '@mui/material';
+import { Button, MenuItem, Paper, Select, Typography } from '@mui/material';
 import { useUser } from '../../hooks/user';
 import { useAuth } from '../../hooks/auth';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
 import FlagIcon from '../../menu/FlagIcon';
 import LabelValue from '../common/LabelValue';
 import TrainerBaseData from '../trainer/TrainerBaseData';
+import ProfilePopup from './ProfilePopup';
+import useStorage from '../../hooks/firebase/useStorage';
+import UserAvatar from '../common/UserAvatar';
+import { useDialog } from '../../hooks/dialog';
+
+const MAX_AVATAR_SIZE = 100000;
 
 const Profile = () => {
   const { t, i18n } = useTranslation();
   const { isPasswordEnabled } = useAuth();
-  const { user, saveUser } = useUser();
+  const { user, saveUser, userChanged } = useUser();
+  const { showDialog } = useDialog();
+
+  const { uploadAvatar } = useStorage();
 
   const [language, setLanguage] = React.useState(i18n.language);
-
-  const schema = useMemo(() => yup.object({
-    id: yup.string().required(),
-    name: yup.string().required(),
-    photoURL: yup.string(),
-  }), []);
-
-  const { handleSubmit, control, formState: { errors } } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: user,
-  });
 
   const handleChangeLanguage = useCallback((event) => {
     const newLanguage = event.target.value;
     setLanguage(newLanguage);
     i18n.changeLanguage(newLanguage);
   }, [i18n]);
-
-  const doChanges = useCallback((values) => {
-    saveUser(values);
-  }, [saveUser]);
 
   const trainerRegistration = useCallback(() => {
     if (!user) {
@@ -47,77 +38,67 @@ const Profile = () => {
     return saveUser(toSave);
   }, [saveUser, user]);
 
+  const selectFile = useCallback((e) => {
+    const selectedFile = e.target.files?.length > 0 ? e.target.files[0] : undefined;
+    if (!selectedFile) {
+      return;
+    }
+    if (selectedFile.size >= MAX_AVATAR_SIZE) {
+      showDialog({
+        title: 'common.warning',
+        description: 'warning.maxAvatarSize',
+      });
+      return;
+    }
+    console.log('XXX START SAVE', selectedFile);
+    uploadAvatar(selectedFile, user!.id).then(() => {
+      userChanged();
+    });
+  }, [showDialog, uploadAvatar, user, userChanged]);
+
   if (!user) {
     return <div></div>;
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit(doChanges)} className="vertical" noValidate>
-        <LabelValue label={t('common.language')}>
-          <Select
-            value={language}
-            onChange={handleChangeLanguage}
-            variant="standard"
-          >
-            <MenuItem value="hu">
-              <FlagIcon code="hu" />&nbsp;&nbsp;magyar
-            </MenuItem>
-            <MenuItem value="en">
-              <FlagIcon code="gb" />&nbsp;&nbsp;english
-            </MenuItem>
-          </Select>
-        </LabelValue>
-        <Typography variant="h3">{t('login.profile')}</Typography>
-        <Controller
-          name="id"
-          control={control}
-          defaultValue={user.id}
-          render={({ field }) => (
-            <TextField
-              { ...field }
-              label={t('login.email')}
-              size="small"
-              variant="outlined"
-              required
-              disabled
-            />
-          )}
-        />
-        <Controller
-          name={'name'}
-          control={control}
-          defaultValue={user.name}
-          render={({ field }) => (
-            <TextField
-              { ...field }
-              required
-              label={t('login.userName')}
-              error={!!errors.name}
-              helperText={errors.name?.message}
-            />
-          )}
-        />
-        <Controller
-          name={'photoURL'}
-          control={control}
-          defaultValue={user.photoURL}
-          render={({ field }) => (
-            <TextField
-              { ...field }
-              label={t('login.photoURL')}
-            />
-          )}
-        />
+    <div className="vertical">
+      <LabelValue label={t('common.language')}>
+        <Select
+          value={language}
+          onChange={handleChangeLanguage}
+          variant="standard"
+        >
+          <MenuItem value="hu">
+            <FlagIcon code="hu" />&nbsp;&nbsp;magyar
+          </MenuItem>
+          <MenuItem value="en">
+            <FlagIcon code="gb" />&nbsp;&nbsp;english
+          </MenuItem>
+        </Select>
+      </LabelValue>
+      <Typography variant="h3">{t('login.profile')}</Typography>
+      <LabelValue label={t('login.email')}>{user.id}</LabelValue>
+      <LabelValue label={t('login.userName')}>{user.name}</LabelValue>
+      <LabelValue label={t('login.photoURL')}>
         <div className="horizontal">
-          <Button color='primary' type='submit' variant='contained'>
-            {t('common.save')}
+          <UserAvatar userId={user.id}/>
+          <Button variant="contained" component="label">
+            {t('common.modify')}
+            <input
+              type="file"
+              accept="image/jpeg"
+              onChange={selectFile}
+              hidden
+            />
           </Button>
         </div>
-
+      </LabelValue>
+      <div>
+        <ProfilePopup />
         { isPasswordEnabled() && <Link to="changePassword">{t('login.changePassword')}</Link> }
-      </form>
-      <Paper sx={{ marginTop: '40px', padding: '20px' }}>
+      </div>
+      <div>&nbsp;</div>
+      <Paper>
         {!user.isTrainer && <div>
           {!user.registeredAsTrainer && <div className="vertical">
             <div>{t('trainer.registrationInfo')}</div>
@@ -135,7 +116,8 @@ const Profile = () => {
           {t('trainer.approvedText')}
         </div>}
       </Paper>
-      {user.isTrainer && <TrainerBaseData />}
+      {user.isTrainer && <div><TrainerBaseData /></div>}
+
     </div>
   );
 };

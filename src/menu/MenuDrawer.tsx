@@ -6,16 +6,17 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@mui/styles';
 import {
   AppBar,
-  Avatar,
   Button,
   CssBaseline,
   ListItemIcon,
   ListItemText,
   Menu,
-  MenuItem, SvgIcon,
-  Toolbar, Typography,
+  MenuItem,
+  SvgIcon,
+  Toolbar,
+  Typography,
 } from '@mui/material';
-import { AccountCircle, Logout, ManageAccounts } from '@mui/icons-material';
+import { Logout, ManageAccounts } from '@mui/icons-material';
 import styles from './MenuDrawer.style';
 import Login from '../view/login/Login';
 import Verification from '../view/login/Verification';
@@ -38,6 +39,7 @@ import EventPage from '../view/trainer/events/EventPage';
 import TrainerEvents from '../view/trainer/events/TrainerEvents';
 import SearchTrainer from '../view/user/SearchTrainer';
 import { ReactComponent as TrainingSheet }  from './training-sheet.svg';
+import UserAvatar from '../view/common/UserAvatar';
 
 const useStyles = makeStyles(styles, { name: 'MenuDrawer' });
 
@@ -156,10 +158,7 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
                 <Typography noWrap className={classes.avatarButton} variant="button">
                   { userName }&nbsp;
                 </Typography>
-                { user?.photoURL ?
-                  <Avatar src={user.photoURL} sx={{ width: 30, height: 30 }} /> :
-                  <Avatar sx={{ width: 28, height: 28 }}><AccountCircle /></Avatar>
-                }
+                <UserAvatar userId={user.id} />
               </Button>
               <Menu
                 id="menu-appbar"

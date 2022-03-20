@@ -18,10 +18,10 @@ export const InlineSpan = styled('span')(() => ({
 const LabelValue = ({ label, children }: { label: string, children: React.ReactNode }) => {
   return (
     <DisplayRow>
-      <Box sx={{ width: '30%', minWidth: '150px' }}>{label}</Box>
-      <div>
+      <Box sx={{ width: '30%', minWidth: '150px', wordBreak: 'break-word' }}>{label}</Box>
+      <Box sx={{ wordBreak: 'break-word' }}>
         {children}
-      </div>
+      </Box>
     </DisplayRow>
   );
 };

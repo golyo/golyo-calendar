@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Avatar, Divider, IconButton, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
+import { Divider, IconButton, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { User, useUser } from '../../hooks/user';
 import SearchGroupPopup from './SearchGroupPopup';
 import { Visibility } from '@mui/icons-material';
+import UserAvatar from '../common/UserAvatar';
 
 export default function SearchTrainer() {
   const { t } = useTranslation();
@@ -34,7 +35,7 @@ export default function SearchTrainer() {
                     divider
           >
             <ListItemAvatar>
-              <Avatar src={tr.photoURL} />
+              <UserAvatar userId={tr.id}></UserAvatar>
             </ListItemAvatar>
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
               <div>

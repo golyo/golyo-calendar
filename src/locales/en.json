@@ -87,6 +87,7 @@
     "title": "Home"
   },
   "trainer": {
+    "trainerData": "Trainer data",
     "trainingName": "Training name",
     "country": "Country",
     "zipCode": "Zip Code",
@@ -181,7 +182,8 @@
     "cancellationOutranged": "Your time range to cancel join request is expired, please consult with your trainer!",
     "joinRequestOutranged": "The training has started, join request expired!",
     "groupTypeChangeIfNotAttached": "You can change group type only if there are no attached groups!",
-    "trainerRequestExists": "{{ trainer }} asked you to join the trainings. Please check the group and decide if you want to join."
+    "trainerRequestExists": "{{ trainer }} asked you to join the trainings. Please check the group and decide if you want to join.",
+    "maxAvatarSize": "The avatar size can not be bigger then 100 Kilobyte !"
   },
   "action": {
     "userRequest": "Applying",

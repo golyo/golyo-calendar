@@ -72,9 +72,8 @@ const changeCounterToMembership = (firestore: Firestore, user: User, groupMember
   const ticketSheet = findOrCreateSheet(groupMembership.membership, group.groupType);
   ticketSheet.presenceNo += modifier;
   ticketSheet.remainingEventNo += -modifier;
-  // refresh name and avatar
+  // refresh name
   groupMembership.membership.name = user.name;
-  groupMembership.membership.avatar = user.photoURL;
   return setDoc(docRef, groupMembership.membership);
 };
 

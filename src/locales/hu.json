@@ -85,6 +85,7 @@
     "update": "Hiba a mentéskor"
   },
   "trainer": {
+    "trainerData": "Edző adatai",
     "trainingName": "Edzés neve",
     "country": "Ország",
     "zipCode": "Irányítószám",
@@ -179,7 +180,8 @@
     "cancellationOutranged": "A visszamondásra szánt időkeret lejárt, egyeztessen edzőjével!",
     "joinRequestOutranged": "Az edzés elkezdődött, a csatlakozási idő lejárt!",
     "groupTypeChangeIfNotAttached": "A típust csak akkor módosíthatja, ha nincs csatolt csoport megadva!",
-    "trainerRequestExists": "{{ trainer }} felkért, hogy csatlakozz az edzéseihez. Nézd meg a csoportot, és döntsd el csatlakozol-e!"
+    "trainerRequestExists": "{{ trainer }} felkért, hogy csatlakozz az edzéseihez. Nézd meg a csoportot, és döntsd el csatlakozol-e!",
+    "maxAvatarSize": "Az avatar mérete nem lehet nagyobb, mint 100 Kilobyte !"
   },
   "action": {
     "userRequest": "Jelentkezés",

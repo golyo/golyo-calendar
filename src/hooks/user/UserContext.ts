@@ -33,7 +33,6 @@ export interface TrainerContactMembership extends TrainerGroups {
 export interface User {
   id: string;
   name: string;
-  photoURL: string;
   registeredAsTrainer: boolean;
   isTrainer: boolean;
   location: string;
@@ -55,6 +54,9 @@ export interface UserContextType<T> {
   user?: User;
   userEventProvider: EventProvider;
   utils: MuiPickersAdapter<T>;
+  getAvatarUrl: (avatarName: string) => Promise<string>;
+  uploadAvatar: (file: File | Blob, avatarName: string) => Promise<any>;
+  userChanged: () => void;
 }
 
 const UserContext = createContext<UserContextType<any>>({} as UserContextType<any>);

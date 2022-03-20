@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Autocomplete, Button, createFilterOptions, Modal, TextField, Typography } from '@mui/material';
+import { Autocomplete, Button, createFilterOptions, Modal, TextField } from '@mui/material';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTrainer } from '../../hooks/trainer';
@@ -69,14 +69,13 @@ const TrainerBaseData = () => {
 
   return (
     <>
-      <Button variant="contained" onClick={openModal}>{t('common.modify')}</Button>
+      <Button variant="contained" onClick={openModal}>{t('trainer.trainerData')}</Button>
       <Modal
         open={open}
         onClose={closeModal}
       >
-        <ModalContainer variant="big" open={open} close={closeModal} title={t('membership.details')}>
+        <ModalContainer variant="big" open={open} close={closeModal} title={t('trainer.trainerData')}>
           <form onSubmit={handleSubmit(doChanges)} className="vertical" noValidate>
-            <Typography variant="h3">{t('login.profile')}</Typography>
             <Controller
               name="id"
               control={control}
@@ -118,7 +117,7 @@ const TrainerBaseData = () => {
                   filterOptions={filterOptions}
                   options={countries}
                   getOptionLabel={(option) => tc(option, ['countries'])}
-                  onChange={(e, values) => setValue('country', values)}
+                  onChange={(e, values) => setValue('country', values || '')}
                   renderInput={(params) => (
                     <TextField
                       {...params}

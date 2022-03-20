@@ -24,6 +24,7 @@ import { Firestore, where } from 'firebase/firestore';
 import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
 import { createCronConverter } from './cronUtils';
 import { createUserEventProvider, EventProvider, getInterval, TrainerEvent } from '../event';
+import useStorage from '../firebase/useStorage';
 
 export const loadGroups = (firestore: Firestore, trainerId: string) =>
   doQuery(firestore, `trainers/${trainerId}/groups`);
@@ -34,11 +35,9 @@ export const loadMemberships = (firestore: Firestore, trainerId: string) => {
 
 const setMember = (firestore: Firestore, user: User, membership: TrainerContactMembership) => {
   const member: MembershipType = {
-
     ...membership.membership,
     id: user.id,
     name: user.name,
-    avatar: user.photoURL,
   };
   return updateObject(firestore, `trainers/${membership.trainer.trainerId}/members`, member);
 };
@@ -100,6 +99,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   const [state, setState] = useState<{ initialized: boolean; user: User | undefined }>( { initialized: false, user: undefined });
   const [groupMemberships, setGroupMemberships] = useState<TrainerContactMembership[]>([]);
   const { authUser } = useAuth();
+  const { uploadAvatar, getAvatarUrl } = useStorage();
 
   const userSrv = useFirestore<User>('users');
   const { firestore } = useFirebase();
@@ -109,6 +109,27 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   const activeMemberships = useMemo(() => groupMemberships.filter((m) => m.membership.state === MemberState.ACCEPTED), [groupMemberships]);
 
   const cronConverter = useMemo(() => createCronConverter(utils), [utils]);
+
+
+  const userChanged = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+    }));
+  }, []);
+
+  const uploadAvatarIfExists = useCallback((usr) => {
+    if (authUser?.photoURL) {
+      getAvatarUrl(usr.id).then(() => {}, () => {
+        console.log('HAS PHOTO URL AND NOT EXISTS AVATAR', authUser?.photoURL);
+        fetch(authUser!.photoURL!).then((response) => {
+          response.blob().then((blob) => {
+            uploadAvatar(blob, usr.id).then(userChanged);
+            console.log('XXX', blob);
+          });
+        });
+      });
+    }
+  }, [authUser, getAvatarUrl, uploadAvatar, userChanged]);
 
   const changeUser = useCallback((newUser: User) => {
     const mergedUser = {
@@ -215,12 +236,16 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     userSrv.get(HACK_USER || authUser!.email!).then((dbUser) => {
       if (dbUser) {
         if (!dbUser.registrationDate) {
+          // FIRST LOGIN
           const toSave = {
             ...createDBUser(authUser!),
             ...dbUser,
           };
           userSrv.save(toSave, true, false).then(() => changeUser(dbUser));
+          uploadAvatarIfExists(dbUser);
         } else {
+          // TODO DELETE THIS UPLOAD LATER
+          uploadAvatarIfExists(dbUser);
           changeUser(dbUser);
           loadGroupMemberships(dbUser);
         }
@@ -231,7 +256,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
         });
       }
     });
-  }, [authUser, changeUser, loadGroupMemberships, userSrv]);
+  }, [authUser, changeUser, loadGroupMemberships, uploadAvatarIfExists, userSrv]);
 
   useEffect(() => {
     // user lost set initialized false
@@ -276,6 +301,9 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     user: user,
     userEventProvider,
     utils,
+    userChanged,
+    getAvatarUrl,
+    uploadAvatar,
   };
 
   if (user && user.isTrainer) {

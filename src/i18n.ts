@@ -32,7 +32,6 @@ i18n
     resources,
     partialBundledLanguages: true,
     fallbackLng: 'en',
-    lng: 'hu',
     keySeparator: '.',
     react: {
       useSuspense: false, //   <---- this will do the magic
