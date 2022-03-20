@@ -85,6 +85,10 @@
     "update": "Hiba a mentéskor"
   },
   "trainer": {
+    "trainingName": "Edzés neve",
+    "country": "Ország",
+    "zipCode": "Irányítószám",
+    "address": "Edzés címe",
     "nextEvents": "Következő 28 nap eseményei",
     "calendar": "Edzés naptár",
     "registrationInfo": "Ha edző szeretne lenni, kérjük adja meg a helyszínt, regisztráljon, és várja meg a jóváhagyást.",

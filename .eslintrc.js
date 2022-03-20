@@ -26,7 +26,7 @@ module.exports = {
 
     'import/no-named-as-default': 'off',
     'import/named': 'off',
-    'import/extensions': ['error', 'ignorePackages', { js: 'never', json: 'never', ts: 'never', tsx: 'never' }],
+    'import/extensions': ['error', 'ignorePackages', { js: 'never', ts: 'never', tsx: 'never' }],
 
     // we dont need because of mobile app
     'jsx-a11y/interactive-supports-focus': 'off',

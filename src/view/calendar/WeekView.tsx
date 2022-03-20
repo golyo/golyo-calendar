@@ -277,7 +277,7 @@ export default function WeekView<T>({ eventProvider, eventClick, newEventClick, 
                       height: hourEvent.heightPercent * lineHeight - 4,
                       backgroundColor: hourEvent.color,
                     }} onClick={() => eventClick ? eventClick(hourEvent.event) : null}>
-                      { hourEvent.event.title }
+                      { hourEvent.event.text }
                       {hourEvent.event.checked && <Check className={classes.checkBadge} color="primary"/>}
                       {hourEvent.event.badge && <Chip
                         className={classes.eventBadge}

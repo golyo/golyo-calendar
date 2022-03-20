@@ -11,6 +11,12 @@ import { useFirebase } from '../firebase';
 import { convertGroupToFirestore } from './GroupProvider';
 import useTrainerEvents from './useTrainerEvents';
 
+const setTrainerDeafults = (trainerData: TrainerDataType) => {
+  trainerData.country = trainerData.country;
+  trainerData.zipCode = trainerData.zipCode || '';
+  trainerData.address = trainerData.address || '';
+};
+
 const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
   const { firestore } = useFirebase();
   const { user, cronConverter } = useUser();
@@ -78,6 +84,7 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
     Promise.all([trainerSrv.get(user!.id), memberSrv.listAll(), groupSrv.listAll()]).then((objects) => {
+      setTrainerDeafults(objects[0]);
       setState({
         trainerData: objects[0],
         members: objects[1],

@@ -9,6 +9,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FlagIcon from '../../menu/FlagIcon';
 import LabelValue from '../common/LabelValue';
+import TrainerBaseData from '../trainer/TrainerBaseData';
 
 const Profile = () => {
   const { t, i18n } = useTranslation();
@@ -21,8 +22,7 @@ const Profile = () => {
     id: yup.string().required(),
     name: yup.string().required(),
     photoURL: yup.string(),
-    location: user?.isTrainer ? yup.string().required() : yup.string(),
-  }), [user]);
+  }), []);
 
   const { handleSubmit, control, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
@@ -109,22 +109,6 @@ const Profile = () => {
             />
           )}
         />
-        <Controller
-          control={control}
-          defaultValue={user.location}
-          name="location"
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label={t('login.location')}
-              size="small"
-              variant="outlined"
-              required={user?.isTrainer}
-              error={!!errors.location}
-              helperText={errors.location?.message}
-            />
-          )}
-        />
         <div className="horizontal">
           <Button color='primary' type='submit' variant='contained'>
             {t('common.save')}
@@ -151,6 +135,7 @@ const Profile = () => {
           {t('trainer.approvedText')}
         </div>}
       </Paper>
+      {user.isTrainer && <TrainerBaseData />}
     </div>
   );
 };

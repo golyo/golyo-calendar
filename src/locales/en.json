@@ -87,6 +87,10 @@
     "title": "Home"
   },
   "trainer": {
+    "trainingName": "Training name",
+    "country": "Country",
+    "zipCode": "Zip Code",
+    "address": "Training address",
     "nextEvents": "Next 28 day events",
     "calendar": "Training Calendar",
     "registrationInfo": "If you want to be a trainer, please setup location, register and wait for approval.",

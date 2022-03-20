@@ -71,11 +71,11 @@ const STYLE = (theme: any) => {
       borderRadius: 8,
     },
     eventBadge: {
-      position: 'absolute',
-      bottom: '0px',
-      right: '0px',
-      fontSize: '0.56rem',
-      height: '15px',
+      'position': 'absolute',
+      'bottom': '0px',
+      'right': '0px',
+      'fontSize': '0.56rem',
+      'height': '15px',
       '& .MuiChip-label': {
         paddingLeft: '5px',
         paddingRight: '5px',

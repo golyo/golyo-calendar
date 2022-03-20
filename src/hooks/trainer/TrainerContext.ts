@@ -11,9 +11,9 @@ export enum GroupType {
 export interface TrainerDataType {
   id: string;
   name: string;
-  country: string,
-  zipCode: string,
-  address: string,
+  country: string | null,
+  zipCode: string | null,
+  address: string | null,
 }
 
 export enum MemberState {
