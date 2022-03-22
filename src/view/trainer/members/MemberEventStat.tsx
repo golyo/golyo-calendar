@@ -3,7 +3,6 @@ import { findOrCreateSheet, GroupType, MembershipType, MemberState, useTrainer }
 import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
 import { TrainerEvent } from '../../../hooks/event';
 import {
-  Avatar,
   Box, Chip,
   Divider,
   IconButton,
@@ -20,6 +19,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useDialog } from '../../../hooks/dialog';
 import { TicketNoWarning } from '../events/EventPage';
+import UserAvatar from '../../common/UserAvatar';
 
 interface MemberStat {
   member: MembershipType;
@@ -127,7 +127,7 @@ export default function MemberEventStat<T>() {
                     divider
           >
             <ListItemAvatar>
-              <Avatar src={ms.member.avatar} />
+              <UserAvatar userId={ms.member.id} />
             </ListItemAvatar>
             <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginRight: '10px' }}>
               <div>

@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Avatar,
   Box,
   Chip,
   Divider,
@@ -17,6 +16,7 @@ import NewMemberPopup from './NewMemberPopup';
 import { MemberState, useGroup, findOrCreateSheet } from '../../../hooks/trainer';
 import MemberDetailPopup from './MemberDetailPopup';
 import { TicketNoWarning } from '../events/EventPage';
+import UserAvatar from '../../common/UserAvatar';
 
 const STATES = Object.values(MemberState) as MemberState[];
 
@@ -65,7 +65,7 @@ const MembersList = () => {
                     divider
           >
             <ListItemAvatar>
-              <Avatar src={member.avatar} />
+              <UserAvatar userId={member.id} />
             </ListItemAvatar>
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
               <div className="horizontal" style={{ justifyContent: 'space-between' }}>
