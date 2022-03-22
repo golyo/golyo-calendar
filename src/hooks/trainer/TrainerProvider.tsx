@@ -79,6 +79,16 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
     groups: prev.groups,
   }))), [trainerSrv]);
 
+  const updateMembership = useCallback((membership: MembershipType) => {
+    return memberSrv.save(membership).then(() => {
+      setState((prev) => ({
+        trainerData: prev.trainerData,
+        members: changeItem(prev.members!, membership),
+        groups: prev.groups,
+      }));
+    });
+  }, [memberSrv]);
+
   const loadTrainerState = useCallback(() => {
     if (!user) {
       return;
@@ -117,6 +127,7 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
     deleteGroup,
     sendEmail,
     membershipChanged,
+    updateMembership,
   };
 
   return <TrainerContext.Provider value={ctx}>{ children}</TrainerContext.Provider>;

@@ -83,7 +83,7 @@ const Profile = () => {
         <div className="horizontal">
           <UserAvatar userId={user.id}/>
           <Button variant="contained" component="label">
-            {t('common.modify')}
+            {t('login.newAvatar')}
             <input
               type="file"
               accept="image/jpeg"

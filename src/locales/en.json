@@ -32,7 +32,8 @@
     "myCalendar": "My Calendar",
     "nextEvents": "Next Events",
     "memberships": "Memberships",
-    "searchTrainer": "Search Trainer"
+    "searchTrainer": "Search Trainer",
+    "userStats": "Statistics"
   },
   "calendar": {
     "week": "Week",
@@ -40,6 +41,7 @@
     "year": "Year"
   },
   "login": {
+    "newAvatar": "New avatar",
     "email": "Email",
     "password": "Password",
     "oldPassword": "Old password",
@@ -99,6 +101,7 @@
     "events": "Events",
     "name": "Name",
     "groups": "Training Groups",
+    "userStats": "Participation statistics",
     "newGroup": "New Group",
     "waitingApprovalText": "You are waiting for approval, to be a trainer.",
     "approvedText": "Congratulation, You are an approved trainer. Now you can use Training Groups menu on the top right menu bar."
@@ -169,7 +172,8 @@
     "leaveGroup": "Are you sure, to leave group?",
     "deleteEvent": "Are you sure to delete selected event, and give tickets back to members?",
     "activateEvent": "Are you sure to activate event, and enable to join by members?",
-    "removeFromEvent": "Are you sure to remove member from event?"
+    "removeFromEvent": "Are you sure to remove member from event?",
+    "addUserBonus": "Are you sure to add bonus ticket to {{ name }}?"
   },
   "warning": {
     "consultTrainer": "Please consult your trainer about tickets!",

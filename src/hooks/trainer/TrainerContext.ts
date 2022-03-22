@@ -160,6 +160,7 @@ interface TrainerContextType {
   deleteGroup: (groupId: string) => Promise<void>;
   sendEmail: (to: string, title: string, message: string) => Promise<any>;
   membershipChanged: (membership: MembershipType[]) => void;
+  updateMembership: (membership: MembershipType) => Promise<void>;
 
   activateEvent: (toSave: TrainerEvent) => Promise<TrainerEvent>;
   addMemberToEvent: (event: TrainerEvent, member: MembershipType) => Promise<TrainerEvent>;

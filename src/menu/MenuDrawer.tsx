@@ -40,6 +40,7 @@ import TrainerEvents from '../view/trainer/events/TrainerEvents';
 import SearchTrainer from '../view/user/SearchTrainer';
 import { ReactComponent as TrainingSheet }  from './training-sheet.svg';
 import UserAvatar from '../view/common/UserAvatar';
+import MemberEventStat from '../view/trainer/members/MemberEventStat';
 
 const useStyles = makeStyles(styles, { name: 'MenuDrawer' });
 
@@ -195,6 +196,7 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
             <Route path="searchTrainer" element={<SearchTrainer />} />
             <Route path="test" element={<ManageAccounts />} />
             <Route path="memberships" element={<UserMemberships />} />
+            <Route path="userStats" element={<MemberEventStat />} />
             <Route path="memberships/:groupId" element={<UserMemberships />} />
             <Route path="profile" element={<Profile />} />
             <Route path="groups" element={<TrainingGroups />} />

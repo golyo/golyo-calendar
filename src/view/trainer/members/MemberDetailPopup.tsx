@@ -23,8 +23,8 @@ const MemberDetailPopup = ({ sheet, member }: Props) => {
   const { t } = useTranslation();
   const { showConfirmDialog } = useDialog();
   const [open, setOpen] = useState(false);
-  const { buySeasonTicket } = useTrainer();
-  const { group, updateMembershipState, updateMembership } = useGroup();
+  const { buySeasonTicket, updateMembership } = useTrainer();
+  const { group, updateMembershipState } = useGroup();
 
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);

@@ -31,7 +31,8 @@
     "myCalendar": "Edzés naptár",
     "nextEvents": "Közelgő Események",
     "memberships": "Kapcsolatok",
-    "searchTrainer": "Edző keresése"
+    "searchTrainer": "Edző keresése",
+    "userStats": "Statisztikák"
   },
   "calendar": {
     "week": "Hét",
@@ -39,6 +40,7 @@
     "year": "Év"
   },
   "login": {
+    "newAvatar": "Új avatar",
     "email": "Email",
     "password": "Jelszó",
     "oldPassword": "Régi jelszó",
@@ -97,6 +99,7 @@
     "events": "Események",
     "name": "Név",
     "groups": "Edzés Csoportok",
+    "userStats": "Részvételi Statisztikák",
     "newGroup": "Új csoport",
     "waitingApprovalText": "Jóváhagyásra vár, hogy edző lehessen.",
     "approvedText": "Gratulálunk, edző lettél a rendszerben. A csoportok kezelését a jobb felső menüsorban használhatod."
@@ -167,7 +170,8 @@
     "leaveGroup": "Biztosan kilép a csoportból?",
     "deleteEvent": "Biztosan törli az eseményt, és visszadja a jelentkezett tagoknak a jegyét?",
     "activateEvent": "Biztosan aktiválja az eseményt, és elérhetővé teszi a tagok számára?",
-    "removeFromEvent": "Biztosan eltávolítja a felhasználót az eseményről?"
+    "removeFromEvent": "Biztosan eltávolítja a felhasználót az eseményről?",
+    "addUserBonus": "Biztosan add bónusz jegyet {{ name }} részére?"
   },
   "warning": {
     "consultTrainer": "A rendelkezésre álló jegyei elfogytak, kérem egyeztessen az edzőjével!",

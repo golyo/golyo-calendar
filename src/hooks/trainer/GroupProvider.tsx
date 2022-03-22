@@ -129,12 +129,6 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
     });
   }, [memberSrv, members, membershipChanged, removeUserMembership]);
   
-  const updateMembership = useCallback((membership: MembershipType) => {
-    return memberSrv.save(membership).then(() => {
-      membershipChanged(changeItem(members, membership));
-    });
-  }, [memberSrv, members, membershipChanged]);
-
   const updateMembershipState = useCallback((requested: MembershipType, toState: MemberState | null) => {
     if (toState === null) {
       return removeTrainerRequest(requested);
@@ -153,7 +147,6 @@ const GroupProvider = ({ groupId, children }: { groupId: string, children: React
     group,
     groupMembers,
     loadEvent,
-    updateMembership,
     updateMembershipState,
   };
 

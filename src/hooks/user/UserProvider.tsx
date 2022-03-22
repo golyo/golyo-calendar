@@ -90,7 +90,7 @@ const createMembership = (userId: string, trainer: TrainerContact, memberships: 
 };
 
 // const HACK_USER = 'bodylali.no1@gmail.com';
-// const HACK_USER = 'horvathmarta369@gmail.com';
+// const HACK_USER = 'szekelyera@gmail.com';
 const HACK_USER = undefined;
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
@@ -123,7 +123,9 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
         console.log('HAS PHOTO URL AND NOT EXISTS AVATAR', authUser?.photoURL);
         fetch(authUser!.photoURL!).then((response) => {
           response.blob().then((blob) => {
-            uploadAvatar(blob, usr.id).then(userChanged);
+            if (false) {
+              uploadAvatar(blob, usr.id).then(userChanged);
+            }
             console.log('XXX', blob);
           });
         });

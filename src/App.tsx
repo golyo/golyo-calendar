@@ -7,7 +7,7 @@ import {
   CalendarViewWeek,
   Contacts,
   Groups,
-  Home as HomeIcon,
+  Home as HomeIcon, InsertChart,
   ManageAccounts,
   PermContactCalendar, Search,
 } from '@mui/icons-material';
@@ -73,6 +73,12 @@ const rightMenu: MenuItemType[] = [
     label: 'trainer.groups',
     path: '/groups',
     icon: <Groups />,
+  },
+  {
+    isVisible: (user) => !!user && user.isTrainer,
+    label: 'menu.userStats',
+    path: '/userStats',
+    icon: <InsertChart />,
   },
   {
     isVisible: VISIBLE,
