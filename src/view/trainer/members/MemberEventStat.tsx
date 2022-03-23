@@ -55,7 +55,8 @@ export default function MemberEventStat<T>() {
     }
     const actEvents = events.filter((e) => e.groupId === selectedGroup.id ||
       (selectedGroup.attachedGroups && selectedGroup.attachedGroups.includes(e.groupId)));
-    const stats = activeMembers.map((member) => {
+    const stats = activeMembers.filter((m) => m.groups.some((gid) => gid === selectedGroup.id ||
+      (selectedGroup.attachedGroups && selectedGroup.attachedGroups.includes(gid)))).map((member) => {
       const memberStat = {
         member,
         stat: 0,

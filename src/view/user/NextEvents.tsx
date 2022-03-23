@@ -48,9 +48,9 @@ const NextEvents = () => {
   }, [activeMemberships]);
 
   const getRemainingEventNo = useCallback((event: TrainerEvent) => {
-    const membership = activeMemberships.find((gm) => gm.trainer.trainerId === event.trainerId)!;
-    const groupType = membership.trainerGroups.find((gr) => gr.id === event.groupId)!.groupType;
-    return membership.membership.ticketSheets?.find((sh) => sh.type === groupType)?.remainingEventNo || 0;
+    const membership = activeMemberships.find((gm) => gm.trainer.trainerId === event.trainerId);
+    const groupType = membership?.trainerGroups.find((gr) => gr.id === event.groupId)!.groupType;
+    return membership?.membership.ticketSheets?.find((sh) => sh.type === groupType)?.remainingEventNo || 0;
   }, [activeMemberships]);
 
   const remainingEventNos: number[] = useMemo(() => events.map((event) => getRemainingEventNo(event)),

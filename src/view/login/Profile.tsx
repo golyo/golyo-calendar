@@ -50,7 +50,6 @@ const Profile = () => {
       });
       return;
     }
-    console.log('XXX START SAVE', selectedFile);
     uploadAvatar(selectedFile, user!.id).then(() => {
       userChanged();
     });

@@ -95,14 +95,13 @@ const HACK_USER = undefined;
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
   const utils = useUtils();
-
-  const [state, setState] = useState<{ initialized: boolean; user: User | undefined }>( { initialized: false, user: undefined });
-  const [groupMemberships, setGroupMemberships] = useState<TrainerContactMembership[]>([]);
+  const { firestore } = useFirebase();
+  const userSrv = useFirestore<User>('users');
   const { authUser } = useAuth();
   const { uploadAvatar, getAvatarUrl } = useStorage();
 
-  const userSrv = useFirestore<User>('users');
-  const { firestore } = useFirebase();
+  const [state, setState] = useState<{ initialized: boolean; user: User | undefined }>( { initialized: false, user: undefined });
+  const [groupMemberships, setGroupMemberships] = useState<TrainerContactMembership[]>([]);
 
   const { user, initialized } = state;
 
@@ -110,42 +109,38 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const cronConverter = useMemo(() => createCronConverter(utils), [utils]);
 
-
   const userChanged = useCallback(() => {
     setState((prev) => ({
       ...prev,
     }));
   }, []);
 
-  const uploadAvatarIfExists = useCallback((usr) => {
-    if (authUser?.photoURL) {
+  const uploadAvatarIfExists = useCallback((usr, pauthUser) => {
+    if (pauthUser?.photoURL) {
       getAvatarUrl(usr.id).then(() => {}, () => {
-        console.log('HAS PHOTO URL AND NOT EXISTS AVATAR', authUser?.photoURL);
-        fetch(authUser!.photoURL!).then((response) => {
+        fetch(pauthUser!.photoURL!).then((response) => {
           response.blob().then((blob) => {
             if (false) {
               uploadAvatar(blob, usr.id).then(userChanged);
             }
-            console.log('XXX', blob);
           });
         });
       });
     }
-  }, [authUser, getAvatarUrl, uploadAvatar, userChanged]);
+  }, [getAvatarUrl, uploadAvatar, userChanged]);
 
   const changeUser = useCallback((newUser: User) => {
-    const mergedUser = {
-      ...user,
-      ...newUser,
-    };
-    if (!mergedUser.memberships) {
-      mergedUser.memberships = [];
+    if (!newUser.memberships) {
+      newUser.memberships = [];
     }
-    setState({
+    setState((prev) => ({
       initialized: true,
-      user: mergedUser,
-    });
-  }, [user]);
+      user: {
+        ...prev,
+        ...newUser,
+      },
+    }));
+  }, []);
 
   const loadTrainers = useCallback(() => {
     return userSrv.listAll(where('isTrainer', '==', true));
@@ -234,56 +229,47 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     return addUserRequest(firestore, trainer.id, user!, group).then(() => loadGroupMemberships(user!));
   }, [firestore, loadGroupMemberships, saveUser, user]);
 
-  const loadUser = useCallback(() => {
-    userSrv.get(HACK_USER || authUser!.email!).then((dbUser) => {
+  const loadUser = useCallback((pauthUser) => {
+    userSrv.get(HACK_USER || pauthUser!.email!).then((dbUser) => {
       if (dbUser) {
         if (!dbUser.registrationDate) {
           // FIRST LOGIN
           const toSave = {
-            ...createDBUser(authUser!),
+            ...createDBUser(pauthUser!),
             ...dbUser,
           };
           userSrv.save(toSave, true, false).then(() => changeUser(dbUser));
-          uploadAvatarIfExists(dbUser);
         } else {
           // TODO DELETE THIS UPLOAD LATER
-          uploadAvatarIfExists(dbUser);
           changeUser(dbUser);
           loadGroupMemberships(dbUser);
         }
       } else {
-        const toSave = createDBUser(authUser!);
+        const toSave = createDBUser(pauthUser!);
         userSrv.save(toSave, true, false).then(() => {
           changeUser(toSave);
         });
       }
     });
-  }, [authUser, changeUser, loadGroupMemberships, uploadAvatarIfExists, userSrv]);
+  }, [changeUser, loadGroupMemberships, userSrv]);
 
   useEffect(() => {
-    // user lost set initialized false
-    if (!authUser) {
-      setState({
-        initialized: false,
-        user: undefined,
-      });
+    if (user && authUser && authUser?.photoURL) {
+      uploadAvatarIfExists(user, authUser);
     }
-  }, [authUser]);
+  }, [authUser, uploadAvatarIfExists, user]);
 
   useEffect(() => {
-    if (initialized) {
-      return;
-    }
-    // set user initialized state
     if (!authUser) {
       setState({
         initialized: true,
         user: undefined,
       });
+      setGroupMemberships([]);
       return;
     }
-    loadUser();
-  }, [authUser, initialized, loadUser, user, userSrv]);
+    loadUser(authUser);
+  }, [authUser, loadUser]);
 
   if (!initialized) {
     return null;
