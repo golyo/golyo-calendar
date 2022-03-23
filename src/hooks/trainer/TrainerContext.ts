@@ -112,6 +112,7 @@ export interface MembershipType {
   state: MemberState;
   groups: string[];
   ticketSheets: TicketSheet[];
+  bonuses?: number[];
 }
 
 export const DEFAULT_MEMBER: MembershipType = {

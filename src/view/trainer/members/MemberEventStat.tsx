@@ -1,20 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { findOrCreateSheet, GroupType, MembershipType, MemberState, useTrainer } from '../../../hooks/trainer';
+import { findOrCreateSheet, MembershipType, MemberState, useTrainer } from '../../../hooks/trainer';
 import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
 import { TrainerEvent } from '../../../hooks/event';
 import {
+  Avatar,
   Box, Chip,
   Divider,
   IconButton,
   List,
   ListItem,
-  ListItemAvatar,
+  ListItemAvatar, ListItemText,
   MenuItem,
   TextField,
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { AddCircle } from '@mui/icons-material';
+import { AddCircle, Event as EventIcon } from '@mui/icons-material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useDialog } from '../../../hooks/dialog';
@@ -27,15 +28,13 @@ interface MemberStat {
   allNo: number;
 }
 
-const STATES = Object.values(GroupType) as GroupType[];
-
 export default function MemberEventStat<T>() {
   const utils = useUtils<T>();
   const { t } = useTranslation();
   const { showConfirmDialog } = useDialog();
   const { eventProvider, members, groups, updateMembership } = useTrainer();
 
-  const [selectedType, setSelectedType] = useState<GroupType>(GroupType.GROUP);
+  const [selectedGroupId, setSelectedGroupId] = useState<string>('');
 
   const thisMonth = useMemo(() => utils.startOfMonth(utils.date(new Date())!), [utils]);
 
@@ -43,53 +42,50 @@ export default function MemberEventStat<T>() {
   const [events, setEvents] = useState<TrainerEvent[]>([]);
 
   const monthTitle = useMemo(() => utils.format(monthStart, 'monthAndYear'), [monthStart, utils]);
+  const monthStore = useMemo(() => utils.toJsDate(monthStart).getTime(), [monthStart, utils]);
 
-  const attachedGroupMap = useMemo(() => {
-    const map = {} as Record<string, string[]>;
-    groups.forEach((g) => {
-      if (g.attachedGroups && g.attachedGroups.length > 0) {
-        map[g.id] = g.attachedGroups;
-      }
-    });
-    return map;
-  }, [groups]);
-  
+  const selectedGroup = useMemo(() => groups.find((g) => g.id === selectedGroupId)!, [groups, selectedGroupId]);
+  const activeMembers = useMemo(() => members.filter((m) => m.state === MemberState.ACCEPTED), [members]);
+
   const addMonth = useCallback((value) => setMonthStart((prev) => utils.addMonths(prev, value)), [utils]);
 
   const memberStats = useMemo<MemberStat[]>(() => {
-    const actEvents = events.filter((e) => groups.find((g) => g.id === e.groupId)?.groupType === selectedType);
-
-    const stats = members.filter((m) => m.state === MemberState.ACCEPTED).map((member) => {
+    if (!selectedGroup) {
+      return [];
+    }
+    const actEvents = events.filter((e) => e.groupId === selectedGroup.id ||
+      (selectedGroup.attachedGroups && selectedGroup.attachedGroups.includes(e.groupId)));
+    const stats = activeMembers.map((member) => {
       const memberStat = {
         member,
         stat: 0,
-        allNo: 0,
+        allNo: actEvents.length,
       };
       actEvents.forEach((e) => {
         if (e.memberIds.includes(member.id)) {
           memberStat.stat += 1;
-        }
-        if (member.groups.some((grId) => (grId === e.groupId ||
-          (attachedGroupMap[grId] && attachedGroupMap[grId].includes(e.groupId))))) {
-          memberStat.allNo += 1;
         }
       });
       return memberStat;
     });
     stats.sort((s1, s2) => s2.stat - s1.stat);
     return stats;
-  }, [attachedGroupMap, events, groups, members, selectedType]);
+  }, [activeMembers, events, selectedGroup]);
 
   const addBonus = useCallback((member: MembershipType) => {
     showConfirmDialog({
       description: t('confirm.addUserBonus', { name: member.name }),
       okCallback: () => {
-        const sheet = findOrCreateSheet(member, selectedType);
+        const sheet = findOrCreateSheet(member, selectedGroup.groupType);
         sheet.remainingEventNo += 1;
+        if (!member.bonuses) {
+          member.bonuses = [];
+        }
+        member.bonuses.push(monthStore);
         updateMembership(member).then();
       },
     });
-  }, [selectedType, showConfirmDialog, t, updateMembership]);
+  }, [monthStore, selectedGroup?.groupType, showConfirmDialog, t, updateMembership]);
 
   useEffect(() => {
     const from = utils.toJsDate(monthStart);
@@ -109,21 +105,35 @@ export default function MemberEventStat<T>() {
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
         <TextField select
-                   onChange={(e) => setSelectedType(e.target.value as GroupType)}
-                   value={selectedType}
+                   onChange={(e) => setSelectedGroupId(e.target.value)}
+                   value={selectedGroupId}
                    label={t('common.filter')}
                    size="small"
                    variant="standard"
                    sx={{ minWidth: '200px' }}
         >
-          { STATES.map((state, idx) => <MenuItem key={idx} value={state}>{t(`groupType.${state}`)}</MenuItem>)}
+          <MenuItem value={''}>-</MenuItem>
+          {groups.map((group, idx) => (
+            <MenuItem key={idx} value={group.id}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Avatar sx={{ bgcolor: group.color }}>
+                  <EventIcon sx={{ bgcolor: group.color }} ></EventIcon>
+                </Avatar>&nbsp;
+                <ListItemText primary={group.name} />
+              </div>
+            </MenuItem>
+          ))}
         </TextField>
       </Box>
       <List>
         <Divider />
         {memberStats.map((ms, idx) => (
           <ListItem key={idx}
-                    secondaryAction={<IconButton onClick={() => addBonus(ms.member)} color="primary"><AddCircle /></IconButton>}
+                    secondaryAction={
+                      <IconButton onClick={() => addBonus(ms.member)} color="primary" disabled={ms.member.bonuses?.includes(monthStore)}>
+                        <AddCircle />
+                      </IconButton>
+                    }
                     divider
           >
             <ListItemAvatar>
@@ -132,7 +142,7 @@ export default function MemberEventStat<T>() {
             <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginRight: '10px' }}>
               <div>
                 <Typography variant="subtitle1">{ms.member.name}</Typography>
-                <TicketNoWarning sheet={findOrCreateSheet(ms.member, selectedType)!} t={t} />
+                <TicketNoWarning sheet={findOrCreateSheet(ms.member, selectedGroup.groupType)!} t={t} />
               </div>
               <Chip color="primary" variant="outlined" label={ms.stat + '/' + ms.allNo}></Chip>
             </div>
