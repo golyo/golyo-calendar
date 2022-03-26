@@ -77,7 +77,7 @@ const rightMenu: MenuItemType[] = [
   {
     isVisible: (user) => !!user && user.isTrainer,
     label: 'menu.userStats',
-    path: '/userStats',
+    path: '/stats',
     icon: <InsertChart />,
   },
   {

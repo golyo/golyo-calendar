@@ -32,7 +32,9 @@
     "nextEvents": "Közelgő Események",
     "memberships": "Kapcsolatok",
     "searchTrainer": "Edző keresése",
-    "userStats": "Statisztikák"
+    "userStats": "Statisztikák",
+    "userMonthlyStats": "Havi statisztika",
+    "last28DaysStats": "Utolsó 28 nap"
   },
   "calendar": {
     "week": "Hét",
@@ -99,8 +101,10 @@
     "events": "Események",
     "name": "Név",
     "groups": "Edzés Csoportok",
-    "userStats": "Részvételi Statisztikák",
+    "userMonthlyStats": "Havi statisztika",
+    "last28DaysStats": "Utolsó 28 nap statisztikája",
     "newGroup": "Új csoport",
+    "bonusTime": "Bónusz ideje",
     "waitingApprovalText": "Jóváhagyásra vár, hogy edző lehessen.",
     "approvedText": "Gratulálunk, edző lettél a rendszerben. A csoportok kezelését a jobb felső menüsorban használhatod."
   },

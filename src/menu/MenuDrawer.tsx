@@ -40,7 +40,9 @@ import TrainerEvents from '../view/trainer/events/TrainerEvents';
 import SearchTrainer from '../view/user/SearchTrainer';
 import { ReactComponent as TrainingSheet }  from './training-sheet.svg';
 import UserAvatar from '../view/common/UserAvatar';
-import MemberEventStat from '../view/trainer/members/MemberEventStat';
+import MonthlyMemberStat from '../view/trainer/stats/MonthyMemberStat';
+import StatRouter from '../view/trainer/stats/StatRouter';
+import Last28DaysStat from '../view/trainer/stats/Last28DaysStat';
 
 const useStyles = makeStyles(styles, { name: 'MenuDrawer' });
 
@@ -196,11 +198,15 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
             <Route path="searchTrainer" element={<SearchTrainer />} />
             <Route path="test" element={<ManageAccounts />} />
             <Route path="memberships" element={<UserMemberships />} />
-            <Route path="userStats" element={<MemberEventStat />} />
+            <Route path="userStats" element={<MonthlyMemberStat />} />
             <Route path="memberships/:groupId" element={<UserMemberships />} />
             <Route path="profile" element={<Profile />} />
             <Route path="groups" element={<TrainingGroups />} />
             <Route path="trainerEvents" element={<TrainerEvents />} />
+            <Route path="stats" element={<StatRouter />} >
+              <Route index element={<Last28DaysStat />} />
+              <Route path="monthlyStat" element={<MonthlyMemberStat />} />
+            </Route>
             <Route path="group/:groupId" element={<GroupRouter />} >
               <Route index element={<DisplayGroup />} />
               <Route path="members" element={<MembersList />} />

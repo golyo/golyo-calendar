@@ -33,7 +33,9 @@
     "nextEvents": "Next Events",
     "memberships": "Memberships",
     "searchTrainer": "Search Trainer",
-    "userStats": "Statistics"
+    "userStats": "Statistics",
+    "userMonthlyStats": "Monthly statistic",
+    "last28DaysStats": "Last 28 days"
   },
   "calendar": {
     "week": "Week",
@@ -101,8 +103,10 @@
     "events": "Events",
     "name": "Name",
     "groups": "Training Groups",
-    "userStats": "Participation statistics",
+    "userMonthlyStats": "Monthly statistic",
+    "last28DaysStats": "The last 28 days statistic",
     "newGroup": "New Group",
+    "bonusTime": "Bonus time",
     "waitingApprovalText": "You are waiting for approval, to be a trainer.",
     "approvedText": "Congratulation, You are an approved trainer. Now you can use Training Groups menu on the top right menu bar."
   },

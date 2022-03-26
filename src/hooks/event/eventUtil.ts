@@ -125,7 +125,7 @@ const createDBEventProvider = (firestore: Firestore, userId: string, trainerGrou
         where('startDate', '<=', to.getTime()),
       ];
       return doQuery(firestore, `trainers/${trainerGroup.trainer.trainerId}/events`, EVENT_DATE_PROPS, ...queries).then((result) => {
-        if (!trainerGroup.isAllGroup) {
+        if (!trainerGroup.isAllGroup || groupRestriction) {
           const groups = trainerGroup.contactGroups.map((gr) => gr.id);
           const filtered = groupRestriction ? (groups.includes(groupRestriction) ? [groupRestriction] : []) : groups;
           return result.filter((r) => r.memberIds.includes(userId) || filtered.includes(r.groupId));
