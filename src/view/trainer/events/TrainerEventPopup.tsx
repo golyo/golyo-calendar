@@ -2,9 +2,9 @@ import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { useCallback, useMemo, useState } from 'react';
-import { Avatar, Button, Divider, List, ListItem } from '@mui/material';
+import { Avatar, Button, Divider, IconButton, List, ListItem } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Event as EventIcon } from '@mui/icons-material';
+import { Delete, Event as EventIcon } from '@mui/icons-material';
 import ModalContainer from '../../common/ModalContainer';
 import { getInterval, TrainerEvent } from '../../../hooks/event';
 import TrainerActionsPopup from './TrainerActionsPopup';
@@ -23,7 +23,7 @@ const TrainerEventPopup = ({ selectedEvent, groupType, resetEvent }: Props) => {
 
   const [event, setEvent] = useState<TrainerEvent>(selectedEvent);
 
-  const { activateEvent, deleteEvent, members } = useTrainer();
+  const { activateEvent, removeMemberFromEvent, deleteEvent, members } = useTrainer();
   
   const { showConfirmDialog } = useDialog();
 
@@ -49,6 +49,17 @@ const TrainerEventPopup = ({ selectedEvent, groupType, resetEvent }: Props) => {
     });
   }, [event, resetEvent, showConfirmDialog]);
 
+  const isMemberExists = useCallback((memberId) => members.some((m) => m.id === memberId), [members]);
+
+  const removeMember = useCallback((memberId: string) => {
+    showConfirmDialog({
+      description: t('confirm.removeFromEvent'),
+      okCallback: () => {
+        removeMemberFromEvent(event, memberId, true).then((dbEvent) => setEvent!(dbEvent));
+      },
+    });
+  }, [event, removeMemberFromEvent, setEvent, showConfirmDialog, t]);
+
   const doActivateEvent = useCallback(() => doWork('confirm.activateEvent', activateEvent), [activateEvent, doWork]);
   const doDeleteEvent = useCallback(() => doWork('confirm.deleteEvent', deleteEvent), [deleteEvent, doWork]);
 
@@ -72,12 +83,12 @@ const TrainerEventPopup = ({ selectedEvent, groupType, resetEvent }: Props) => {
           <List>
             {event?.memberIds.map((memberId, idx) => (
               <ListItem key={idx}
-                        secondaryAction={<TrainerActionsPopup
+                        secondaryAction={isMemberExists(memberId) ? <TrainerActionsPopup
                           memberId={memberId}
                           event={event}
                           groupType={groupType}
                           setEvent={setEvent}
-                        />}
+                        /> : <IconButton onClick={() => removeMember(memberId)}><Delete /></IconButton>}
                         divider
               >
                 <Typography key={idx} variant="subtitle2">{memberNames[idx]}</Typography>

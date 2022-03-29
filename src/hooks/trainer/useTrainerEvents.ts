@@ -34,7 +34,7 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: Memb
     ticketNoChanges: number,
     eventNoChanges: number,
     presenceNoChanges: number,
-    useMessage?: boolean,
+    useMessage = false,
   ) => {
     return memberSrv.getAndModify(memberId, (member) => {
       const sheet = findOrCreateSheet(member, groupType);
@@ -42,12 +42,17 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: Memb
       sheet.remainingEventNo += eventNoChanges;
       sheet.presenceNo += presenceNoChanges;
       return member;
-    }, useMessage || false).then((member) => {
+    }, true, useMessage).then((member) => {
       setState((prev) => ({
         ...prev,
         members: changeItem(prev.members!, member),
       }));
       return member;
+    }).catch((err) => {
+      if (err.toString().startsWith('Not found data in database')) {
+        return undefined;
+      }
+      throw err;
     });
   }, [memberSrv, setState]);
 
@@ -115,22 +120,26 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: Memb
     }).then((event) => dispatchEventChanged(event, WeekEventType.CHANGED));
   }, [dispatchEventChanged, eventSrv]);
 
-  const addMemberToEvent = useCallback((event: TrainerEvent, member: MembershipType) => {
+  const addMemberToEvent = useCallback((event: TrainerEvent, memberId: string) => {
     const group = findGroup(event.groupId);
-    changeMembershipValues(member.id, group.groupType, 0, -1, 1);
+    changeMembershipValues(memberId, group.groupType, 0, -1, 1);
     return eventSrv.getAndModify(event.id, (toSave) => {
-      toSave.memberIds.push(member.id);
+      const checkIfExist = toSave || event;
+      checkIfExist.memberIds.push(memberId);
+      return checkIfExist;
+    }).then((result) => {
+      return dispatchEventChanged(result, WeekEventType.CHANGED);
+    });
+  }, [changeMembershipValues, dispatchEventChanged, eventSrv, findGroup]);
+
+  const removeMemberFromEvent = useCallback((event: TrainerEvent, memberId: string, ticketBack: boolean) => {
+    const group = findGroup(event.groupId);
+    changeMembershipValues(memberId, group.groupType, 0, (ticketBack ? 1 : 0), -1);
+    return eventSrv.getAndModify(event.id, (toSave) => {
+      removeStr(toSave.memberIds, memberId);
       return toSave;
     }).then((result) => dispatchEventChanged(result, WeekEventType.CHANGED));
   }, [changeMembershipValues, dispatchEventChanged, eventSrv, findGroup]);
-
-  const removeMemberFromEvent = useCallback((eventId: string, groupType: GroupType, memberId: string, ticketBack: boolean) => {
-    changeMembershipValues(memberId, groupType, 0, (ticketBack ? 1 : 0), -1);
-    return eventSrv.getAndModify(eventId, (event) => {
-      removeStr(event.memberIds, memberId);
-      return event;
-    }).then((result) => dispatchEventChanged(result, WeekEventType.CHANGED));
-  }, [changeMembershipValues, dispatchEventChanged, eventSrv]);
 
   return {
     activateEvent,

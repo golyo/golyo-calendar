@@ -127,6 +127,11 @@
     "ticketLength": "Bérlet hossza",
     "deleteConfirm": "Bizto hogy törli a csoportot ?"
   },
+  "addMemberState": {
+    "GROUP_MEMBER": "Csoport tag",
+    "OUTER_MEMBER": "Más csoport tagja",
+    "OTHER_USER": "Nem regisztrált tag"
+  },
   "memberState": {
     "ACCEPTED": "Aktív tag",
     "TRAINER_REQUEST": "Meghívás alatt",
@@ -212,10 +217,11 @@
     "MASS": "Tömeg sport"
   },
   "event": {
+    "member": "Résztvevő",
     "addMember": "Tag hozzáadása",
     "createNew": "Új esemény létrehozása",
-    "chooseGroupMember": "Válasszon csoport tagot!",
-    "chooseMember": "Válasszon külsős tagot!",
+    "addGroupMember": "Résztvevő hozzáadása!",
+    "chooseMemberType": "Résztvevő típusa",
     "details": "Esemény részletek",
     "members": "Résztvevők",
     "time": "Időpont",

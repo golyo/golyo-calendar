@@ -14,7 +14,7 @@ const Login = () => {
   }), []);
 
   const { control, handleSubmit, setError, formState: { errors } } = useForm({ resolver: yupResolver(schema) });
-  const { login, authUser, signInWithGoogleRedirect, signInWithFacebookRedirect } = useAuth();
+  const { login, authUser, signInWithGoogle, signInWithFacebookRedirect } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -39,7 +39,7 @@ const Login = () => {
       <h2>{t('login.login')}</h2>
 
       <div>
-        <Button color="primary" variant="contained" onClick={signInWithGoogleRedirect}>
+        <Button color="primary" variant="contained" onClick={signInWithGoogle}>
           {t('login.google')}
         </Button>&nbsp;&nbsp;
         <Button color="primary" variant="contained" onClick={signInWithFacebookRedirect}>

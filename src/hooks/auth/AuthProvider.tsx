@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   createUserWithEmailAndPassword,
@@ -10,6 +10,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithRedirect,
+  getRedirectResult,
   signOut,
   updateEmail as updateFirebaseEmail,
   updatePassword as updateFirebasePassword,
@@ -88,7 +89,25 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await updateFirebasePassword(userCredential.user, newPassword);
   }, [authUser]);
 
-  const signInWithGoogleRedirect = useCallback(() => signInWithRedirect(auth, new GoogleAuthProvider()), [auth]);
+  const signInWithGoogle = useCallback(() => {
+    console.log('START SIGNIN REDIRECT');
+    return signInWithRedirect(auth, new GoogleAuthProvider())
+      .then(() => {
+        console.log('CHECK REDIRECT RESULT');
+        return getRedirectResult(auth);
+      })
+      .then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result!)!;
+
+        // This gives you a Google Access Token.
+        // You can use it to access the Google API.
+        console.log('LOGIN SUCCES', credential.accessToken, result!.user);
+        return credential;
+      }).catch((error) => {
+        console.error('ERROR WHILE LOGIN', error.code, error.message);
+        // Handle Errors here.
+      });
+  }, [auth]);
 
   const signInWithFacebookRedirect = useCallback(() => signInWithRedirect(auth, new FacebookAuthProvider()), [auth]);
 
@@ -169,7 +188,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const isPasswordEnabled = useCallback(() => !!authUser && !!authUser.providerData.find((data) => data.providerId === 'password'), [authUser]);
 
-  const ctx = useMemo(() => ({
+  if (authState === AuthState.INIT) {
+    return null;
+  }
+
+  const ctx = {
     ...state,
     login,
     logout,
@@ -179,27 +202,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     updateEmail,
     updatePassword,
     startPasswordReset,
-    signInWithGoogleRedirect,
+    signInWithGoogle,
     signInWithFacebookRedirect,
     isPasswordEnabled,
-  }), [
-    login,
-    logout,
-    register,
-    updateEmail,
-    updateUser,
-    updatePassword,
-    sendVerifyEmail,
-    startPasswordReset,
-    signInWithGoogleRedirect,
-    signInWithFacebookRedirect,
-    isPasswordEnabled,
-    state,
-  ]);
+  };
 
-  if (authState === AuthState.INIT) {
-    return null;
-  }
   return <AuthContext.Provider value={ctx}>{ children}</AuthContext.Provider>;
 };
 

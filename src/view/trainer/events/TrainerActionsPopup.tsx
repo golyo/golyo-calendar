@@ -1,4 +1,4 @@
-import { GroupType, useTrainer } from '../../../hooks/trainer';
+import { GroupType, TicketSheet, useTrainer } from '../../../hooks/trainer';
 import { Avatar, Button, IconButton, Modal } from '@mui/material';
 import { AddCircle, Edit as EditIcon } from '@mui/icons-material';
 import ModalContainer from '../../common/ModalContainer';
@@ -26,9 +26,14 @@ const TrainerActionsPopup = ({ memberId, event, groupType, setEvent } : ActionPo
 
   const isStarted = useCallback(() => event.startDate.getTime() < Date.now(), [event]);
 
-  const member = useMemo(() => members.find((m) => m.id === memberId)!, [memberId, members]);
+  const member = useMemo(() => members.find((m) => m.id === memberId), [memberId, members]);
 
-  const sheet = useMemo(() => findOrCreateSheet(member, groupType), [groupType, member]);
+  const sheet = useMemo(() => {
+    if (!member) {
+      return { } as TicketSheet;
+    }
+    return findOrCreateSheet(member, groupType);
+  }, [groupType, member]);
 
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);
@@ -37,21 +42,21 @@ const TrainerActionsPopup = ({ memberId, event, groupType, setEvent } : ActionPo
     showConfirmDialog({
       description: t('confirm.buySeasonTicket'),
       okCallback: () => {
-        buySeasonTicket(member.id, event.groupId);
+        buySeasonTicket(member!.id, event.groupId);
         closeModal();
       },
     });
-  }, [buySeasonTicket, closeModal, event.groupId, member.id, showConfirmDialog, t]);
+  }, [buySeasonTicket, closeModal, event.groupId, member, showConfirmDialog, t]);
 
   const removeMember = useCallback((ticketBack: boolean) => {
     showConfirmDialog({
       description: t('confirm.removeFromEvent'),
       okCallback: () => {
-        removeMemberFromEvent(event.id!, groupType, member.id, ticketBack).then((dbEvent) => setEvent!(dbEvent));
+        removeMemberFromEvent(event, memberId, ticketBack).then((dbEvent) => setEvent!(dbEvent));
         closeModal();
       },
     });
-  }, [closeModal, event.id, groupType, member.id, removeMemberFromEvent, setEvent, showConfirmDialog, t]);
+  }, [closeModal, event, memberId, removeMemberFromEvent, setEvent, showConfirmDialog, t]);
 
   const doRemoveMember = useCallback(() => removeMember(true), [removeMember]);
 
@@ -85,16 +90,18 @@ const TrainerActionsPopup = ({ memberId, event, groupType, setEvent } : ActionPo
       >
         <ModalContainer variant="small" open={open} close={closeModal} title={
           (<span className="horizontal">
-            <Avatar src={member.avatar} />
-            <span>{member.name}</span>
+            {member && <Avatar src={member.avatar} />}
+            <span>{member ? member.name : memberId}</span>
           </span>)
         }>
           <div className="vertical">
-            <LabelValue label={t('membership.remainingEventNo')}><TicketNoWarning sheet={sheet!} t={t} /></LabelValue>
-            <LabelValue label={t('membership.purchasedTicketNo')}>
+            {member && <LabelValue label={t('membership.remainingEventNo')}>
+              <TicketNoWarning sheet={sheet!} t={t} />
+            </LabelValue>}
+            {member && <LabelValue label={t('membership.purchasedTicketNo')}>
               <span style={{ paddingRight: '20px' }}>{sheet.purchasedTicketNo}</span>
               <IconButton color="primary" onClick={buyTicket}><AddCircle /></IconButton>
-            </LabelValue>
+            </LabelValue>}
             <div className="horizontal">
               {event && isStarted() && <Button size="small" onClick={memberMissed} variant="contained">{t('action.memberMissed')}</Button>}
               {event && !isStarted() && <Button size="small" onClick={doRemoveMember} variant="contained">{t('action.removeMember')}</Button>}

@@ -21,12 +21,20 @@ if (process.env.REACT_APP_SENTRY_RELEASE) {
   console.log('Sentry initialized', process.env.REACT_APP_SENTRY_RELEASE);
 }
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App/>
-  </React.StrictMode>,
-  document.getElementById('root'),
-);
+const renderApp = () => {
+  ReactDOM.render(
+    <React.StrictMode>
+      <App/>
+    </React.StrictMode>,
+    document.getElementById('root'),
+  );
+};
+
+if (window.cordova) {
+  document.addEventListener('deviceReady', renderApp);
+} else {
+  renderApp();
+}
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

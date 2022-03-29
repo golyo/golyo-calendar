@@ -1,17 +1,26 @@
-import { useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuItem, Modal, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { Button, MenuItem, Modal, TextField, Typography } from '@mui/material';
 import { AddCircle } from '@mui/icons-material';
 import ModalContainer from '../../common/ModalContainer';
-import { useTrainer } from '../../../hooks/trainer';
+import { MembershipType, useTrainer } from '../../../hooks/trainer';
 import { TrainerEvent } from '../../../hooks/event';
 import { getGroupMembers } from '../../../hooks/trainer/GroupProvider';
+import LabelValue from '../../common/LabelValue';
+
+enum ChoiceType {
+  GROUP_MEMBER = 'GROUP_MEMBER',
+  OUTER_MEMBER = 'OUTER_MEMBER',
+  OTHER_USER = 'OTHER_USER',
+}
+
+const CHOICE_TYPES = Object.values(ChoiceType) as ChoiceType[];
 
 const NewEventMemberPopup = ({ event, eventChanged }: { event: TrainerEvent; eventChanged: (event: TrainerEvent) => void; }) => {
   const { t } = useTranslation();
   const { groups, members, addMemberToEvent } = useTrainer();
 
-  const [groupMemberId, setGroupMemberId] = useState<string>('');
+  const [choiceType, setChoiceType] = useState<ChoiceType>(ChoiceType.GROUP_MEMBER);
 
   const [memberId, setMemberId] = useState<string>('');
 
@@ -31,32 +40,37 @@ const NewEventMemberPopup = ({ event, eventChanged }: { event: TrainerEvent; eve
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => {
     setMemberId('');
-    setGroupMemberId('');
     setOpen(false);
   }, []);
 
-  const onSelectMember = useCallback((e: SelectChangeEvent) => {
-    setMemberId(e.target.value);
-    setGroupMemberId('');
+  const onSelectChoiceType = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setMemberId('');
+    setChoiceType(e.target.value as ChoiceType);
   }, []);
 
-  const onSelectGroupMember = useCallback((e: SelectChangeEvent) => {
-    setGroupMemberId(e.target.value);
-    setMemberId('');
+  const onSelectMember = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setMemberId(e.target.value);
   }, []);
 
   const doAddMemberToEvent = useCallback(() => {
-    const toAdd = memberId || groupMemberId;
-    if (!toAdd) {
+    if (!memberId) {
       return;
     }
-    addMemberToEvent(event, members.find((m) => m.id === toAdd)!).then((saved) => {
+    addMemberToEvent(event, memberId).then((saved) => {
       setMemberId('');
-      setGroupMemberId('');
       eventChanged(saved);
       closeModal();
     });
-  }, [addMemberToEvent, closeModal, event, eventChanged, groupMemberId, memberId, members]);
+  }, [addMemberToEvent, closeModal, event, eventChanged, memberId]);
+
+  const groupMemberChoice = useCallback((memberChoices: MembershipType[]) => (
+    <TextField select onChange={onSelectMember} size="small" value={memberId}>
+      <MenuItem value={''}></MenuItem>
+      {memberChoices.map((pm, idx) => (
+        <MenuItem key={idx} value={pm.id}>{pm.name}</MenuItem>
+      ))}
+    </TextField>
+  ), [memberId, onSelectMember]);
 
   return (
     <>
@@ -67,21 +81,20 @@ const NewEventMemberPopup = ({ event, eventChanged }: { event: TrainerEvent; eve
       >
         <ModalContainer variant="small" close={closeModal} open={open} title={t('event.addMember')}>
           <div className="vertical">
-            <Typography variant="h5">{t('event.chooseGroupMember')}</Typography>
-            <Select onChange={onSelectGroupMember} size="small" value={groupMemberId}>
-              <MenuItem value={''}></MenuItem>
-              {possibleGroupMembers.map((pm, idx) => (
-                <MenuItem key={idx} value={pm.id}>{pm.name}</MenuItem>
-              ))}
-            </Select>
-            <Typography variant="h5">{t('event.chooseMember')}</Typography>
-            <Select onChange={onSelectMember} size="small" value={memberId}>
-              <MenuItem value={''}></MenuItem>
-              {possibleMembers.map((pm, idx) => (
-                <MenuItem key={idx} value={pm.id}>{pm.name}</MenuItem>
-              ))}
-            </Select>
-            <div>
+            <Typography variant="h5">{t('event.addGroupMember')}</Typography>
+            <LabelValue label={t('event.chooseMemberType')}>
+              <TextField select onChange={onSelectChoiceType} size="small" value={choiceType}>
+                {CHOICE_TYPES.map((ct, idx) => (
+                  <MenuItem key={idx} value={ct}>{t(`addMemberState.${ct}`)}</MenuItem>
+                ))}
+              </TextField>
+            </LabelValue>
+            {choiceType === ChoiceType.GROUP_MEMBER && groupMemberChoice(possibleGroupMembers)}
+            {choiceType === ChoiceType.OUTER_MEMBER && groupMemberChoice(possibleMembers)}
+            {choiceType === ChoiceType.OTHER_USER &&
+              <TextField onChange={onSelectMember} size="small" value={memberId}></TextField>
+            }
+            <div className="horizontal">
               <Button size="small" color="primary" onClick={doAddMemberToEvent} variant="contained">
                 {t('common.save')}
               </Button>

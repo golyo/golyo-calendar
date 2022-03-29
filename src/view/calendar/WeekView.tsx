@@ -195,6 +195,9 @@ export default function WeekView<T>({ eventProvider, eventClick, newEventClick, 
   }, [handleEventChanged]);
 
   useEffect(() => {
+    if (!eventProvider) {
+      return;
+    }
     // if language changed, utils changed, and firstWeekDay could changed
     const firstDay = utils.startOfWeek(utils.addDays(firstWeekDay, 1));
     if (!utils.isSameDay(firstWeekDay, firstDay)) {

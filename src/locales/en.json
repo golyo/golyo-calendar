@@ -129,6 +129,11 @@
     "ticketLength": "Ticket length",
     "deleteConfirm": "Are you sure, delete this group ?"
   },
+  "addMemberState": {
+    "GROUP_MEMBER": "Group member",
+    "OUTER_MEMBER": "Other group member",
+    "OTHER_USER": "Not registrated User"
+  },
   "memberState": {
     "ACCEPTED": "Accepted",
     "TRAINER_REQUEST": "Invited to join",
@@ -215,10 +220,11 @@
     "MASS": "Mass Training"
   },
   "event": {
+    "member": "Member",
     "addMember": "Add Member",
     "createNew": "Create new event",
-    "chooseGroupMember": "Choose group member!",
-    "chooseMember": "Choose outside member!",
+    "addGroupMember": "Add Event Member",
+    "chooseMemberType": "Member type",
     "details": "Event details",
     "members": "Members",
     "time": "Time",

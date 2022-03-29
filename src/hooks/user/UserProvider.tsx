@@ -100,18 +100,16 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   const { authUser } = useAuth();
   const { uploadAvatar, getAvatarUrl } = useStorage();
 
-  const [state, setState] = useState<{ initialized: boolean; user: User | undefined }>( { initialized: false, user: undefined });
+  const [user, setUser] = useState<User | undefined>();
   const [groupMemberships, setGroupMemberships] = useState<TrainerContactMembership[]>([]);
-
-  const { user, initialized } = state;
 
   const activeMemberships = useMemo(() => groupMemberships.filter((m) => m.membership.state === MemberState.ACCEPTED), [groupMemberships]);
 
   const cronConverter = useMemo(() => createCronConverter(utils), [utils]);
 
   const userChanged = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
+    setUser((prev) => ({
+      ...prev!,
     }));
   }, []);
 
@@ -133,12 +131,9 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     if (!newUser.memberships) {
       newUser.memberships = [];
     }
-    setState((prev) => ({
-      initialized: true,
-      user: {
-        ...prev,
-        ...newUser,
-      },
+    setUser((prev) => ({
+      ...prev,
+      ...newUser,
     }));
   }, []);
 
@@ -261,19 +256,16 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!authUser) {
-      setState({
-        initialized: true,
-        user: undefined,
-      });
-      setGroupMemberships([]);
+      if (user) {
+        setUser(undefined);
+        setGroupMemberships([]);
+      }
       return;
     }
-    loadUser(authUser);
-  }, [authUser, loadUser]);
-
-  if (!initialized) {
-    return null;
-  }
+    if (!user || user.id != authUser.email) {
+      loadUser(authUser);
+    }
+  }, [authUser, loadUser, user]);
 
   const ctx = {
     addGroupMembership,
@@ -294,6 +286,9 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     uploadAvatar,
   };
 
+  if (authUser && !user) {
+    return null;
+  }
   if (user && user.isTrainer) {
     return (
       <UserContext.Provider value={ctx}>

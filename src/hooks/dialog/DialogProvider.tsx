@@ -8,7 +8,7 @@ const BACKDROP_MESSAGE_LATENCY = 1500;
 
 const pushMessage = (messages: string[], message?: string) => {
   if (message) {
-    messages.push(message);
+    return [...messages, message];
   }
   return messages;
 };

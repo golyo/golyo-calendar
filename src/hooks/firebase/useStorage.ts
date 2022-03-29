@@ -11,9 +11,7 @@ const useStorage = () => {
   const uploadAvatar = useCallback((file: File | Blob, fileName: string) => {
     const storageRef = ref(storage, `avatars/${fileName}.jpg`);
 
-    return uploadBytes(storageRef, file, jpegMetadata).then((result) => {
-      console.log('uploadAvatar Result', result);
-    });
+    return uploadBytes(storageRef, file, jpegMetadata);
   }, [storage]);
 
   const getAvatarUrl = useCallback((fileName: string) => {

@@ -184,20 +184,26 @@ export const useFirestore = <T extends { id: string }>(path: string, datePropert
     }
   }, [collectionRef, getDocRef, hiddeError, hideBackdrop, showBackdrop]);
 
-  const getAndModify: (id: string, modifier: (item: T) => T, useMessage?: boolean) => Promise<T> =
-    useCallback((id: string, modifier: (item: T) => T, useMessage = true) => {
+  const getAndModify: (id: string, modifier: (item: T) => T, checkExistence?: boolean, useMessage?: boolean) => Promise<T> =
+    useCallback((id: string, modifier: (item: T) => T, checkExistence, useMessage = true) => {
       showBackdrop();
       const docRef = getDocRef(id);
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         getDoc(docRef).then((querySnapshot) => {
-          const modified = modifier(querySnapshot.data());
+          const inDb = querySnapshot.data();
+          if (checkExistence && !inDb) {
+            hideBackdrop();
+            reject(`Not found data in database to ${path}/${id}`);
+            return;
+          }
+          const modified = modifier(inDb);
           setDoc(docRef, modified).then(() => {
             hideBackdrop(useMessage ? 'common.modifySuccess' : '');
             resolve(modified);
           }, (err) => hiddeError(err, useMessage ? 'error.update' : undefined));
         });
       });
-    }, [getDocRef, hiddeError, hideBackdrop, showBackdrop]);
+    }, [getDocRef, hiddeError, hideBackdrop, path, showBackdrop]);
 
   const remove = useCallback((id: string, useMessage = true) => {
     showBackdrop();

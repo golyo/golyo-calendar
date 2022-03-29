@@ -18,7 +18,7 @@ const EventPopup = ({ event, resetEvent }: { event: TrainerEvent | null; resetEv
       return [];
     }
     const grMembership = groupMemberships.find((gr) => gr.trainer.trainerId === event.trainerId)!;
-    return event.memberIds.map((mid) => grMembership.memberships.find((m) => m.id === mid)?.name || '');
+    return event.memberIds.map((mid) => grMembership.memberships.find((m) => m.id === mid)?.name || mid);
   }, [event, groupMemberships]);
 
   const interval = useMemo(() => event ? getInterval(event) : '', [event]);

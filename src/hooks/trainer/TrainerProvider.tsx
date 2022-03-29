@@ -104,10 +104,12 @@ const TrainerProvider = ({ children }: { children: React.ReactNode }) => {
   }, [groupSrv, memberSrv, trainerSrv, user]);
 
   useEffect(() => {
-    loadTrainerState();
-  }, [loadTrainerState]);
+    if (!trainerData) {
+      loadTrainerState();
+    }
+  }, [loadTrainerState, trainerData]);
 
-  if (!trainerData) {
+  if (!trainerData || !eventProvider) {
     return null;
   }
 
