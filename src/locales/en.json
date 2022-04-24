@@ -35,7 +35,8 @@
     "searchTrainer": "Search Trainer",
     "userStats": "Statistics",
     "userMonthlyStats": "Monthly statistic",
-    "last28DaysStats": "Last 28 days"
+    "last28DaysStats": "Last 28 days",
+    "memberTicketStats": "Ticket statistic"
   },
   "calendar": {
     "week": "Week",
@@ -192,7 +193,7 @@
     "membershipExists": "You ara already has contact with the trainer, only the trainer can add more group memberships!",
     "trainerOwnGroup": "You are the owner in this group!",
     "groupInviteOnly": "You can join this group onyl, if trainer invites you!",
-    "cancellationOutranged": "Your time range to cancel join request is expired, please consult with your trainer!",
+    "cancellationOutranged": "Your time range to change join request is expired, please consult with your trainer!",
     "joinRequestOutranged": "The training has started, join request expired!",
     "groupTypeChangeIfNotAttached": "You can change group type only if there are no attached groups!",
     "trainerRequestExists": "{{ trainer }} asked you to join the trainings. Please check the group and decide if you want to join.",

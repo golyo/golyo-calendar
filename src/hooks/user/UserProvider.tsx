@@ -90,7 +90,7 @@ const createMembership = (userId: string, trainer: TrainerContact, memberships: 
 };
 
 // const HACK_USER = 'bodylali.no1@gmail.com';
-// const HACK_USER = 'szekelyera@gmail.com';
+// const HACK_USER = 'horvathmarta369@gmail.com';
 const HACK_USER = undefined;
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
@@ -262,7 +262,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
       }
       return;
     }
-    if (!user || user.id != authUser.email) {
+    if (!user || (!HACK_USER && user.id != authUser.email)) {
       loadUser(authUser);
     }
   }, [authUser, loadUser, user]);

@@ -43,6 +43,7 @@ import UserAvatar from '../view/common/UserAvatar';
 import MonthlyMemberStat from '../view/trainer/stats/MonthyMemberStat';
 import StatRouter from '../view/trainer/stats/StatRouter';
 import Last28DaysStat from '../view/trainer/stats/Last28DaysStat';
+import MemberTicketStat from '../view/trainer/stats/MemberTicketStat';
 
 const useStyles = makeStyles(styles, { name: 'MenuDrawer' });
 
@@ -206,6 +207,7 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
             <Route path="stats" element={<StatRouter />} >
               <Route index element={<Last28DaysStat />} />
               <Route path="monthlyStat" element={<MonthlyMemberStat />} />
+              <Route path="ticketStat" element={<MemberTicketStat />} />
             </Route>
             <Route path="group/:groupId" element={<GroupRouter />} >
               <Route index element={<DisplayGroup />} />

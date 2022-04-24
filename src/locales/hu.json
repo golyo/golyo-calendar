@@ -34,7 +34,8 @@
     "searchTrainer": "Edző keresése",
     "userStats": "Statisztikák",
     "userMonthlyStats": "Havi statisztika",
-    "last28DaysStats": "Utolsó 28 nap"
+    "last28DaysStats": "Utolsó 28 nap",
+    "memberTicketStats": "Jegy statisztika"
   },
   "calendar": {
     "week": "Hét",
@@ -190,7 +191,7 @@
     "membershipExists": "Már csatlakozott az edző egy csoportjához, további csoportokhoz az edző adhatja hozzá!",
     "trainerOwnGroup": "Saját csoportjához nem csatlakozhat!",
     "groupInviteOnly": "Csak az edző meghívására csatlakozhatsz a csoporthoz!",
-    "cancellationOutranged": "A visszamondásra szánt időkeret lejárt, egyeztessen edzőjével!",
+    "cancellationOutranged": "A módosításra szánt időkeret lejárt, egyeztessen edzőjével!",
     "joinRequestOutranged": "Az edzés elkezdődött, a csatlakozási idő lejárt!",
     "groupTypeChangeIfNotAttached": "A típust csak akkor módosíthatja, ha nincs csatolt csoport megadva!",
     "trainerRequestExists": "{{ trainer }} felkért, hogy csatlakozz az edzéseihez. Nézd meg a csoportot, és döntsd el csatlakozol-e!",

@@ -8,7 +8,15 @@ const StatRouter = () => {
   const { t } = useTranslation();
   const location = useLocation();
 
-  const value = useMemo(() => location.pathname.endsWith('monthlyStat') ? 1 : 0, [location]);
+  const value = useMemo(() => {
+    if (location.pathname.endsWith('monthlyStat')) {
+      return 1;
+    } else if (location.pathname.endsWith('ticketStat')) {
+      return 2;
+    } else {
+      return 0;
+    }
+  }, [location]);
 
   return (
     <div className="vertical">
@@ -16,6 +24,7 @@ const StatRouter = () => {
         <Tabs value={value}>
           <Tab component={Link} to="" label={t('menu.last28DaysStats')} />
           <Tab component={Link} to="monthlyStat" label={t('menu.userMonthlyStats')} />
+          <Tab component={Link} to="ticketStat" label={t('menu.memberTicketStats')} />
         </Tabs>
       </Box>
       <Outlet />

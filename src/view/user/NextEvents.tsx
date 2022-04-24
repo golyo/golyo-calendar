@@ -61,7 +61,7 @@ const NextEvents = () => {
     const group = findGroupToEvent(event);
     const membership = activeMemberships.find((gm) => gm.trainer.trainerId === event.trainerId)!;
     const maxDiff = group.cancellationDeadline * 60 * 60 * 1000;
-    if (!isAdd && (Date.now() + maxDiff > event.startDate.getTime())) {
+    if (Date.now() + maxDiff > event.startDate.getTime()) {
       showDialog({
         title: 'common.warning',
         description: 'warning.cancellationOutranged',
