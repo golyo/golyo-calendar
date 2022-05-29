@@ -201,6 +201,20 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
             }
             label={t('trainingGroup.inviteOnly') as string}
           />
+          <FormControlLabel control={
+            <Controller
+              name="showMembers"
+              control={control}
+              render={({ field }) => (
+                <Checkbox
+                  {...field}
+                  checked={field.value}
+                />
+              )}
+            />
+          }
+          label={t('trainingGroup.showMembers') as string}
+        />
           <Controller
             control={control}
             name="cancellationDeadline"

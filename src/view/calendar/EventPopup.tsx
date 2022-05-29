@@ -38,11 +38,15 @@ const EventPopup = ({ event, resetEvent }: { event: TrainerEvent | null; resetEv
       )}>
         <div className="vertical">
           <Typography variant="subtitle1">{event?.text + ' ' + interval}</Typography>
-          <Typography variant="subtitle2">{t('event.members')}</Typography>
-          <Divider />
-          {event?.memberIds.map((mid, idx) => (
-            <Typography key={idx} variant="subtitle2">{memberNames[idx]}</Typography>
-          ))}
+          {event?.showMembers && (
+            <>
+              <Typography variant="subtitle2">{t('event.members')}</Typography>
+              <Divider />
+              {event?.memberIds.map((mid, idx) => (
+                <Typography key={idx} variant="subtitle2">{memberNames[idx]}</Typography>
+              ))}
+            </>
+          )}
         </div>
       </ModalContainer>
     </Modal>

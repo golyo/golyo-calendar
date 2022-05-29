@@ -195,7 +195,7 @@ const NextEvents = () => {
         {events.map((event, idx) => (
           <ListItem key={idx}
                     secondaryAction={
-                      <Badge badgeContent={event.memberIds.length.toString()} color="primary">
+                      <Badge badgeContent={event.showMembers && event.memberIds.length.toString()} color="primary">
                         <Switch
                           color="secondary"
                           checked={isAccepted(event)}

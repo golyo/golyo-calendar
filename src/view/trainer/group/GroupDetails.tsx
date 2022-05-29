@@ -40,6 +40,14 @@ export default function GroupDetails({ group, showParts }: { group: TrainingGrou
           <div key={gidx}>{cron.days.join(',')}&nbsp;&nbsp;{cron.time}</div>
         ))}
       </LabelValue>
+      <LabelValue label={t('trainingGroup.showMembers')}>
+        {t(group.showMembers ? 'common.yes' : 'common.no')}
+      </LabelValue>
+      <LabelValue label={t('trainingGroup.trainingTime')}>
+        {group.crons.map((cron, gidx) => (
+          <div key={gidx}>{cron.days.join(',')}&nbsp;&nbsp;{cron.time}</div>
+        ))}
+      </LabelValue>
     </>
   );
 }

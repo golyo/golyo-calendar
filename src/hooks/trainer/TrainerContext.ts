@@ -136,6 +136,7 @@ export interface TrainingGroupBase {
   ticketValidity: number;
   duration: number;
   maxMember: number;
+  showMembers: boolean;
 }
 
 export interface TrainingGroupUIType extends TrainingGroupBase {

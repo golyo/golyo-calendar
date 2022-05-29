@@ -28,6 +28,7 @@ export const generateCronEvent = (group: TrainingGroupType, trainer: TrainerCont
     id: startDate.getTime().toString(),
     isDeleted: false,
     groupId: group.id,
+    showMembers: group.showMembers,
     trainerId: trainer.trainerId,
     title: trainer.trainerName,
     text: group.name,
@@ -117,7 +118,7 @@ export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: Trai
   });
 };
 
-const createDBEventProvider = (firestore: Firestore, userId: string, trainerGroups: TrainerGroups[]) => {
+const createDBEventProvider = (firestore: Firestore, userId: string, trainerGroups: TrainerGroups[], isTrainer: boolean) => {
   let groupRestriction: string | undefined = undefined;
 
   const getEvents = (from: Date, to: Date) => {
@@ -129,17 +130,28 @@ const createDBEventProvider = (firestore: Firestore, userId: string, trainerGrou
         where('startDate', '>=', from.getTime()),
         where('startDate', '<=', to.getTime()),
       ];
+      const groupShowMembers: Record<string, boolean> = {};
+      trainerGroup.contactGroups.forEach((gr) => {
+        groupShowMembers[gr.id] = gr.showMembers;
+      });
       return doQuery(firestore, `trainers/${trainerGroup.trainer.trainerId}/events`, EVENT_DATE_PROPS, ...queries).then((result) => {
         if (!trainerGroup.isAllGroup || groupRestriction) {
-          const groups = trainerGroup.contactGroups.map((gr) => gr.id);
-          const filtered = groupRestriction ? (groups.includes(groupRestriction) ? [groupRestriction] : []) : groups;
-          return result.filter((r) => r.memberIds.includes(userId) || filtered.includes(r.groupId));
+          const groupIds = Object.keys(groupShowMembers);
+          const filtered = groupRestriction ? (groupIds.includes(groupRestriction) ? [groupRestriction] : []) : groupIds;
+          const ret = result.filter((r) => r.memberIds.includes(userId) || filtered.includes(r.groupId));
+          ret.forEach((e: TrainerEvent) => {
+            e.showMembers = isTrainer || groupShowMembers[e.groupId];
+          });
+          return ret;
         }
+        result.forEach((e: TrainerEvent) => {
+          e.showMembers = isTrainer || groupShowMembers[e.groupId];
+        });
         return result;
       });
     })).then((data) => {
       const allEvent: TrainerEvent[] = [].concat.apply([], data as [][]);
-      allEvent.forEach((event) => event.badge = event.memberIds?.length.toString() || '0');
+      allEvent.forEach((event) => event.badge = event.showMembers ? event.memberIds?.length.toString() || '0' : '');
       allEvent.sort(EVENT_COMPARE);
       return allEvent;
     });
@@ -155,8 +167,8 @@ const createDBEventProvider = (firestore: Firestore, userId: string, trainerGrou
   } as EventProvider;
 };
 
-const createEventProvider = (firestore: Firestore, userId: string, trainerGroups: TrainerGroups[], checkMembership: boolean) => {
-  const dbEventProvider = createDBEventProvider(firestore, userId, trainerGroups);
+const createEventProvider = (firestore: Firestore, userId: string, trainerGroups: TrainerGroups[], checkMembership: boolean, isTrainer: boolean) => {
+  const dbEventProvider = createDBEventProvider(firestore, userId, trainerGroups, isTrainer);
   let groupRestriction: string | undefined = undefined;
 
   const getEvents = (from: Date, to: Date) => {
@@ -192,7 +204,7 @@ const createEventProvider = (firestore: Firestore, userId: string, trainerGroups
 };
 
 export const createUserEventProvider = (firestore: Firestore, user: User, memberships: TrainerContactMembership[]) =>
-  createEventProvider(firestore, user.id, memberships, true);
+  createEventProvider(firestore, user.id, memberships, true, false);
 
 export const createTrainerEventProvider = (firestore: Firestore, trainer: User, contactGroups: TrainingGroupType[]) => {
   const trainerGroup: TrainerGroups = {
@@ -203,5 +215,5 @@ export const createTrainerEventProvider = (firestore: Firestore, trainer: User, 
     },
     contactGroups,
   };
-  return createEventProvider(firestore, trainer.id, [trainerGroup], false);
+  return createEventProvider(firestore, trainer.id, [trainerGroup], false, true);
 };

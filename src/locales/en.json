@@ -129,6 +129,7 @@
     "days": "Days",
     "time": "Time",
     "trainingTime": "Training time",
+    "showMembers": "Show members",
     "ticketLength": "Ticket length",
     "ticketValidity": "Ticket validity",
     "deleteConfirm": "Are you sure, delete this group ?"
