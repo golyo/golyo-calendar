@@ -101,6 +101,7 @@ export interface TicketSheet {
   type: GroupType;
   presenceNo: number;
   remainingEventNo: number;
+  ticketBuyDate?: number;
   purchasedTicketNo: number;
 }
 
@@ -132,6 +133,7 @@ export interface TrainingGroupBase {
   inviteOnly: boolean;
   cancellationDeadline: number;
   ticketLength: number;
+  ticketValidity: number;
   duration: number;
   maxMember: number;
 }

@@ -1,17 +1,18 @@
 import { Dispatch, SetStateAction, useCallback } from 'react';
 import { changeItem, removeStr, useFirestore } from '../firestore/firestore';
-import { GroupType, MembershipType, TrainerState, TrainingGroupType } from './TrainerContext';
+import { GroupType, MembershipType, TicketSheet, TrainerState, TrainingGroupType } from './TrainerContext';
 import { EVENT_DATE_PROPS, TrainerEvent } from '../event';
 import { User } from '../user';
 import { WEEK_EVENT_CHANGED, WeekEventType } from '../../view/calendar/WeekView';
 import { generateCronEvent } from '../event/eventUtil';
+import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
 
 const createSheet = (type: GroupType) => ({
   type,
   presenceNo: 0,
   remainingEventNo: 0,
   purchasedTicketNo: 0,
-});
+} as TicketSheet);
 
 export const findOrCreateSheet = (memberShip: MembershipType, type: GroupType) => {
   const sheet = memberShip.ticketSheets.find((sh) => sh.type === type);
@@ -27,7 +28,8 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: Memb
   const eventSrv = useFirestore<TrainerEvent>(`trainers/${user.id}/events`, EVENT_DATE_PROPS);
   const memberSrv = useFirestore<MembershipType>(`trainers/${user.id}/members`);
   const findGroup = useCallback((groupId: string) => groups.find((g) => g.id === groupId)!, [groups]);
-
+  const utils = useUtils();
+  
   const changeMembershipValues = useCallback((
     memberId: string,
     groupType: GroupType,
@@ -40,6 +42,7 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: Memb
       const sheet = findOrCreateSheet(member, groupType);
       sheet.purchasedTicketNo += ticketNoChanges;
       sheet.remainingEventNo += eventNoChanges;
+      sheet.ticketBuyDate = utils.toJsDate(utils.endOfDay(utils.date())).getTime();
       sheet.presenceNo += presenceNoChanges;
       return member;
     }, true, useMessage).then((member) => {
@@ -54,7 +57,7 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: Memb
       }
       throw err;
     });
-  }, [memberSrv, setState]);
+  }, [memberSrv, setState, utils]);
 
   const buySeasonTicket = useCallback((memberId: string, groupId: string) => {
     const group = findGroup(groupId);

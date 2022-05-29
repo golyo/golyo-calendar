@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
 import { Button, IconButton, Modal } from '@mui/material';
 import { AddCircle, Visibility } from '@mui/icons-material';
 import ModalContainer from '../../common/ModalContainer';
@@ -21,6 +22,7 @@ interface Props {
 
 const MemberDetailPopup = ({ sheet, member }: Props) => {
   const { t } = useTranslation();
+  const utils = useUtils();
   const { showConfirmDialog } = useDialog();
   const [open, setOpen] = useState(false);
   const { buySeasonTicket, updateMembership } = useTrainer();
@@ -66,6 +68,9 @@ const MemberDetailPopup = ({ sheet, member }: Props) => {
     return TRAINER_STATE_MAP[member.state || ''];
   }, [member.state]);
 
+  const displayBuyDate = useMemo(() => sheet.ticketBuyDate ? utils.formatByString(utils.date(sheet.ticketBuyDate), utils.formats.fullDate) :
+    '', [sheet.ticketBuyDate, utils]);
+
   return (
     <>
       <IconButton onClick={openModal}>
@@ -89,6 +94,9 @@ const MemberDetailPopup = ({ sheet, member }: Props) => {
             <LabelValue label={t('membership.remainingEventNo')}>
               <span style={{ paddingRight: '20px' }}>{sheet?.remainingEventNo || 0}</span>
               <ModifyTicketPopup sheet={sheet} membership={member} />
+            </LabelValue>
+            <LabelValue label={t('membership.ticketBuyDate')}>
+              { displayBuyDate }
             </LabelValue>
             <LabelValue label={t('membership.purchasedTicketNo')}>
               <span style={{ paddingRight: '20px' }}>{sheet.purchasedTicketNo}</span>

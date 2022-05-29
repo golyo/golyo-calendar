@@ -13,6 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Event as EventIcon, Visibility } from '@mui/icons-material';
+import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
 
 import { useUser } from '../../hooks/user';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -21,11 +22,22 @@ import { getNextEventTo, changeMembershipToEvent } from '../../hooks/event';
 import { TrainerEvent } from '../../hooks/event';
 import { useDialog } from '../../hooks/dialog';
 import { isMaxMembershipError } from '../../hooks/event/eventUtil';
-import { MemberState } from '../../hooks/trainer';
+import { findOrCreateSheet, GroupType, MemberState } from '../../hooks/trainer';
 import { Link } from 'react-router-dom';
+
+interface TicketsValidityType {
+  type: GroupType;
+  groupId: string;
+  groupName: string;
+  validity: any;
+  trainerId: string;
+  trainerName: string;
+  remainingNo: number;
+}
 
 const NextEvents = () => {
   const { t } = useTranslation();
+  const utils = useUtils();
   const { firestore } = useFirebase();
   const { showBackdrop, hideBackdrop, checkIfConfirmDialog, showDialog } = useDialog();
   const [events, setEvents] = useState<TrainerEvent[]>([]);
@@ -47,11 +59,43 @@ const NextEvents = () => {
     return membership.trainerGroups.find((gr) => gr.id === event.groupId)!;
   }, [activeMemberships]);
 
+  const ticketsValidities = useMemo(() => {
+    return activeMemberships.reduce((validities, m) => {
+      m.contactGroups.forEach((g) => {
+        const sheet = findOrCreateSheet(m.membership, g.groupType);
+        if (g.ticketValidity && sheet.ticketBuyDate) {
+          validities.push({
+            trainerId: m.trainer.trainerId,
+            trainerName: m.trainer.trainerName,
+            groupId: g.id,
+            groupName: g.name,
+            type: g.groupType,
+            remainingNo: sheet.remainingEventNo,
+            validity: utils.addMonths(utils.date(sheet.ticketBuyDate), g.ticketValidity),
+          });
+        }
+      });
+      return validities;
+    }, [] as TicketsValidityType[]);
+  }, [activeMemberships, utils]);
+  
+  const warningValities = useMemo(() =>{
+    const afterTwoWeek = utils.addWeeks(utils.date(), 2);
+    return ticketsValidities.filter((tv) => tv.validity && (utils.isBefore(tv.validity, afterTwoWeek)));
+  }, [ticketsValidities, utils]);
+
+  const isTicketValid = useCallback((groupId: string) => {
+    const ticketsValidity = ticketsValidities.find((tv) => tv.groupId === groupId);
+    return !ticketsValidity || utils.isBefore(utils.date(), ticketsValidity.validity);
+  }, [ticketsValidities, utils]);
+
   const getRemainingEventNo = useCallback((event: TrainerEvent) => {
     const membership = activeMemberships.find((gm) => gm.trainer.trainerId === event.trainerId);
-    const groupType = membership?.trainerGroups.find((gr) => gr.id === event.groupId)!.groupType;
-    return membership?.membership.ticketSheets?.find((sh) => sh.type === groupType)?.remainingEventNo || 0;
-  }, [activeMemberships]);
+    const groupType = membership!.trainerGroups.find((gr) => gr.id === event.groupId)!.groupType;
+    const isValid = isTicketValid(event.groupId);
+    const no = membership?.membership.ticketSheets?.find((sh) => sh.type === groupType)?.remainingEventNo || 0;
+    return isValid ? no : Math.min(no, 0);
+  }, [activeMemberships, isTicketValid]);
 
   const remainingEventNos: number[] = useMemo(() => events.map((event) => getRemainingEventNo(event)),
     [events, getRemainingEventNo]);
@@ -75,20 +119,21 @@ const NextEvents = () => {
       });
       return;
     }
-    if (isAdd && getRemainingEventNo(event) <= 0 && hasChecked(event)) {
+    const remainingEventNo = getRemainingEventNo(event);
+    if (isAdd && remainingEventNo <= 0 && hasChecked(event)) {
       showDialog({
         title: 'common.warning',
         description: 'warning.selectionExistsNoTicket',
       });
       return;
     }
-    const remainingEventNo = membership.membership.ticketSheets.find((sh) => sh.type === group.groupType)?.remainingEventNo || 0;
     checkIfConfirmDialog({
       description: t('confirm.noMoreTicket'),
       isShowDialog: () => isAdd && remainingEventNo <= 0,
       doCallback: () => {
         showBackdrop();
-        changeMembershipToEvent(firestore, event, user!, membership!, isAdd).then(() => {
+        const isExpired = !isTicketValid(event.groupId);
+        changeMembershipToEvent(firestore, event, user!, membership!, isAdd, isExpired).then(() => {
           membershipChanged();
           hideBackdrop(isAdd ? 'membership.checkinApproved' : 'membership.checkoutApproved');
           if (isAdd && remainingEventNo === 0) {
@@ -110,20 +155,8 @@ const NextEvents = () => {
         });
       },
     });
-  }, [
-    activeMemberships,
-    checkIfConfirmDialog,
-    findGroupToEvent,
-    firestore,
-    getRemainingEventNo,
-    hasChecked,
-    hideBackdrop,
-    membershipChanged,
-    showBackdrop,
-    showDialog,
-    t,
-    user,
-  ]);
+  }, [activeMemberships, checkIfConfirmDialog, findGroupToEvent, firestore, getRemainingEventNo, hasChecked,
+    hideBackdrop, isTicketValid, membershipChanged, showBackdrop, showDialog, t, user]);
 
   useEffect(() => {
     if (userEventProvider.getEvents) {
@@ -134,6 +167,15 @@ const NextEvents = () => {
   return (
     <div className="vertical">
       <Typography variant="h3">{t('trainer.nextEvents')}</Typography>
+      {warningValities.map((wv, idx) => (
+        <Alert key={idx} severity="warning">
+          {t('warning.ticketExpiredWarning', {
+            date: utils.formatByString(wv.validity, utils.formats.shortDate),
+            trainer: wv.trainerName,
+            group: wv.groupName,
+          })}
+        </Alert>
+      ))}
       <List>
         {requestedMemberships.map((membership, idx) => (
           <ListItem key={idx}

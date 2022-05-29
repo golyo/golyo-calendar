@@ -30,12 +30,7 @@ const TrainingGroups = () => {
     });
   }, [saveGroup, closePopup]);
 
-  const doMove = useCallback(() => {
-    throw new Error('Alma');
-  }, []);
-
   if (!user) {
-    console.log('XXXXtestEMail', doMove);
     return null;
   }
 

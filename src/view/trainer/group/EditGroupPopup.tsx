@@ -42,6 +42,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
     duration: yup.number().integer().min(1).max(24 * 60),
     cancellationDeadline: yup.number().integer().min(0).max(120),
     ticketLength: yup.number().integer().min(1).max(100),
+    ticketValidity: yup.number(),
     maxMember: yup.number().integer().min(1).max(100),
     attachedGroups: yup.array().of(yup.string()),
     crons: yup.array().of(
@@ -62,6 +63,10 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
   const attachedGroups = watch('attachedGroups');
 
   const attachableGroups = useMemo(() => groups.filter((gr) => gr.id != trainingGroup.id ), [groups, trainingGroup.id]);
+
+  const months = useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => (i + 1));
+  }, []);
 
   useEffect(() => {
     reset(trainingGroup);
@@ -244,6 +249,25 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
           />
           <Controller
             control={control}
+            name="ticketValidity"
+            render={({ field }) => (
+              <TextField
+                {...field}
+                fullWidth
+                select
+                label={t('trainingGroup.ticketValidity')}
+                size="small"
+                variant="outlined"
+              >
+                <MenuItem value={0}>{t('common.unlimited')}</MenuItem>
+                {months.map((month, idx) => (
+                  <MenuItem value={month} key={idx}>{month + ' ' + t('common.month')}</MenuItem>
+                ))}
+              </TextField>
+            )}
+          />
+          <Controller
+            control={control}
             name="color"
             render={({ field }) => (
               <TextField
@@ -257,7 +281,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
                 error={!!errors.color}
                 helperText={errors.color?.message}
               >
-                <MenuItem value=''>-</MenuItem>)
+                <MenuItem value=''>-</MenuItem>
                 {EVENT_COLORS.map((color, idx) =>
                   (<MenuItem key={idx} sx={{
                     'backgroundColor': color,

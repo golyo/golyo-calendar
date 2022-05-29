@@ -17,6 +17,8 @@
     "register": "Jelentkezés",
     "modify": "Módosítás",
     "min": "Perc",
+    "month": "Hónap",
+    "unlimited": "Korlátlan",
     "pcs": "db",
     "filter": "Szűrés",
     "language": "Választott nyelv",
@@ -33,9 +35,9 @@
     "memberships": "Kapcsolatok",
     "searchTrainer": "Edző keresése",
     "userStats": "Statisztikák",
-    "userMonthlyStats": "Havi statisztika",
+    "userMonthlyStats": "Havi",
     "last28DaysStats": "Utolsó 28 nap",
-    "memberTicketStats": "Jegy statisztika"
+    "memberTicketStats": "Jegyek"
   },
   "calendar": {
     "week": "Hét",
@@ -126,6 +128,7 @@
     "time": "Idő",
     "trainingTime": "Edzések ideje",
     "ticketLength": "Bérlet hossza",
+    "ticketValidity": "Érvényesség",
     "deleteConfirm": "Bizto hogy törli a csoportot ?"
   },
   "addMemberState": {
@@ -155,6 +158,7 @@
     "modifyTicketNo": "Hátralevő alkalmak módosítása",
     "changeEventNo": "Változtatott érték",
     "purchasedTicketNo": "Megvett bérletek",
+    "ticketBuyDate": "Bérlet vásárlás",
     "cancelTrainerRequest": "Meghívás visszavonása",
     "addOtherGroupMember": "Tag hozzáaadása más csoportból",
     "inviteMember": "Tag meghívása"
@@ -195,7 +199,8 @@
     "joinRequestOutranged": "Az edzés elkezdődött, a csatlakozási idő lejárt!",
     "groupTypeChangeIfNotAttached": "A típust csak akkor módosíthatja, ha nincs csatolt csoport megadva!",
     "trainerRequestExists": "{{ trainer }} felkért, hogy csatlakozz az edzéseihez. Nézd meg a csoportot, és döntsd el csatlakozol-e!",
-    "maxAvatarSize": "Az avatar mérete nem lehet nagyobb, mint 100 Kilobyte !"
+    "maxAvatarSize": "Az avatar mérete nem lehet nagyobb, mint 100 Kilobyte !",
+    "ticketExpiredWarning": "A {{ trainer }} - {{ group }}  jegyek lejárati dátuma {{ date }} !"
   },
   "action": {
     "userRequest": "Jelentkezés",

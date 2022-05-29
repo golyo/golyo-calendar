@@ -23,6 +23,7 @@ export const DEFAULT_GROUP: TrainingGroupUIType = {
   duration: 60,
   cancellationDeadline: 4,
   ticketLength: 10,
+  ticketValidity: 0,
   maxMember: 12,
   inviteOnly: false,
   crons: [{
@@ -42,6 +43,7 @@ export const convertGroupToUi: (data: TrainingGroupType, cronConverter: CronConv
   (data: any, cronConverter: CronConverter) => ({
     ...data,
     attachedGroups: data.attachedGroups || [],
+    ticketValidity: data.ticketValidity || 0,
     crons: data.crons.map((cron: string) => cronConverter.toUiCron(cron)),
   });
 

@@ -18,6 +18,8 @@
     "register": "Register",
     "modify": "Modify",
     "min": "Min",
+    "month": "Month",
+    "unlimited": "Unlimited",
     "pcs": "pcs",
     "filter": "Filter",
     "language": "Választott nyelv",
@@ -34,9 +36,9 @@
     "memberships": "Memberships",
     "searchTrainer": "Search Trainer",
     "userStats": "Statistics",
-    "userMonthlyStats": "Monthly statistic",
+    "userMonthlyStats": "Monthly",
     "last28DaysStats": "Last 28 days",
-    "memberTicketStats": "Ticket statistic"
+    "memberTicketStats": "Tickets"
   },
   "calendar": {
     "week": "Week",
@@ -128,6 +130,7 @@
     "time": "Time",
     "trainingTime": "Training time",
     "ticketLength": "Ticket length",
+    "ticketValidity": "Ticket validity",
     "deleteConfirm": "Are you sure, delete this group ?"
   },
   "addMemberState": {
@@ -157,6 +160,7 @@
     "modifyTicketNo": "Modify remaining ticket number",
     "changeEventNo": "Change value to",
     "purchasedTicketNo": "Purchased ticket no",
+    "ticketBuyDate": "Ticket buy date",
     "cancelRequest": "Cancel request",
     "addOtherGroupMember": "Add member from other groups",
     "inviteMember": "Invite member"
@@ -197,7 +201,8 @@
     "joinRequestOutranged": "The training has started, join request expired!",
     "groupTypeChangeIfNotAttached": "You can change group type only if there are no attached groups!",
     "trainerRequestExists": "{{ trainer }} asked you to join the trainings. Please check the group and decide if you want to join.",
-    "maxAvatarSize": "The avatar size can not be bigger then 100 Kilobyte !"
+    "maxAvatarSize": "The avatar size can not be bigger then 100 Kilobyte !",
+    "ticketExpiredWarning": "The {{ trainer }} - {{ group }} tickets will be expired in {{ date }} !"
   },
   "action": {
     "userRequest": "Applying",

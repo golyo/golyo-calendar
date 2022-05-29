@@ -64,12 +64,16 @@ export const filterEvents = (events: CalendarEvent[], from: Date, to: Date) => {
   });
 };
 
-const changeCounterToMembership = (firestore: Firestore, user: User, groupMembership: TrainerContactMembership, group: TrainingGroupType, isAdd: boolean) => {
+const changeCounterToMembership = (firestore: Firestore, user: User, groupMembership: TrainerContactMembership,
+  group: TrainingGroupType, isAdd: boolean, isExpired: boolean) => {
   const path = `trainers/${groupMembership.trainer.trainerId}/members`;
   const collectionRef = getCollectionRef(firestore, path);
   const docRef = doc(collectionRef, user.id);
   const modifier = isAdd ? 1 : -1;
   const ticketSheet = findOrCreateSheet(groupMembership.membership, group.groupType);
+  if (isExpired && ticketSheet.remainingEventNo > 0) {
+    ticketSheet.remainingEventNo = 0;
+  }
   ticketSheet.presenceNo += modifier;
   ticketSheet.remainingEventNo += -modifier;
   // refresh name
@@ -83,7 +87,8 @@ export const isMaxMembershipError = (error: string) => error === MAX_MEMBERSHIP_
 
 export const EVENT_DATE_PROPS = ['startDate', 'endDate'];
 
-export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: TrainerEvent, user: User, membership: TrainerContactMembership, isAdd: boolean) => {
+export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: TrainerEvent, user: User,
+  membership: TrainerContactMembership, isAdd: boolean, isExpired: boolean) => {
   const path = `trainers/${trainerEvent.trainerId}/events`;
   const collectionRef = getCollectionRef(firestore, path, EVENT_DATE_PROPS);
   const docRef = doc(collectionRef, trainerEvent.id);
@@ -106,7 +111,7 @@ export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: Trai
         data.memberIds.splice(idx, 1);
       }
       setDoc(docRef, data).then(() => {
-        changeCounterToMembership(firestore, user, membership, group, isAdd).then(() => resolve());
+        changeCounterToMembership(firestore, user, membership, group, isAdd, isExpired).then(() => resolve());
       });
     });
   });

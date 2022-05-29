@@ -114,13 +114,12 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const uploadAvatarIfExists = useCallback((usr, pauthUser) => {
-    if (pauthUser?.photoURL) {
+    // TODO
+    if (pauthUser?.photoURL && false) {
       getAvatarUrl(usr.id).then(() => {}, () => {
         fetch(pauthUser!.photoURL!).then((response) => {
           response.blob().then((blob) => {
-            if (false) {
-              uploadAvatar(blob, usr.id).then(userChanged);
-            }
+            uploadAvatar(blob, usr.id).then(userChanged);
           });
         });
       });

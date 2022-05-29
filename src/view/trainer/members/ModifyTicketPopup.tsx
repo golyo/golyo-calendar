@@ -9,7 +9,7 @@ import { TicketSheet } from '../../../hooks/trainer/TrainerContext';
 
 const ModifyTicketPopup = ({ membership, sheet }: { membership: MembershipType, sheet: TicketSheet }) => {
   const { t } = useTranslation();
-
+  
   const { updateMembership } = useTrainer();
   const [open, setOpen] = useState(false);
   const [newValue, setNewValue] = useState<number>(sheet.remainingEventNo);

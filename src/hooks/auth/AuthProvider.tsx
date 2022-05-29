@@ -90,10 +90,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [authUser]);
 
   const signInWithGoogle = useCallback(() => {
-    console.log('START SIGNIN REDIRECT');
     return signInWithRedirect(auth, new GoogleAuthProvider())
       .then(() => {
-        console.log('CHECK REDIRECT RESULT');
         return getRedirectResult(auth);
       })
       .then((result) => {
@@ -101,7 +99,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         // This gives you a Google Access Token.
         // You can use it to access the Google API.
-        console.log('LOGIN SUCCES', credential.accessToken, result!.user);
         return credential;
       }).catch((error) => {
         console.error('ERROR WHILE LOGIN', error.code, error.message);

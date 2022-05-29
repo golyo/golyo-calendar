@@ -27,6 +27,9 @@ export default function GroupDetails({ group, showParts }: { group: TrainingGrou
       <LabelValue label={t('trainingGroup.ticketLength')}>
         { group.ticketLength }&nbsp;{t('common.pcs')}
       </LabelValue>
+      <LabelValue label={t('trainingGroup.ticketValidity')}>
+        { group.ticketValidity ? group.ticketValidity + ' ' + t('common.month') : t('common.unlimited') }
+      </LabelValue>
       <LabelValue label={t('trainingGroup.color')}>
         <Avatar sx={{ bgcolor: group.color }}>
           <EventIcon></EventIcon>
