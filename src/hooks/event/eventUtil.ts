@@ -36,6 +36,7 @@ export const generateCronEvent = (group: TrainingGroupType, trainer: TrainerCont
     endDate: new Date(startDate.getTime() + (group.duration * 60 * 1000)),
     color: group.color,
     memberIds: [],
+    memberNames: [],
   } as TrainerEvent;
 };
 
@@ -107,9 +108,11 @@ export const changeMembershipToEvent = (firestore: Firestore, trainerEvent: Trai
           return;
         }
         data.memberIds.push(user.id);
+        data.memberNames.push(user.name);
       } else {
         const idx = data.memberIds.indexOf(user.id);
         data.memberIds.splice(idx, 1);
+        data.memberNames.splice(idx, 1);
       }
       setDoc(docRef, data).then(() => {
         changeCounterToMembership(firestore, user, membership, group, isAdd, isExpired).then(() => resolve());

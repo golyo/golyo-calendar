@@ -4,7 +4,7 @@ import { User as AuthUser } from 'firebase/auth';
 
 import {
   changeItemByEqual,
-  deleteObject, doQuery,
+  deleteObject, doQuery, loadObject,
   removeItemByEqual,
   updateObject,
   useFirestore,
@@ -29,8 +29,8 @@ import useStorage from '../firebase/useStorage';
 export const loadGroups = (firestore: Firestore, trainerId: string) =>
   doQuery(firestore, `trainers/${trainerId}/groups`);
 
-export const loadMemberships = (firestore: Firestore, trainerId: string) => {
-  return doQuery(firestore, `trainers/${trainerId}/members`);
+export const loadMembership = (firestore: Firestore, trainerId: string, userId: string) => {
+  return loadObject(firestore, `trainers/${trainerId}/members`, userId);
 };
 
 const setMember = (firestore: Firestore, user: User, membership: TrainerContactMembership) => {
@@ -76,12 +76,10 @@ const createDBUser = (authUser: AuthUser) => ({
 
 const isTrainerEqual = (a: TrainerContactMembership, b: TrainerContactMembership) => a.trainer.trainerId === b.trainer.trainerId;
 
-const createMembership = (userId: string, trainer: TrainerContact, memberships: MembershipType[], trainerGroups: TrainingGroupType[]) => {
-  const membership = memberships.find((m) => m.id === userId)!;
+const createMembership = (userId: string, trainer: TrainerContact, membership: MembershipType, trainerGroups: TrainingGroupType[]) => {
   const contactGroups = trainerGroups.filter((group) => membership.groups.includes(group.id) ||
       group.attachedGroups?.some((aid) => membership.groups.includes(aid)));
   return {
-    memberships,
     membership,
     contactGroups,
     trainerGroups,
@@ -186,9 +184,9 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     }
     Promise.all(
       dbUser.memberships.map(async (trainerContact) => {
-        const memberships = await loadMemberships(firestore, trainerContact.trainerId) as MembershipType[];
+        const membership = await loadMembership(firestore, trainerContact.trainerId, dbUser.id) as MembershipType;
         const groups = await loadGroups(firestore, trainerContact.trainerId);
-        return createMembership(dbUser!.id, trainerContact, memberships, groups);
+        return createMembership(dbUser!.id, trainerContact, membership, groups);
       }),
     ).then((memberships) => {
       setGroupMemberships(memberships);

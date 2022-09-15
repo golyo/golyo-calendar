@@ -10,17 +10,13 @@ export interface CalendarEvent {
   color?: string;
 }
 
-export interface EventMember {
-  id: string;
-  name: string;
-}
-
 export interface TrainerEvent extends CalendarEvent {
   deletable?: boolean;
   trainerId: string;
   groupId: string;
   showMembers: boolean;
   memberIds: string[];
+  memberNames: string[];
 }
 
 export interface EventProvider {

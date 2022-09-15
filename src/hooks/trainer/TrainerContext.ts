@@ -167,7 +167,7 @@ interface TrainerContextType {
   updateMembership: (membership: MembershipType) => Promise<void>;
 
   activateEvent: (toSave: TrainerEvent) => Promise<TrainerEvent>;
-  addMemberToEvent: (event: TrainerEvent, memberId: string) => Promise<TrainerEvent>;
+  addMemberToEvent: (event: TrainerEvent, memberId: string, memberName: string) => Promise<TrainerEvent>;
   buySeasonTicket: (memberId: string, groupId: string) => Promise<MembershipType | undefined>;
   createEvent: (group:TrainingGroupType, startDate: Date) => Promise<TrainerEvent>;
   deleteEvent: (toSave: TrainerEvent) => Promise<void>;

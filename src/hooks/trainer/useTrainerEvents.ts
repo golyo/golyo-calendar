@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useCallback } from 'react';
-import { changeItem, removeStr, useFirestore } from '../firestore/firestore';
+import { changeItem, useFirestore } from '../firestore/firestore';
 import { GroupType, MembershipType, TicketSheet, TrainerState, TrainingGroupType } from './TrainerContext';
 import { EVENT_DATE_PROPS, TrainerEvent } from '../event';
 import { User } from '../user';
@@ -76,10 +76,6 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: Memb
     return changedEvent;
   }, []);
 
-  const getMemberNames = useCallback((event: TrainerEvent) => {
-    return event.memberIds.map((memberId) => members.find((m) => m.id === memberId)?.name || '');
-  }, [members]);
-
   const createEvent = useCallback((group:TrainingGroupType, startDate: Date) => {
     const event = generateCronEvent(group,  {
       trainerId: user.id,
@@ -123,12 +119,13 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: Memb
     }).then((event) => dispatchEventChanged(event, WeekEventType.CHANGED));
   }, [dispatchEventChanged, eventSrv]);
 
-  const addMemberToEvent = useCallback((event: TrainerEvent, memberId: string) => {
+  const addMemberToEvent = useCallback((event: TrainerEvent, memberId: string, memberName: string) => {
     const group = findGroup(event.groupId);
     changeMembershipValues(memberId, group.groupType, 0, -1, 1);
     return eventSrv.getAndModify(event.id, (toSave) => {
       const checkIfExist = toSave || event;
       checkIfExist.memberIds.push(memberId);
+      checkIfExist.memberNames.push(memberName);
       return checkIfExist;
     }).then((result) => {
       return dispatchEventChanged(result, WeekEventType.CHANGED);
@@ -139,7 +136,11 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: Memb
     const group = findGroup(event.groupId);
     changeMembershipValues(memberId, group.groupType, 0, (ticketBack ? 1 : 0), -1);
     return eventSrv.getAndModify(event.id, (toSave) => {
-      removeStr(toSave.memberIds, memberId);
+      const idx = toSave.memberIds.indexOf(memberId);
+      if (idx >= 0) {
+        toSave.memberIds.splice(idx, 1);
+        toSave.memberNames.splice(idx, 1);
+      }
       return toSave;
     }).then((result) => dispatchEventChanged(result, WeekEventType.CHANGED));
   }, [changeMembershipValues, dispatchEventChanged, eventSrv, findGroup]);
@@ -150,7 +151,6 @@ const useTrainerEvents = (user: User, groups: TrainingGroupType[], members: Memb
     buySeasonTicket,
     createEvent,
     deleteEvent,
-    getMemberNames,
     removeMemberFromEvent,
   };
 };

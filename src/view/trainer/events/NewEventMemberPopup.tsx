@@ -23,6 +23,8 @@ const NewEventMemberPopup = ({ event, eventChanged }: { event: TrainerEvent; eve
   const [choiceType, setChoiceType] = useState<ChoiceType>(ChoiceType.GROUP_MEMBER);
 
   const [memberId, setMemberId] = useState<string>('');
+  
+  const member = useMemo(() => members.find((m) => m.id  === memberId), [memberId, members]);
 
   const group = useMemo(() => groups.find((g) => g.id === event.groupId)!, [event.groupId, groups]);
 
@@ -56,12 +58,12 @@ const NewEventMemberPopup = ({ event, eventChanged }: { event: TrainerEvent; eve
     if (!memberId) {
       return;
     }
-    addMemberToEvent(event, memberId).then((saved) => {
+    addMemberToEvent(event, member!.id, member!.name).then((saved) => {
       setMemberId('');
       eventChanged(saved);
       closeModal();
     });
-  }, [addMemberToEvent, closeModal, event, eventChanged, memberId]);
+  }, [addMemberToEvent, closeModal, event, eventChanged, member, memberId]);
 
   const groupMemberChoice = useCallback((memberChoices: MembershipType[]) => (
     <TextField select onChange={onSelectMember} size="small" value={memberId}>

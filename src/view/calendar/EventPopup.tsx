@@ -7,19 +7,9 @@ import { getInterval, TrainerEvent } from '../../hooks/event';
 import { Avatar, Divider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Event as EventIcon } from '@mui/icons-material';
-import { useUser } from '../../hooks/user';
 
 const EventPopup = ({ event, resetEvent }: { event: TrainerEvent | null; resetEvent: () => void; }) => {
   const { t } = useTranslation();
-  const { groupMemberships } = useUser();
-
-  const memberNames = useMemo(() => {
-    if (!event) {
-      return [];
-    }
-    const grMembership = groupMemberships.find((gr) => gr.trainer.trainerId === event.trainerId)!;
-    return event.memberIds.map((mid) => grMembership.memberships.find((m) => m.id === mid)?.name || mid);
-  }, [event, groupMemberships]);
 
   const interval = useMemo(() => event ? getInterval(event) : '', [event]);
 
@@ -42,8 +32,8 @@ const EventPopup = ({ event, resetEvent }: { event: TrainerEvent | null; resetEv
             <>
               <Typography variant="subtitle2">{t('event.members')}</Typography>
               <Divider />
-              {event?.memberIds.map((mid, idx) => (
-                <Typography key={idx} variant="subtitle2">{memberNames[idx]}</Typography>
+              {event?.memberNames.map((memberName, idx) => (
+                <Typography key={idx} variant="subtitle2">{memberName}</Typography>
               ))}
             </>
           )}
