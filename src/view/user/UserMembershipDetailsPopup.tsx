@@ -11,7 +11,7 @@ import {
 } from '../../hooks/trainer';
 import LabelValue from '../common/LabelValue';
 import { CronConverter, TrainerContactMembership } from '../../hooks/user';
-import GroupDetails from '../trainer/group/GroupDetails';
+import PublicGroupData from '../trainer/group/PublicGroupData';
 import { useDialog } from '../../hooks/dialog';
 
 interface Props {
@@ -83,7 +83,7 @@ const UserMembershipDetailPopup = ({ groupMembership, handleRequest, leaveGroup,
             <LabelValue label={t('membership.groupName')}>
               { group?.name }
             </LabelValue>
-            <GroupDetails group={group!} showParts={true} />
+            <PublicGroupData group={group!} />
             <LabelValue label={t('membership.state')}>
               {t(`memberState.${groupMembership?.membership.state}`)}
             </LabelValue>

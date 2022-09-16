@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import * as yup from 'yup';
@@ -12,10 +12,11 @@ import {
   MenuItem,
   Modal,
   Select,
-  TextField,
+  TextField, Typography,
 } from '@mui/material';
-import { Event as EventIcon } from '@mui/icons-material';
+import { Event as EventIcon, ExpandMore } from '@mui/icons-material';
 import { GroupType, TrainingGroupUIType, useTrainer } from '../../../hooks/trainer';
+import { Accordion, AccordionDetails, AccordionSummary } from '../../common/ZhAccordion';
 import CronWeekPicker from '../../common/CronWeekPicker';
 import { EVENT_COLORS } from '../../../theme/weekTableTheme';
 import ModalContainer from '../../common/ModalContainer';
@@ -33,7 +34,9 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
   const { t } = useTranslation();
   const { showDialog } = useDialog();
   const { groups } = useTrainer();
+  const [showPublic, setShowPublic] = useState<boolean>(true);
 
+  const toggleAccordion = useCallback(() => setShowPublic((prev) => !prev), []);
   const schema = useMemo(() => yup.object({
     name: yup.string().required(),
     groupType: yup.string().required(),
@@ -109,238 +112,254 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
         </>
       )} close={closePopup}>
         <form onSubmit={handleSubmit(modifyData)} className="vertical">
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                label={t('trainingGroup.name')}
-                size="small"
-                variant="outlined"
-                error={!!errors.name}
-                helperText={errors.name?.message}
-              />
-            )}
-          />
-          <Controller
-            name="groupType"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                select
-                label={t('trainingGroup.groupType')}
-                size="small"
-                variant="outlined"
-                onChange={(e) => {
-                  if (onGroupTypeChanged()) {
-                    field.onChange(e);
-                  }
-                }}
-              >
-                {Object.values(GroupType).map((gtype, idx) =>
-                  (<MenuItem key={idx} value={gtype}>{t(`groupType.${gtype}`)}</MenuItem>),
-                )}
-              </TextField>
-            )}
-          />
-          <Controller
-            control={control}
-            name="duration"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                type="number"
-                label={t('trainingGroup.duration')}
-                size="small"
-                variant="outlined"
-                error={!!errors.duration}
-                helperText={errors.duration?.message}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Avatar variant="square">{t('common.min')}</Avatar>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="maxMember"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                type="number"
-                label={t('trainingGroup.maxMember')}
-                size="small"
-                variant="outlined"
-                error={!!errors.maxMember}
-                helperText={errors.maxMember?.message}
-              />
-            )}
-          />
-          <FormControlLabel
-            control={
-              <Controller
-                name="inviteOnly"
-                control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    {...field}
-                    checked={field.value}
-                  />
-                )}
-              />
-            }
-            label={t('trainingGroup.inviteOnly') as string}
-          />
-          <FormControlLabel control={
-            <Controller
-              name="showMembers"
-              control={control}
-              render={({ field }) => (
-                <Checkbox
-                  {...field}
-                  checked={field.value}
-                />
-              )}
-            />
-          }
-          label={t('trainingGroup.showMembers') as string}
-        />
-          <Controller
-            control={control}
-            name="cancellationDeadline"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                type="number"
-                label={t('trainingGroup.cancellationDeadline')}
-                size="small"
-                variant="outlined"
-                error={!!errors.cancellationDeadline}
-                helperText={errors.cancellationDeadline?.message}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Avatar variant="square">{t('common.hour')}</Avatar>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="ticketLength"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                type="number"
-                label={t('trainingGroup.ticketLength')}
-                size="small"
-                variant="outlined"
-                error={!!errors.ticketLength}
-                helperText={errors.ticketLength?.message}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Avatar variant="square">{t('common.pcs')}</Avatar>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="ticketValidity"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                select
-                label={t('trainingGroup.ticketValidity')}
-                size="small"
-                variant="outlined"
-              >
-                <MenuItem value={0}>{t('common.unlimited')}</MenuItem>
-                {months.map((month, idx) => (
-                  <MenuItem value={month} key={idx}>{month + ' ' + t('common.month')}</MenuItem>
-                ))}
-              </TextField>
-            )}
-          />
-          <Controller
-            control={control}
-            name="color"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                select
-                fullWidth
-                label={t('trainingGroup.color')}
-                size="small"
-                variant="outlined"
-                sx={{ backgroundColor: field.value }}
-                error={!!errors.color}
-                helperText={errors.color?.message}
-              >
-                <MenuItem value=''>-</MenuItem>
-                {EVENT_COLORS.map((color, idx) =>
-                  (<MenuItem key={idx} sx={{
-                    'backgroundColor': color,
-                    '&:hover': {
-                      backgroundColor: color,
-                    },
-                  }} value={color}>{color}</MenuItem>),
-                )}
-              </TextField>
-            )}
-          />
-          {fields.map((item, index) => (
-            <div key={index}>
-              <CronWeekPicker
-                control={control}
-                setValue={setValue}
-                errors={errors}
-                trigger={trigger}
-                name={`crons.${index}`}
-                onDelete={index > 0 ? () => remove(index) : undefined}
-                onAdd={fields.length - 1 === index ? () => append({ days: [], time: '' }) : undefined}
-              />
-            </div>
-          ))}
-          <Controller
-            name="attachedGroups"
-            control={control}
-            render={({ field }) => (
-              <FormControl size="small">
-                <InputLabel id="attachedGroupsLabel">{t('trainingGroup.attachedGroups')}</InputLabel>
-                <Select
-                  {...field}
-                  labelId="attachedGroupsLabel"
-                  fullWidth
-                  multiple
-                  label={t('trainingGroup.attachedGroups')}
-                  size="small"
-                >
-                  {attachableGroups.map((agroup, idx) =>
-                    (<MenuItem key={idx} value={agroup.id}>{agroup.name}</MenuItem>),
+          <div>
+            <Accordion disableGutters expanded={showPublic} onChange={toggleAccordion}>
+              <AccordionSummary expandIcon={<ExpandMore />} >
+                <Typography>{t('trainer.groupPublic')}</Typography>
+              </AccordionSummary>
+              <AccordionDetails className="vertical">
+                <Controller
+                  name="name"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label={t('trainingGroup.name')}
+                      size="small"
+                      variant="outlined"
+                      error={!!errors.name}
+                      helperText={errors.name?.message}
+                    />
                   )}
-                </Select>
-              </FormControl>
-            )}
-          />
+                />
+                <Controller
+                  name="groupType"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      select
+                      label={t('trainingGroup.groupType')}
+                      size="small"
+                      variant="outlined"
+                      onChange={(e) => {
+                        if (onGroupTypeChanged()) {
+                          field.onChange(e);
+                        }
+                      }}
+                    >
+                      {Object.values(GroupType).map((gtype, idx) =>
+                        (<MenuItem key={idx} value={gtype}>{t(`groupType.${gtype}`)}</MenuItem>),
+                      )}
+                    </TextField>
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="duration"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      type="number"
+                      label={t('trainingGroup.duration')}
+                      size="small"
+                      variant="outlined"
+                      error={!!errors.duration}
+                      helperText={errors.duration?.message}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Avatar variant="square">{t('common.min')}</Avatar>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="maxMember"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      type="number"
+                      label={t('trainingGroup.maxMember')}
+                      size="small"
+                      variant="outlined"
+                      error={!!errors.maxMember}
+                      helperText={errors.maxMember?.message}
+                    />
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="color"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      select
+                      fullWidth
+                      label={t('trainingGroup.color')}
+                      size="small"
+                      variant="outlined"
+                      sx={{ backgroundColor: field.value }}
+                      error={!!errors.color}
+                      helperText={errors.color?.message}
+                    >
+                      <MenuItem value=''>-</MenuItem>
+                      {EVENT_COLORS.map((color, idx) =>
+                        (<MenuItem key={idx} sx={{
+                          'backgroundColor': color,
+                          '&:hover': {
+                            backgroundColor: color,
+                          },
+                        }} value={color}>{color}</MenuItem>),
+                      )}
+                    </TextField>
+                  )}
+                />
+                {fields.map((item, index) => (
+                  <div key={index}>
+                    <CronWeekPicker
+                      control={control}
+                      setValue={setValue}
+                      errors={errors}
+                      trigger={trigger}
+                      name={`crons.${index}`}
+                      onDelete={index > 0 ? () => remove(index) : undefined}
+                      onAdd={fields.length - 1 === index ? () => append({ days: [], time: '' }) : undefined}
+                    />
+                  </div>
+                ))}
+              </AccordionDetails>
+            </Accordion>
+            <Accordion disableGutters expanded={!showPublic} onChange={toggleAccordion}>
+              <AccordionSummary expandIcon={<ExpandMore />} >
+                <Typography>{t('trainer.groupSettings')}</Typography>
+              </AccordionSummary>
+              <AccordionDetails className="vertical">
+                <Controller
+                  control={control}
+                  name="cancellationDeadline"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      type="number"
+                      label={t('trainingGroup.cancellationDeadline')}
+                      size="small"
+                      variant="outlined"
+                      error={!!errors.cancellationDeadline}
+                      helperText={errors.cancellationDeadline?.message}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Avatar variant="square">{t('common.hour')}</Avatar>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="ticketLength"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      type="number"
+                      label={t('trainingGroup.ticketLength')}
+                      size="small"
+                      variant="outlined"
+                      error={!!errors.ticketLength}
+                      helperText={errors.ticketLength?.message}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Avatar variant="square">{t('common.pcs')}</Avatar>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="ticketValidity"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      select
+                      label={t('trainingGroup.ticketValidity')}
+                      size="small"
+                      variant="outlined"
+                    >
+                      <MenuItem value={0}>{t('common.unlimited')}</MenuItem>
+                      {months.map((month, idx) => (
+                        <MenuItem value={month} key={idx}>{month + ' ' + t('common.month')}</MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                />
+                <FormControlLabel
+                  control={
+                    <Controller
+                      name="inviteOnly"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          {...field}
+                          checked={field.value}
+                        />
+                      )}
+                    />
+                  }
+                  label={t('trainingGroup.inviteOnly') as string}
+                />
+                <FormControlLabel
+                  control={
+                    <Controller
+                      name="showMembers"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          {...field}
+                          checked={field.value}
+                        />
+                      )}
+                    />}
+                  label={t('trainingGroup.showMembers') as string}
+                />
+                <Controller
+                  name="attachedGroups"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControl size="small">
+                      <InputLabel id="attachedGroupsLabel">{t('trainingGroup.attachedGroups')}</InputLabel>
+                      <Select
+                        {...field}
+                        labelId="attachedGroupsLabel"
+                        fullWidth
+                        multiple
+                        label={t('trainingGroup.attachedGroups')}
+                        size="small"
+                      >
+                        {attachableGroups.map((agroup, idx) =>
+                          (<MenuItem key={idx} value={agroup.id}>{agroup.name}</MenuItem>),
+                        )}
+                      </Select>
+                    </FormControl>
+                  )}
+                />
+              </AccordionDetails>
+            </Accordion>
+          </div>
           <div>
             <Button color="primary" type="submit" variant="contained">
               {t('common.save')}

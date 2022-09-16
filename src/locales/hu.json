@@ -103,6 +103,8 @@
     "title": "Edző",
     "events": "Események",
     "name": "Név",
+    "groupPublic": "Publikus adatok",
+    "groupSettings": "Beállítások",
     "groups": "Edzés Csoportok",
     "userMonthlyStats": "Havi statisztika",
     "last28DaysStats": "Utolsó 28 nap statisztikája",

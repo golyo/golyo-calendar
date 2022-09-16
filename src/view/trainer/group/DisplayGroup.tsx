@@ -1,18 +1,23 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
+import { Button, Typography } from '@mui/material';
+import { Delete, Edit, ExpandMore } from '@mui/icons-material';
+
 
 import { useDialog } from '../../../hooks/dialog';
 import { useGroup, useTrainer } from '../../../hooks/trainer';
+
+import { Accordion, AccordionDetails, AccordionSummary } from '../../common/ZhAccordion';
+
 import EditGroupPopup from './EditGroupPopup';
-import GroupDetails from './GroupDetails';
-import LabelValue from '../../common/LabelValue';
+import PublicGroupData from './PublicGroupData';
+import GroupSettingsData from './GroupSettingsData';
 
 export default function DisplayGroup() {
   const { t } = useTranslation();
   const { showConfirmDialog, showDialog } = useDialog();
+  const [showPublic, setShowPublic] = useState<boolean>(true);
   const navigate = useNavigate();
   const { attachedGroups, group } = useGroup();
   const { members, saveGroup, deleteGroup } = useTrainer();
@@ -21,6 +26,8 @@ export default function DisplayGroup() {
 
   const closePopup = useCallback(() => setEdit(false), []);
   const openPopup = useCallback(() => setEdit(true), []);
+
+  const toggleAccordion = useCallback(() => setShowPublic((prev) => !prev), []);
 
   const doDelete = useCallback(() => {
     if (members.length > 0) {
@@ -45,12 +52,26 @@ export default function DisplayGroup() {
 
   return (
     <>
-      <GroupDetails group={group} />
-      <LabelValue label={t('trainingGroup.attachedGroups')}>
-        {attachedGroups.map((agroup, idx) => (
-          <div key={idx}>{agroup.name}</div>
-        ))}
-      </LabelValue>
+      <div>
+        <Accordion disableGutters expanded={showPublic} onChange={toggleAccordion}>
+          <AccordionSummary expandIcon={<ExpandMore />} >
+            <Typography>{t('trainer.groupPublic')}</Typography>
+          </AccordionSummary>
+          <AccordionDetails className="vertical">
+            <PublicGroupData group={group} />
+          </AccordionDetails>
+        </Accordion>
+
+        <Accordion disableGutters expanded={!showPublic} onChange={toggleAccordion}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <Typography>{t('trainer.groupSettings')}</Typography>
+          </AccordionSummary>
+          <AccordionDetails className="vertical">
+            <GroupSettingsData group={group} attachedGroups={attachedGroups} />
+          </AccordionDetails>
+        </Accordion>
+      </div>
+
       <div className="horizontal">
         <Button onClick={openPopup} variant="contained" startIcon={<Edit />}>{t('common.modify')}</Button>
         <Button onClick={doDelete} variant="contained" startIcon={<Delete />}>{t('common.delete')}</Button>

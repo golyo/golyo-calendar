@@ -105,6 +105,8 @@
     "title": "Trainer",
     "events": "Events",
     "name": "Name",
+    "groupPublic": "Public data",
+    "groupSettings": "Public data",
     "groups": "Training Groups",
     "userMonthlyStats": "Monthly statistic",
     "last28DaysStats": "The last 28 days statistic",
