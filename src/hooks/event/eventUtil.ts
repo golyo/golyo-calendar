@@ -28,13 +28,14 @@ export const generateCronEvent = (group: TrainingGroupType, trainer: TrainerCont
     id: startDate.getTime().toString(),
     isDeleted: false,
     groupId: group.id,
-    showMembers: group.showMembers,
+    showMembers: group.showMembers === undefined ? false : group.showMembers,
     trainerId: trainer.trainerId,
     title: trainer.trainerName,
     text: group.name,
     startDate: startDate,
     endDate: new Date(startDate.getTime() + (group.duration * 60 * 1000)),
     color: group.color,
+    badge: '0',
     memberIds: [],
     memberNames: [],
   } as TrainerEvent;
@@ -144,17 +145,18 @@ const createDBEventProvider = (firestore: Firestore, userId: string, trainerGrou
           const ret = result.filter((r) => r.memberIds.includes(userId) || filtered.includes(r.groupId));
           ret.forEach((e: TrainerEvent) => {
             e.showMembers = isTrainer || groupShowMembers[e.groupId];
+            e.badge = (e.showMembers && e.memberIds?.length.toString()) || '0';
           });
           return ret;
         }
         result.forEach((e: TrainerEvent) => {
           e.showMembers = isTrainer || groupShowMembers[e.groupId];
+          e.badge = (e.showMembers && e.memberIds?.length.toString()) || '0';
         });
         return result;
       });
     })).then((data) => {
       const allEvent: TrainerEvent[] = [].concat.apply([], data as [][]);
-      allEvent.forEach((event) => event.badge = event.showMembers ? event.memberIds?.length.toString() || '0' : '');
       allEvent.sort(EVENT_COMPARE);
       return allEvent;
     });
