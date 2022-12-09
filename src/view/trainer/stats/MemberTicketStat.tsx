@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { findOrCreateSheet, MembershipType, MemberState, useTrainer } from '../../../hooks/trainer';
-import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
+import { useUtils } from '@mui/x-date-pickers/internals/hooks/useUtils';
 import { getNextEventTo, TrainerEvent } from '../../../hooks/event';
 import {
   Avatar,

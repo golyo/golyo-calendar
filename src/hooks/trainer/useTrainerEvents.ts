@@ -5,7 +5,7 @@ import { EVENT_DATE_PROPS, TrainerEvent } from '../event';
 import { User } from '../user';
 import { WEEK_EVENT_CHANGED, WeekEventType } from '../../view/calendar/WeekView';
 import { generateCronEvent } from '../event/eventUtil';
-import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
+import { useUtils } from '@mui/x-date-pickers/internals/hooks/useUtils';
 
 const createSheet = (type: GroupType) => ({
   type,

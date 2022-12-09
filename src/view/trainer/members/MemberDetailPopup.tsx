@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
+import { useUtils } from '@mui/x-date-pickers/internals/hooks/useUtils';
 import { Button, IconButton, Modal } from '@mui/material';
 import { AddCircle, Visibility } from '@mui/icons-material';
 import ModalContainer from '../../common/ModalContainer';

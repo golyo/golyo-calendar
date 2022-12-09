@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import { Navigate, useNavigate  } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, TextField } from '@mui/material';
@@ -12,12 +12,12 @@ const PasswordChange = () => {
   const { t } = useTranslation();
   const { authUser, authState, updatePassword } = useAuth();
 
-  const changePassword = useCallback((values) => {
+  const changePassword = useCallback((values: FieldValues) => {
     const { oldPassword, newPassword, passwordCheck } = values;
     if (newPassword !== passwordCheck) {
       setError('passwordCheck', {
         type: 'manual',
-        message: t('login.error.passwordCheck'),
+        message: t('login.error.passwordCheck')!,
       });
       return;
     }
@@ -28,12 +28,12 @@ const PasswordChange = () => {
       if (err.code.endsWith('wrong-password')) {
         setError('oldPassword', {
           type: 'manual',
-          message: t(`login.error.${err.code}`),
+          message: t(`login.error.${err.code}`)!,
         });
       } else {
         setError('newPassword', {
           type: 'manual',
-          message: t(`login.error.${err.code}`),
+          message: t(`login.error.${err.code}`)!,
         });
       }
     });
@@ -66,7 +66,7 @@ const PasswordChange = () => {
               label={t('login.oldPassword')}
               required
               error={!!errors.oldPassword}
-              helperText={errors.oldPassword?.message}
+              helperText={errors.oldPassword?.message as string || ''}
             />
           )}
         />
@@ -82,7 +82,7 @@ const PasswordChange = () => {
               label={t('login.newPassword')}
               required
               error={!!errors.newPassword}
-              helperText={errors.newPassword?.message}
+              helperText={errors.newPassword?.message as string || ''}
             />
           )}
         />
@@ -98,7 +98,7 @@ const PasswordChange = () => {
               label={t('login.passwordCheck')}
               required
               error={!!errors.passwordCheck}
-              helperText={errors.passwordCheck?.message}
+              helperText={errors.passwordCheck?.message as string || ''}
             />
           )}
         />

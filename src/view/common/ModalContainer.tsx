@@ -1,13 +1,9 @@
-import { makeStyles } from '@mui/styles';
-import styles from './ModalContainer.style';
-import { useMemo } from 'react';
-import classNames from 'classnames';
-import Typography from '@mui/material/Typography';
-import { AppBar, Box, Grow, IconButton, Toolbar } from '@mui/material';
-import { Close } from '@mui/icons-material';
 import * as React from 'react';
+import { useMemo } from 'react';
+import { AppBar, Box, Grow, IconButton, Toolbar, Typography } from '@mui/material';
+import { Close } from '@mui/icons-material';
 
-const useStyles = makeStyles(styles, { name: 'ModalContainer2' });
+import styles from './ModalContainer.style';
 
 interface ModalProps {
   children : React.ReactNode;
@@ -18,19 +14,17 @@ interface ModalProps {
 }
 
 const ModalContainer = React.forwardRef<HTMLDivElement, ModalProps>(({ children, variant, title, close, open }, ref) => {
-  const classes = useStyles();
-
   const appendRootClass = useMemo(() => {
-    return variant === 'big' ? classes.variantBig : variant === 'small' ? classes.variantSmall : undefined;
-  }, [classes.variantBig, classes.variantSmall, variant]);
+    return variant === 'big' ? styles.variantBig : variant === 'small' ? styles.variantSmall : undefined;
+  }, [variant]);
 
   return (
     <Grow in={open} timeout={1000}>
-      <Box className={classes.outer}>
-        <Box tabIndex={-1} className={classNames(classes.root, appendRootClass)} ref={ref}>
+      <Box css={styles.outer}>
+        <Box tabIndex={-1} ref={ref} css={[styles.root, appendRootClass]}>
           <AppBar position="relative">
-            <Toolbar className={classes.headerTextContainer}>
-              <Typography variant="h4" color="inherit" component="div" className={classes.headerTitle}>
+            <Toolbar>
+              <Typography variant="h4" color="inherit" component="div">
                 { title }
               </Typography>
               <IconButton onClick={close} edge="end" size="large" color="inherit">
@@ -38,7 +32,7 @@ const ModalContainer = React.forwardRef<HTMLDivElement, ModalProps>(({ children,
               </IconButton>
             </Toolbar>
           </AppBar>
-          <div className={classes.modalContent}>
+          <div>
             {children}
           </div>
         </Box>

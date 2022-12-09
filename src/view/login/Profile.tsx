@@ -1,10 +1,9 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Button, MenuItem, Paper, Select, Typography } from '@mui/material';
+import { Button, MenuItem, Paper, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { useUser } from '../../hooks/user';
 import { useAuth } from '../../hooks/auth';
-import FlagIcon from '../../menu/FlagIcon';
 import LabelValue from '../common/LabelValue';
 import TrainerBaseData from '../trainer/TrainerBaseData';
 import ProfilePopup from './ProfilePopup';
@@ -24,7 +23,7 @@ const Profile = () => {
 
   const [language, setLanguage] = React.useState(i18n.language);
 
-  const handleChangeLanguage = useCallback((event) => {
+  const handleChangeLanguage = useCallback((event: SelectChangeEvent<string>) => {
     const newLanguage = event.target.value;
     setLanguage(newLanguage);
     i18n.changeLanguage(newLanguage);
@@ -38,8 +37,8 @@ const Profile = () => {
     return saveUser(toSave);
   }, [saveUser, user]);
 
-  const selectFile = useCallback((e) => {
-    const selectedFile = e.target.files?.length > 0 ? e.target.files[0] : undefined;
+  const selectFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files && e.target.files.length > 0 ? e.target.files![0] : undefined;
     if (!selectedFile) {
       return;
     }
@@ -68,10 +67,10 @@ const Profile = () => {
           variant="standard"
         >
           <MenuItem value="hu">
-            <FlagIcon code="hu" />&nbsp;&nbsp;magyar
+            magyar
           </MenuItem>
           <MenuItem value="en">
-            <FlagIcon code="gb" />&nbsp;&nbsp;english
+            english
           </MenuItem>
         </Select>
       </LabelValue>

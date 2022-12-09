@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+/** @jsxImportSource @emotion/react */
+import React, { useCallback, useEffect, useMemo, useState, MouseEvent } from 'react';
 import {
   Table,
   TableBody,
@@ -10,14 +11,14 @@ import {
   Button,
   IconButton,
 } from '@mui/material';
-import { makeStyles, useTheme } from '@mui/styles';
-import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
+import { useTheme } from '@emotion/react';
+import { useUtils } from '@mui/x-date-pickers/internals/hooks/useUtils';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { MuiPickersAdapter } from '@mui/lab/LocalizationProvider/LocalizationProvider';
+import { MuiPickersAdapter } from '@mui/x-date-pickers/internals/models';
 
 import { Breakpoints, useBreakpoint } from '../../hooks/breakpoint';
-import { IThemeOptions, WeekTablePalette } from '../../theme/weekTableTheme';
+import { WeekTablePalette, WeekTheme } from '../../theme/weekTableTheme';
 import { CalendarEvent, EventProvider } from '../../hooks/event';
 import styles, { breakpointLineHeightMap } from './WeekView.style';
 import { changeItem, removeItemById } from '../../hooks/firestore/firestore';
@@ -29,8 +30,6 @@ export enum WeekEventType {
   CHANGED = 'CHANGED',
   REMOVED = 'REMOVED',
 }
-
-const useStyles = makeStyles(styles, { name: 'WeekView' });
 
 const WEEK_ARRAY = Array.from(Array(7));
 
@@ -133,9 +132,10 @@ type WeekViewProp<T> = {
 };
 
 export default function WeekView<T>({ eventProvider, eventClick, newEventClick, weekLabel = 'Week', yearLabel = 'Year', todayLabel = 'Today' } : WeekViewProp<T>) {
-  const classes = useStyles();
   const utils = useUtils<T>();
-  const { palette: { weekPalette } } = useTheme() as IThemeOptions;
+  const theme = useTheme() as WeekTheme;
+  const { palette: { weekPalette } } = theme;
+  const css = useMemo(() => styles(theme), [theme]);
   const breakpoint = useBreakpoint();
   const [firstWeekDay, setFirstWeekDay] = useState<T>(utils.startOfWeek(utils.date()!));
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -180,8 +180,8 @@ export default function WeekView<T>({ eventProvider, eventClick, newEventClick, 
 
   const lineHeight: number = useMemo(() => breakpointLineHeightMap[breakpoint as keyof Record<Breakpoints, number>], [breakpoint]);
 
-  const onTableCellClicked = useCallback((event, rowIdx: number, cellIdx: number) => {
-    if (newEventClick && event.target.tagName === 'TD') {
+  const onTableCellClicked = useCallback((event: MouseEvent, rowIdx: number, cellIdx: number) => {
+    if (newEventClick && (event!.target! as HTMLElement).tagName === 'TD') {
       const startDate = utils.setHours(utils.addDays(firstWeekDay, cellIdx), parseInt(tableRows[rowIdx].hour) - 1);
       newEventClick(startDate);
     }
@@ -211,7 +211,7 @@ export default function WeekView<T>({ eventProvider, eventClick, newEventClick, 
   },  [eventProvider, firstWeekDay, utils]);
 
   return (
-    <TableContainer className={classes.root}>
+    <TableContainer css={css.root}>
       <Table aria-label="collapsible table" style={{ tableLayout: 'fixed' }}>
         <colgroup>
           <col style={{ width: '40px' }}/>
@@ -225,10 +225,10 @@ export default function WeekView<T>({ eventProvider, eventClick, newEventClick, 
         </colgroup>
         <TableHead>
           <TableRow>
-            <TableCell colSpan={8} className={classes.weekCell}>
-              <div className={classes.headerNavigation}>
+            <TableCell colSpan={8} css={css.weekCell}>
+              <div css={css.headerNavigation}>
                 <div>
-                  <span className={classes.headerLabel}>{weekLabel}</span>
+                  <span css={css.headerLabel}>{weekLabel}</span>
                   <IconButton onClick={goPrevWeek} size="small" color="success"><ArrowBackIcon /></IconButton>
                   <Button onClick={goToday}
                           variant="contained"
@@ -240,7 +240,7 @@ export default function WeekView<T>({ eventProvider, eventClick, newEventClick, 
                   <IconButton onClick={goNextWeek} size="small" color="success"><ArrowForwardIcon /></IconButton>
                 </div>
                 <div>
-                  <span className={classes.headerLabel}>{yearLabel}</span>
+                  <span css={css.headerLabel}>{yearLabel}</span>
                   <IconButton onClick={goPrevYear} size="small" color="success"><ArrowBackIcon /></IconButton>
                   <Chip label={ year } color="primary" size="small" />
                   <IconButton onClick={goNextYear} size="small" color="success"><ArrowForwardIcon /></IconButton>
@@ -249,14 +249,14 @@ export default function WeekView<T>({ eventProvider, eventClick, newEventClick, 
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className={classes.weekCell}>
-              <div className={classes.chipContent}>
-                <Chip label={ getHourString(getStartHour(tableRows)) } className={classes.timeChip} size="small" />
+            <TableCell css={css.weekCell}>
+              <div css={css.chipContent}>
+                <Chip label={ getHourString(getStartHour(tableRows)) } css={css.timeChip} size="small" />
               </div>
             </TableCell>
             { dayHeaders.map((weekDay, i) => (
-              <TableCell key={i} className={classes.weekCell}>
-                <div className={classes.headerContent}>
+              <TableCell key={i} css={css.weekCell}>
+                <div css={css.headerContent}>
                   <div>{weekDay}</div>
                   <div>{weekDays[i]} </div>
                 </div>
@@ -267,23 +267,23 @@ export default function WeekView<T>({ eventProvider, eventClick, newEventClick, 
         <TableBody>
           { tableRows.map((row, i) => (
             <TableRow key={i}>
-              <TableCell className={classes.weekCell}>
-                <div className={classes.chipContent}>
-                  <Chip label={row.hour} className={classes.timeChip} size="small" />
+              <TableCell css={css.weekCell}>
+                <div css={css.chipContent}>
+                  <Chip label={row.hour} css={css.timeChip} size="small" />
                 </div>
               </TableCell>
               { row.weekEvents.map((weekEvent, j) => (
-                <TableCell key={i + '-' + j} className={classes.weekCell} onClick={(e) => onTableCellClicked(e, i, j)}>
+                <TableCell key={i + '-' + j} css={css.weekCell} onClick={(e) => onTableCellClicked(e, i, j)}>
                   { weekEvent && weekEvent.dayEvents.map((hourEvent, k) => (
-                    <div className={classes.eventContent} key={i + '-' + j + '-' + k} style={{
+                    <div css={css.eventContent} key={i + '-' + j + '-' + k} style={{
                       top: hourEvent.topPercent * lineHeight,
                       height: hourEvent.heightPercent * lineHeight - 4,
                       backgroundColor: hourEvent.color,
                     }} onClick={() => eventClick ? eventClick(hourEvent.event) : null}>
                       { hourEvent.event.text }
-                      {hourEvent.event.checked && <Check className={classes.checkBadge} color="primary"/>}
+                      {hourEvent.event.checked && <Check css={css.checkBadge} color="primary"/>}
                       {hourEvent.event.badge && <Chip
-                        className={classes.eventBadge}
+                        css={css.eventBadge}
                         size="small"
                         label={hourEvent.event.isDeleted ? 'X' : hourEvent.event.badge}
                         color={hourEvent.event.isDeleted ? 'error' : 'primary'}

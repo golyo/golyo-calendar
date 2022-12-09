@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { TFunction, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Avatar,
@@ -10,23 +10,22 @@ import {
   ListItemAvatar,
   Typography,
 } from '@mui/material';
-
+import { styled } from '@mui/material/styles';
 import { TrainerEvent } from '../../../hooks/event';
 import { useUser } from '../../../hooks/user';
 import { DEFAULT_MEMBER, MembershipType, TicketSheet, useGroup, useTrainer, findOrCreateSheet } from '../../../hooks/trainer';
 import LabelValue from '../../common/LabelValue';
 import TrainerActionsPopup from './TrainerActionsPopup';
-import { styled } from '@mui/material/styles';
 
 export const TicketAlert = styled(Alert)(() => ({
   padding: '0px 6px',
   marginTop: '3px',
 }));
 
-export function TicketNoWarning({ sheet, t }: { sheet: TicketSheet, t: TFunction }) {
+export function TicketNoWarning({ sheet, t }: { sheet: TicketSheet, t: any }) {
   return (
     <div>
-      {sheet?.remainingEventNo > 0 && <TicketAlert variant="outlined" severity="info">{t('event.remainingEventNo', { ticketNo: sheet.remainingEventNo })}</TicketAlert>}
+      {sheet?.remainingEventNo > 0 && <Alert variant="outlined" severity="info">{t('event.remainingEventNo', { ticketNo: sheet.remainingEventNo })}</Alert>}
       {sheet?.remainingEventNo <= 0 &&
         <TicketAlert variant="outlined" severity="error">{t(sheet.remainingEventNo < 0 ? 'event.owesTicket' : 'event.noMoreEvent', { ticketNo: -sheet.remainingEventNo })}</TicketAlert>
       }

@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
-import { MuiPickersAdapter } from '@mui/lab/LocalizationProvider/LocalizationProvider';
+import { useUtils } from '@mui/x-date-pickers/internals/hooks/useUtils';
+import { MuiPickersAdapter } from '@mui/x-date-pickers/internals/models';
 import { Modal, MenuItem, TextField, Button } from '@mui/material';
 import ModalContainer from '../../common/ModalContainer';
 import { useTrainer } from '../../../hooks/trainer';
@@ -40,7 +40,7 @@ export default function NewEventPopup<T>({ startDate, resetStartDate }: Props<T>
     },
   });
 
-  const doChanges = useCallback((values) => {
+  const doChanges = useCallback((values: FieldValues) => {
     const group = groups.find((g) => g.id === values.groupId)!;
     createEvent(group, utils.toJsDate(startDate)).then(() => resetStartDate());
   }, [createEvent, groups, resetStartDate, startDate, utils]);
@@ -67,7 +67,7 @@ export default function NewEventPopup<T>({ startDate, resetStartDate }: Props<T>
                 inputProps={{ step: 300 }}
                 sx={{ minWidth: 110 }}
                 error={!!errors.time}
-                helperText={errors.time?.message}
+                helperText={errors.time?.message as string || ''}
               />
             }
           />
@@ -82,7 +82,7 @@ export default function NewEventPopup<T>({ startDate, resetStartDate }: Props<T>
                 size="small"
                 variant="outlined"
                 error={!!errors.groupId}
-                helperText={errors.groupId?.message}
+                helperText={errors.groupId?.message as string || ''}
               >
                 <MenuItem value={''}>-</MenuItem>
                 {groups.map((group, idx) =>

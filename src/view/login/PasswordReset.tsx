@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import { Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, TextField } from '@mui/material';
@@ -12,14 +12,14 @@ const PasswordReset = () => {
 
   const { startPasswordReset, authState } = useAuth();
 
-  const startReset = useCallback((values) => {
+  const startReset = useCallback((values: FieldValues) => {
     const { email } = values;
     startPasswordReset(email).then(() => {
       // setErrors({});
     }).catch((err: any) => {
       setError('email', {
         type: 'manual',
-        message: t(`login.error.${err.code}`),
+        message: t(`login.error.${err.code}`)!,
       });
     });
   }, [startPasswordReset, setError, t]);
@@ -44,7 +44,7 @@ const PasswordReset = () => {
                             value={value}
                             label={t('login.email')}
                             error={!!errors.email}
-                            helperText={errors.email?.message}
+                            helperText={errors.email?.message as string || ''}
                             required
                             disabled={isSubmitted}
                         />

@@ -21,7 +21,7 @@ import {
   DEFAULT_MEMBER,
 } from '../trainer';
 import { Firestore, where } from 'firebase/firestore';
-import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
+import { useUtils } from '@mui/x-date-pickers/internals/hooks/useUtils';
 import { createCronConverter } from './cronUtils';
 import { createUserEventProvider, EventProvider, getInterval, TrainerEvent } from '../event';
 import useStorage from '../firebase/useStorage';
@@ -111,7 +111,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     }));
   }, []);
 
-  const uploadAvatarIfExists = useCallback((usr, pauthUser) => {
+  const uploadAvatarIfExists = useCallback((usr: User, pauthUser: AuthUser) => {
     // TODO
     if (pauthUser?.photoURL && false) {
       getAvatarUrl(usr.id).then(() => {}, () => {
@@ -221,7 +221,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     return addUserRequest(firestore, trainer.id, user!, group).then(() => loadGroupMemberships(user!));
   }, [firestore, loadGroupMemberships, saveUser, user]);
 
-  const loadUser = useCallback((pauthUser) => {
+  const loadUser = useCallback((pauthUser: AuthUser) => {
     userSrv.get(HACK_USER || pauthUser!.email!).then((dbUser) => {
       if (dbUser) {
         if (!dbUser.registrationDate) {

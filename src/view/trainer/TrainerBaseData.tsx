@@ -46,7 +46,7 @@ const TrainerBaseData = () => {
   const openModal = useCallback(() => setOpen(true), []);
   const closeModal = useCallback(() => setOpen(false), []);
 
-  const doChanges = useCallback((values) => {
+  const doChanges = useCallback((values: any) => {
     saveTrainerData(values).then(() => closeModal());
   }, [closeModal, saveTrainerData]);
 
@@ -101,7 +101,7 @@ const TrainerBaseData = () => {
                   required
                   label={t('trainer.trainingName')}
                   error={!!errors.name}
-                  helperText={errors.name?.message}
+                  helperText={errors.name?.message as string || ''}
                 />
               )}
             />
@@ -123,7 +123,7 @@ const TrainerBaseData = () => {
                       {...params}
                       label={t('trainer.country')}
                       error={!!errors.country}
-                      helperText={errors.country?.message}
+                      helperText={errors.country?.message as string || ''}
                     />
                   )}
                 />
@@ -139,7 +139,7 @@ const TrainerBaseData = () => {
                   required
                   label={t('trainer.zipCode')}
                   error={!!errors.zipCode}
-                  helperText={errors.zipCode?.message}
+                  helperText={errors.zipCode?.message as string || ''}
                 />
               )}
             />
@@ -153,7 +153,7 @@ const TrainerBaseData = () => {
                   required
                   label={t('trainer.address')}
                   error={!!errors.address}
-                  helperText={errors.address?.message}
+                  helperText={errors.address?.message as string || ''}
                 />
               )}
             />

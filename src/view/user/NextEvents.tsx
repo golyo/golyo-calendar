@@ -13,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Event as EventIcon, Visibility } from '@mui/icons-material';
-import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
+import { useUtils } from '@mui/x-date-pickers/internals/hooks/useUtils';
 
 import { useUser } from '../../hooks/user';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';

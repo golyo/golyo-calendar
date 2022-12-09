@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import { useUser } from '../../hooks/user';
-import { TrainerEvent } from '../../hooks/event';
+import { CalendarEvent, TrainerEvent } from '../../hooks/event';
 import EventPopup from '../calendar/EventPopup';
 import WeekView from '../calendar/WeekView';
 
@@ -12,8 +12,8 @@ export default function UserCalendar() {
   const { userEventProvider } = useUser();
   const [selectedEvent, setSelectedEvent] = useState<TrainerEvent | null>(null);
 
-  const eventClick = useCallback((event) => {
-    setSelectedEvent(event);
+  const eventClick = useCallback((event: CalendarEvent) => {
+    setSelectedEvent(event as TrainerEvent);
   }, []);
 
   const resetEvent = useCallback(() => setSelectedEvent(null), []);
@@ -23,9 +23,9 @@ export default function UserCalendar() {
       <Typography variant="h3">{t('menu.myCalendar')}</Typography>
       <WeekView eventClick={eventClick}
                 eventProvider={userEventProvider}
-                todayLabel={t('calendar.actWeek')}
-                weekLabel={t('calendar.week')}
-                yearLabel={t('calendar.year')}
+                todayLabel={t('calendar.actWeek')!}
+                weekLabel={t('calendar.week')!}
+                yearLabel={t('calendar.year')!}
       />
       <EventPopup event={selectedEvent} resetEvent={resetEvent} />
     </div>

@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import { MembershipType, MemberState, TrainingGroupType, TrainingGroupUIType } from '../trainer';
 import { EventProvider, TrainerEvent } from '../event';
-import { MuiPickersAdapter } from '@mui/lab/LocalizationProvider/LocalizationProvider';
+import { MuiPickersAdapter } from '@mui/x-date-pickers/internals/models';
 
 export interface UiCronType {
   days: string[];

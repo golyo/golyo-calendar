@@ -41,8 +41,8 @@ interface DialogContextType {
   checkIfConfirmDialog: (dialog: CheckIfConfirmDialogType) => void;
   showDialog: (dialog: DialogType) => void;
   hideDialog: () => void;
-  showBackdrop: (message?: string) => void;
-  hideBackdrop: (message?: string) => void;
+  showBackdrop: (message?: string | false) => void;
+  hideBackdrop: (message?: string | false) => void;
 }
 
 const DialogContext = React.createContext<DialogContextType>({} as DialogContextType);

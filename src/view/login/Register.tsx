@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import { Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, TextField } from '@mui/material';
@@ -11,12 +11,12 @@ const Register = () => {
   const { t } = useTranslation();
   const { register, authState } = useAuth();
 
-  const doRegister = useCallback((values) => {
+  const doRegister = useCallback((values: FieldValues) => {
     const { email, password, passwordCheck, displayName } = values;
     if (password !== passwordCheck) {
       setError('passwordCheck', {
         type: 'manual',
-        message: t('login.error.passwordCheck'),
+        message: t('login.error.passwordCheck')!,
       });
       return;
     }
@@ -26,12 +26,12 @@ const Register = () => {
       if (err.code.endsWith('password')) {
         setError('password', {
           type: 'manual',
-          message: t('login.error.' + err.code),
+          message: t('login.error.' + err.code)!,
         });
       } else {
         setError('email', {
           type: 'manual',
-          message: t('login.error.' + err.code),
+          message: t('login.error.' + err.code)!,
         });
       }
     });
@@ -68,7 +68,7 @@ const Register = () => {
                             value={value}
                             label={t('login.email')}
                             error={!!errors.email}
-                            helperText={errors.email?.message}
+                            helperText={errors.email?.message as string || ''}
                             required
                         />
                     )}
@@ -85,7 +85,7 @@ const Register = () => {
                             label={t('login.password')}
                             required
                             error={!!errors.password}
-                            helperText={errors.password?.message}
+                            helperText={errors.password?.message as string || ''}
                         />
                     )}
                 />
@@ -101,7 +101,7 @@ const Register = () => {
                             label={t('login.passwordCheck')}
                             required
                             error={!!errors.passwordCheck}
-                            helperText={errors.passwordCheck?.message}
+                            helperText={errors.passwordCheck?.message as string || ''}
                         />
                     )}
                 />

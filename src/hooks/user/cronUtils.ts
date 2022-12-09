@@ -1,5 +1,5 @@
 import { UiCronType } from './UserContext';
-import { MuiPickersAdapter } from '@mui/lab/LocalizationProvider/LocalizationProvider';
+import { MuiPickersAdapter } from '@mui/x-date-pickers/internals/models';
 
 const daysToWeekValue = (days: string[], weekDays: string[]) => days.map((dayIdx) => weekDays[parseInt(dayIdx)]);
 const daysToWeekIdx = (days: string[], weekDays: string[]) => days.map((dayName) => weekDays.indexOf(dayName));

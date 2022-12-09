@@ -4,7 +4,7 @@ import {
   Autocomplete, Box, IconButton,
   TextField,
 } from '@mui/material';
-import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
+import { useUtils } from '@mui/x-date-pickers/internals/hooks/useUtils';
 import { AddCircle, Delete } from '@mui/icons-material';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -63,7 +63,7 @@ const CronWeekPicker = ({ control, setValue, trigger, errors, name, onDelete, on
                 label={t('trainingGroup.days')}
                 placeholder="Nap"
                 error={!!cronErrors?.days}
-                helperText={cronErrors?.days?.message}
+                helperText={cronErrors?.days?.message as string || ''}
               />
             )}
           />

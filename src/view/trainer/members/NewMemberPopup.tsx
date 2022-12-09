@@ -7,7 +7,7 @@ import { AddCircle } from '@mui/icons-material';
 import * as yup from 'yup';
 import ModalContainer from '../../common/ModalContainer';
 import {
-  DEFAULT_MEMBER,
+  DEFAULT_MEMBER, MembershipType,
   MemberState,
   useGroup,
   useTrainer,
@@ -40,7 +40,7 @@ const NewMemberPopup = () => {
     setOpen(false);
   }, [reset]);
 
-  const modifyData = useCallback((newUser) => {
+  const modifyData = useCallback((newUser: MembershipType) => {
     closeModal();
     return updateMembershipState(newUser, MemberState.TRAINER_REQUEST);
   }, [closeModal, updateMembershipState]);
@@ -85,7 +85,7 @@ const NewMemberPopup = () => {
                   size="small"
                   variant="outlined"
                   error={!!errors.id}
-                  helperText={errors.id?.message}
+                  helperText={errors.id?.message as string || ''}
                 />
               )}
             />
@@ -100,7 +100,7 @@ const NewMemberPopup = () => {
                   size="small"
                   variant="outlined"
                   error={!!errors.name}
-                  helperText={errors.name?.message}
+                  helperText={errors.name?.message as string || ''}
                 />
               )}
             />

@@ -3,7 +3,6 @@ import {
   Link, Route, Routes,
 } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { makeStyles } from '@mui/styles';
 import {
   AppBar,
   Button,
@@ -12,12 +11,10 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  SvgIcon,
   Toolbar,
   Typography,
 } from '@mui/material';
 import { Logout, ManageAccounts } from '@mui/icons-material';
-import styles from './MenuDrawer.style';
 import Login from '../view/login/Login';
 import Verification from '../view/login/Verification';
 import RegistrationSuccess from '../view/login/RegistrationSuccess';
@@ -38,14 +35,13 @@ import TrainerCalendar from '../view/trainer/events/TrainerCalendar';
 import EventPage from '../view/trainer/events/EventPage';
 import TrainerEvents from '../view/trainer/events/TrainerEvents';
 import SearchTrainer from '../view/user/SearchTrainer';
-import { ReactComponent as TrainingSheet }  from './training-sheet.svg';
 import UserAvatar from '../view/common/UserAvatar';
 import MonthlyMemberStat from '../view/trainer/stats/MonthyMemberStat';
 import StatRouter from '../view/trainer/stats/StatRouter';
 import Last28DaysStat from '../view/trainer/stats/Last28DaysStat';
 import MemberTicketStat from '../view/trainer/stats/MemberTicketStat';
 
-const useStyles = makeStyles(styles, { name: 'MenuDrawer' });
+import styles from './MenuDrawer.style';
 
 export type MenuItemType = {
   label: string;
@@ -60,8 +56,7 @@ type Props = {
   subMenu?: MenuItemType[];
 };
 
-export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
-  const classes = useStyles();
+const MenuDrawer = ({ leftMenu, rightMenu }: Props) => {
   const { logout } = useAuth();
   const { user } = useUser();
   const { t } = useTranslation();
@@ -70,7 +65,7 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
   const { anchorLeft, anchorRight } = state;
   const isLeftOpen = useMemo(() => Boolean(anchorLeft), [anchorLeft]);
   const isRightOpen = useMemo(() => Boolean(anchorRight), [anchorRight]);
-
+  const css = useMemo(() => styles(), []);
   const userName = user ? user.name : '';
 
   const handleRightMenu = useCallback((event: any) => setState((prev) => ({
@@ -109,27 +104,18 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
   }, [handleClose, t]);
 
   return (
-    <div className={classes.root}>
+    <div css={css.root}>
       <CssBaseline />
 
       <AppBar position="fixed">
         <Toolbar disableGutters>
           <Button
-            startIcon={<SvgIcon
-              color="inherit"
-              component={TrainingSheet}
-              inheritViewBox
-              classes={{
-                root: isLeftOpen ? classes.menuButtonIconOpen : classes.menuButtonIconClosed,
-              }}
-            />}
             color="inherit"
             aria-label="Open drawer"
             aria-controls={isLeftOpen ? 'composition-menu' : undefined}
             aria-expanded={isLeftOpen ? 'true' : undefined}
             aria-haspopup="true"
             onClick={handleLeftMenu}
-            className={classes.menuButton}
           >
             Trainer Sheet
           </Button>
@@ -149,9 +135,9 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
           >
             { renderMenu(leftVisible) }
           </Menu>
-          <div className={classes.grow}>
+          <div css={css.grow}>
           </div>
-          <div className={classes.menuHorizontal}>
+          <div css={css.menuHorizontal}>
             { user && <>
               <Button
                 color="inherit"
@@ -159,7 +145,7 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
                 aria-owns={isRightOpen ? 'menu-appbar' : undefined}
                 aria-haspopup="true"
               >
-                <Typography noWrap className={classes.avatarButton} variant="button">
+                <Typography noWrap variant="button">
                   { userName }&nbsp;
                 </Typography>
                 <UserAvatar userId={user.id} />
@@ -189,9 +175,9 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
           </div>
         </Toolbar>
       </AppBar>
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
-        <div className={classes.container}>
+      <div css={css.content}>
+        <div css={css.toolbar} />
+        <div css={css.container}>
           <Routes>
             <Route index element={<NextEvents />} />
             <Route path="myCalendar" element={<UserCalendar />} />
@@ -226,7 +212,9 @@ export default function MenuDrawer({ leftMenu, rightMenu }: Props) {
             </Route>
           </Routes>
         </div>
-      </main>
+      </div>
     </div>
   );
-}
+};
+
+export default MenuDrawer;

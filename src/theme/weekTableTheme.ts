@@ -1,5 +1,5 @@
 import * as colors from '@mui/material/colors';
-import { PaletteOptions, ThemeOptions } from '@mui/material/styles';
+import { Theme } from '@emotion/react';
 
 export interface WeekTablePalette {
   headerBGColor?: string,
@@ -7,10 +7,10 @@ export interface WeekTablePalette {
   eventColors: string[],
 }
 
-export interface IPalette extends PaletteOptions {
+export interface IPalette {
   weekPalette: WeekTablePalette,
 }
-export interface IThemeOptions extends ThemeOptions {
+export interface WeekTheme extends Theme {
   palette: IPalette;
 }
 

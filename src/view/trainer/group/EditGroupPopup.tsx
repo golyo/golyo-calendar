@@ -1,18 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, useFieldArray, Controller, FieldValues } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Avatar,
   Button,
-  Checkbox, FormControl,
+  Checkbox,
+  FormControl,
   FormControlLabel,
-  InputAdornment, InputLabel,
+  InputAdornment,
+  InputLabel,
   MenuItem,
   Modal,
   Select,
-  TextField, Typography,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { Event as EventIcon, ExpandMore } from '@mui/icons-material';
 import { GroupType, TrainingGroupUIType, useTrainer } from '../../../hooks/trainer';
@@ -50,7 +53,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
     attachedGroups: yup.array().of(yup.string()),
     crons: yup.array().of(
       yup.object().shape({
-        days: yup.array().of(yup.string()).min(1, t('error.required')),
+        days: yup.array().of(yup.string()).min(1, t('error.required')!),
         time: yup.string().required(),
       }),
     ),
@@ -75,7 +78,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
     reset(trainingGroup);
   }, [reset, trainingGroup]);
 
-  const modifyData = useCallback((modifiedGroup) => {
+  const modifyData = useCallback((modifiedGroup: FieldValues) => {
     const toSave = {
       ...trainingGroup,
       ...modifiedGroup,
@@ -129,7 +132,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
                       size="small"
                       variant="outlined"
                       error={!!errors.name}
-                      helperText={errors.name?.message}
+                      helperText={errors.name?.message as string || ''}
                     />
                   )}
                 />
@@ -168,7 +171,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
                       size="small"
                       variant="outlined"
                       error={!!errors.duration}
-                      helperText={errors.duration?.message}
+                      helperText={errors.duration?.message as string || ''}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -191,7 +194,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
                       size="small"
                       variant="outlined"
                       error={!!errors.maxMember}
-                      helperText={errors.maxMember?.message}
+                      helperText={errors.maxMember?.message as string || ''}
                     />
                   )}
                 />
@@ -208,7 +211,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
                       variant="outlined"
                       sx={{ backgroundColor: field.value }}
                       error={!!errors.color}
-                      helperText={errors.color?.message}
+                      helperText={errors.color?.message as string || ''}
                     >
                       <MenuItem value=''>-</MenuItem>
                       {EVENT_COLORS.map((color, idx) =>
@@ -254,7 +257,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
                       size="small"
                       variant="outlined"
                       error={!!errors.cancellationDeadline}
-                      helperText={errors.cancellationDeadline?.message}
+                      helperText={errors.cancellationDeadline?.message as string || ''}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -277,7 +280,7 @@ const EditGroupPopup = ({ trainingGroup, isOpen, closePopup, saveGroup } : Modal
                       size="small"
                       variant="outlined"
                       error={!!errors.ticketLength}
-                      helperText={errors.ticketLength?.message}
+                      helperText={errors.ticketLength?.message as string || ''}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">

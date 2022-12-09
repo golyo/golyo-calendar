@@ -108,7 +108,7 @@ export const deleteObject = (firestore: Firestore, path: string, id: string) => 
 
 export const updateObject = <T extends { id: string }>(firestore: Firestore, path: string, object: T, merge = true) => {
   const docRef = doc(firestore, path, object.id);
-  const updated = { ... object };
+  const updated = { ...object };
   // @ts-ignore
   delete updated.id;
   return setDoc(docRef, updated, { merge });

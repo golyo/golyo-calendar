@@ -9,7 +9,6 @@ import { useDialog } from '../../../hooks/dialog';
 import { useGroup, useTrainer } from '../../../hooks/trainer';
 
 import { Accordion, AccordionDetails, AccordionSummary } from '../../common/ZhAccordion';
-
 import EditGroupPopup from './EditGroupPopup';
 import PublicGroupData from './PublicGroupData';
 import GroupSettingsData from './GroupSettingsData';

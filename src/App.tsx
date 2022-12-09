@@ -1,30 +1,34 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ThemeProvider } from '@emotion/react';
 import { enUS, hu } from 'date-fns/locale';
 import * as yup from 'yup';
 import {
   CalendarViewWeek,
   Contacts,
   Groups,
-  Home as HomeIcon, InsertChart,
+  Home as HomeIcon,
+  InsertChart,
   ManageAccounts,
-  PermContactCalendar, Search,
+  PermContactCalendar,
+  Search,
 } from '@mui/icons-material';
-import { createTheme, ThemeProvider, responsiveFontSizes } from '@mui/material/styles';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
+
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { createTheme, ThemeOptions } from '@mui/material/styles';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import MenuDrawer, { MenuItemType } from './menu/MenuDrawer';
 
 import { FirebaseProvider } from './hooks/firebase';
 import { AuthProvider } from './hooks/auth';
-import weekTableTheme, { IThemeOptions } from './theme/weekTableTheme';
+import weekTableTheme from './theme/weekTableTheme';
 import { BreakpointProvider } from './hooks/breakpoint';
 import { UserProvider } from './hooks/user';
 import { DialogProvider } from './hooks/dialog';
 import ErrorBoundary from './view/common/ErrorBoundary';
 
-const theme = responsiveFontSizes(createTheme(weekTableTheme as IThemeOptions));
+export const theme = createTheme(weekTableTheme as ThemeOptions);
 
 const VISIBLE = () => true;
 
@@ -96,7 +100,7 @@ function App() {
   useEffect(() => {
     yup.setLocale({
       mixed: {
-        required: t('error.required'),
+        required: t('error.required')!,
         notType: (ref) => {
           switch (ref.type) {
             case 'number':
@@ -109,7 +113,7 @@ function App() {
         },
       },
       string: {
-        email: t('error.email'),
+        email: t('error.email')!,
       },
     });
   }, [t]);

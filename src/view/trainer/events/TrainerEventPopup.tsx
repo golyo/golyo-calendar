@@ -49,7 +49,7 @@ const TrainerEventPopup = ({ selectedEvent, groupType, resetEvent }: Props) => {
     });
   }, [event, resetEvent, showConfirmDialog]);
 
-  const isMemberExists = useCallback((memberId) => members.some((m) => m.id === memberId), [members]);
+  const isMemberExists = useCallback((memberId: string) => members.some((m) => m.id === memberId), [members]);
 
   const removeMember = useCallback((memberId: string) => {
     showConfirmDialog({

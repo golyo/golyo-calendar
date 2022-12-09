@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { findOrCreateSheet, MembershipType, MemberState, useTrainer } from '../../../hooks/trainer';
-import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
+import { useUtils } from '@mui/x-date-pickers/internals/hooks/useUtils';
 import { TrainerEvent } from '../../../hooks/event';
 import {
+  Alert,
   Avatar,
   Box, Chip,
   Divider,
@@ -18,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 import { AddCircle, Event as EventIcon } from '@mui/icons-material';
 import { useDialog } from '../../../hooks/dialog';
 import UserAvatar from '../../common/UserAvatar';
-import { TicketAlert } from '../events/EventPage';
 
 interface MemberStat {
   member: MembershipType;
@@ -114,9 +114,9 @@ export default function MemberEventStat<T>({ interval, leftFilter } : StatProp) 
       return null;
     }
     return (
-      <TicketAlert variant="outlined" severity="info">
+      <Alert variant="outlined" severity="info">
         {t('trainer.bonusTime') + ': ' + utils.format(utils.date(memberStat.inrangeBonus)!, 'shortDate')}
-      </TicketAlert>
+      </Alert>
     );
   }, [t, utils]);
 

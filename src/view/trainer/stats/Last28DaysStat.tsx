@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
+import { useUtils } from '@mui/x-date-pickers/internals/hooks/useUtils';
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import MemberEventStat from './MemberEventStat';

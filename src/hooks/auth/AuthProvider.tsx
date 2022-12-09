@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   createUserWithEmailAndPassword,
   EmailAuthProvider,
@@ -37,6 +37,7 @@ const NOT_AUTH_PAGES = [
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { auth } = useFirebase();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [state, setState] = useState<{ authUser?: AuthUser; authState: AuthState }>({ authState: AuthState.INIT });
   const { authUser, authState } = state;
@@ -74,13 +75,13 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         navigate('/login');
       }
     }
-  }, [authState, navigate, authUser]);
+  }, [authState, navigate, authUser, location.pathname]);
 
-  const login = useCallback((email, password) => {
+  const login = useCallback((email: string, password: string) => {
     return signInWithEmailAndPassword(auth, email, password);
   }, [auth]);
 
-  const updatePassword = useCallback(async (oldPassword, newPassword) => {
+  const updatePassword = useCallback(async (oldPassword: string, newPassword: string) => {
     if (!authUser || !authUser.email) {
       throw new Error('User not defined');
     }
@@ -108,7 +109,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithFacebookRedirect = useCallback(() => signInWithRedirect(auth, new FacebookAuthProvider()), [auth]);
 
-  const startPasswordReset = useCallback((email) => {
+  const startPasswordReset = useCallback((email: string) => {
     const actionCodeSettings = {
       url: window.location.origin + '/#/registrationSuccess?action=changePassword',
       handleCodeInApp: true,
@@ -116,7 +117,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return sendPasswordResetEmail(auth, email, actionCodeSettings);
   }, [auth]);
 
-  const sendEmailToUser = useCallback((userParam, newUser) => {
+  const sendEmailToUser = useCallback((userParam: AuthUser, newUser: boolean) => {
     if (!userParam.emailVerified) {
       const actionCodeSettings = {
         url: window.location.origin + '/#/registrationSuccess?action=registration',
@@ -135,10 +136,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [navigate]);
 
   const sendVerifyEmail = useCallback(() => {
-    return sendEmailToUser(authUser, false);
+    return sendEmailToUser(authUser!, false);
   }, [authUser, sendEmailToUser]);
 
-  const register = useCallback((email, password, displayName) => {
+  const register = useCallback((email: string, password: string, displayName: string) => {
     return createUserWithEmailAndPassword(auth, email, password).then((result) => {
       updateProfile(result.user, { displayName }).then(() => {
         sendEmailToUser(result.user, true);
@@ -147,7 +148,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
   }, [auth, sendEmailToUser]);
 
-  const updateEmail = useCallback(async (newEmail, password) => {
+  const updateEmail = useCallback(async (newEmail: string, password: string) => {
     if (!authUser || !authUser.email) {
       throw new Error('User not defined');
     }
@@ -160,18 +161,18 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return Promise.resolve();
   }, [sendEmailToUser, authUser]);
 
-  const updateUser = useCallback(async (displayName, photoURL) => {
+  const updateUser = useCallback(async (displayName: string, photoURL?: string) => {
     if (!authUser) {
       throw new Error('User not defined');
     }
-    if (!isEqual(authUser.displayName, displayName) || !isEqual(authUser.photoURL, photoURL)) {
+    if (!isEqual(authUser.displayName, displayName) || !isEqual(authUser.photoURL, photoURL || '')) {
       return updateProfile(authUser, { displayName, photoURL }).then(() => {
         setState({
           authState,
           authUser: {
             ...authUser,
             displayName,
-            photoURL,
+            photoURL: photoURL || '',
           },
         });
       });

@@ -29,7 +29,7 @@ class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       const { t } = this.props;
-      return <Alert severity="error">{t('error.unknownError')}</Alert>;
+      return <Alert severity="error">{t('error.unknownError') as string}</Alert>;
     }
 
     return this.props.children;

@@ -14,7 +14,7 @@ const EMPTY_FUNC = () => {};
 const ConfirmDialog = ({ title, description, buttons, open, hideDialog } : ConfirmDialogType) => {
   const { t } = useTranslation();
 
-  const onButtonClick = useCallback((idx) => () => {
+  const onButtonClick = useCallback((idx: number) => () => {
     hideDialog();
     (buttons![idx].onClick || EMPTY_FUNC)();
   }, [buttons, hideDialog]);

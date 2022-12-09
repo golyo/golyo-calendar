@@ -1,4 +1,9 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import facepaint from 'facepaint';
+
+const breakpoints = [576, 768, 992, 1200];
+
+export const mq = facepaint(breakpoints.map(bp => `@media (min-width: ${bp}px)`));
 
 export enum Breakpoints {
   xs = 'xs',
@@ -8,11 +13,11 @@ export enum Breakpoints {
 }
 
 const getDeviceConfig = (width: number) => {
-  if (width < 600) {
+  if (width < breakpoints[0]) {
     return Breakpoints.xs;
-  } else if (width >= 600 && width < 900 ) {
+  } else if (width < breakpoints[1]) {
     return Breakpoints.sm;
-  } else if (width >= 900 && width < 1200) {
+  } else if (width < breakpoints[2]) {
     return Breakpoints.md;
   }
   return Breakpoints.lg;

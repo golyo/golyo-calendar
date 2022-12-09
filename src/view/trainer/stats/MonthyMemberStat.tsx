@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useUtils } from '@mui/lab/internal/pickers/hooks/useUtils';
+import { useUtils } from '@mui/x-date-pickers/internals/hooks/useUtils';
 import {
   Box,
   Chip,
@@ -21,7 +21,7 @@ export default function MonthlyMemberStat<T>() {
 
   const monthTitle = useMemo(() => utils.format(monthStart, 'monthAndYear'), [monthStart, utils]);
 
-  const addMonth = useCallback((value) => setMonthStart((prev) => utils.addMonths(prev, value)), [utils]);
+  const addMonth = useCallback((value: number) => setMonthStart((prev) => utils.addMonths(prev, value)), [utils]);
 
   const toDate = useMemo(() => utils.toJsDate(utils.endOfMonth(monthStart)), [monthStart, utils]);
 

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, TextField } from '@mui/material';
 import { useAuth } from '../../hooks/auth';
@@ -18,14 +18,14 @@ const Login = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const doLogin = useCallback((values) => {
+  const doLogin = useCallback((values: FieldValues) => {
     const { email, password } = values;
     login(email, password).then(() => {
       navigate('/');
     }).catch((err: any) => {
       setError('email', {
         type: 'manual',
-        message: t(`login.error.${err.code}`),
+        message: t(`login.error.${err.code}`)!,
       });
     });
   }, [login, navigate, setError, t]);
@@ -58,7 +58,7 @@ const Login = () => {
             label={t('login.email')}
             required
             error={!!errors.email}
-            helperText={errors.email?.message}
+            helperText={errors.email?.message as string || ''}
           />
         )}
       />

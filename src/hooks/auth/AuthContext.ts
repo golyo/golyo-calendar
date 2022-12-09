@@ -16,7 +16,7 @@ export interface AuthContextType {
   sendVerifyEmail: () => Promise<void>;
   register: (email: string, password: string, displayName: string) => Promise<UserCredential>;
   updateEmail: (newEmail: string, password: string) => Promise<void>;
-  updateUser: (displayName: string, photoURL: string | null) => Promise<void>;
+  updateUser: (displayName: string, photoURL?: string) => Promise<void>;
   updatePassword: (oldPassword: string, newPassword: string) => Promise<void>;
   startPasswordReset: (email: string) => Promise<void>;
   signInWithGoogle: () => Promise<any>;
